@@ -100,12 +100,12 @@ test('DRP-QR-01: The pairing QR is a real per-open canvas render, not a static s
   await ar.dropitCloseBtn.click();
 });
 
-test('DRP-SCAN-01: Scanning the QR with a phone and sending a file completes the transfer', { tag: '@positive' }, async ({ page }) => {
+test('DRP-SCAN-01: Scanning the QR with a phone and sending a file completes the transfer', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real physical phone to scan the Drop It QR and initiate a genuine file transfer -- browser automation cannot simulate a phone camera or a second physical device, and no such device is available in this environment');
   expect(true).toBe(false);
 });
 
-test('DRP-RETRY-01: Retry control appears and works after a failed/interrupted transfer', { tag: '@negative' }, async ({ page }) => {
+test('DRP-RETRY-01: Retry control appears and works after a failed/interrupted transfer', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real physical phone to establish and then interrupt a genuine file transfer -- no such device is available in this environment');
   expect(true).toBe(false);
 });
@@ -123,17 +123,17 @@ test('DRP-CLOSE-01: Close exits Drop It cleanly from the idle "scan" state', { t
 // covered by AR-CYP-05 in tests/add-resource/gap-analysis.spec.js (which
 // itself confirmed the overlap live via the same two bounding boxes).
 
-test('DRP-FILETYPE-01: An unsupported file type from the phone is rejected with a clear message', { tag: '@negative' }, async ({ page }) => {
+test('DRP-FILETYPE-01: An unsupported file type from the phone is rejected with a clear message', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real physical phone connected via Drop It to attempt sending an unsupported file type -- no such device is available in this environment');
   expect(true).toBe(false);
 });
 
-test('DRP-SIZE-01: An oversized file from the phone is rejected or handled gracefully', { tag: '@negative' }, async ({ page }) => {
+test('DRP-SIZE-01: An oversized file from the phone is rejected or handled gracefully', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real physical phone connected via Drop It to attempt sending an oversized file -- no such device is available in this environment');
   expect(true).toBe(false);
 });
 
-test('DRP-CONN-01: Losing network connectivity mid-scan/mid-transfer is handled gracefully', { tag: '@negative' }, async ({ page }) => {
+test('DRP-CONN-01: Losing network connectivity mid-scan/mid-transfer is handled gracefully', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real physical phone mid-transfer plus control over ITS network connectivity -- neither is available in this environment');
   expect(true).toBe(false);
 });
@@ -166,7 +166,7 @@ test('DRP-STATE-01: Hard-refreshing while Drop It is open cleanly resets it with
   await expect(ar.addResourcesTrigger).toBeVisible({ timeout: 10000 });
 });
 
-test('DRP-SEC-01: The pairing mechanism uses real per-session backend channels, not a purely client-side/static token', { tag: '@security' }, async ({ page }) => {
+test('DRP-SEC-01: The pairing mechanism uses real per-session backend channels, not a purely client-side/static token', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const wsOrChannelUrls = [];
   page.on('request', (req) => {
@@ -206,7 +206,7 @@ test('DRP-CONVERGE-01: Entry point, pairing UI, and idle-state Close are all ind
   await expect(page.getByText('Drop It', { exact: true })).toBeHidden({ timeout: 5000 });
 });
 
-test('DRP-EXP-01: The three status lines update visibly if a real device connects (not just static defaults)', { tag: '@boundary' }, async ({ page }) => {
+test('DRP-EXP-01: The three status lines update visibly if a real device connects (not just static defaults)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real phone to attempt an actual scan and observe whether Connection/Transfer/Upload status text changes from its default values -- no such device is available in this environment');
   expect(true).toBe(false);
 });
@@ -236,7 +236,7 @@ test('DRP-EXP-02: Leaving the panel open and idle does not desync its state from
   await ar.dropitCloseBtn.click();
 });
 
-test('DRP-EXP-03: A future dynamic pairing token would need to be rejected across sessions/accounts', { tag: '@security' }, async ({ page }) => {
+test('DRP-EXP-03: A future dynamic pairing token would need to be rejected across sessions/accounts', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // This row was explicitly written as forward-looking/blocked on the
   // workbook's original DRP-QR-01 "static QR" finding being fixed first.
   // This session's own DRP-QR-01 test above found the pairing graphic is

@@ -47,7 +47,7 @@ test('PLR-WS-01: Clicking a Worksheet resource opens a PDF-style document viewer
   await expect(plr.closeIcon.first()).toBeVisible();
 });
 
-test('PLR-WS-02: Header displays worksheet metadata (Title/Subject/Topic and Name/Class/Div/Roll No/Date/Remarks)', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WS-02: Header displays worksheet metadata (Title/Subject/Topic and Name/Class/Div/Roll No/Date/Remarks)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
@@ -65,7 +65,7 @@ test('PLR-WS-03: Questions are shown with a labeled answer area below each', { t
   expect(bodyText.trim().length).toBeGreaterThan(0);
 });
 
-test('PLR-WS-04: A text-to-speech/audio control is available per question (presence only, per workbook)', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WS-04: A text-to-speech/audio control is available per question (presence only, per workbook)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const audioIconCount = await page.locator('[class*="audio" i], [class*="speaker" i], [class*="tts" i]').count();
@@ -74,7 +74,7 @@ test('PLR-WS-04: A text-to-speech/audio control is available per question (prese
   expect(audioIconCount).toBeGreaterThan(0);
 });
 
-test('PLR-WS-05: An annotation toolbar lets the teacher draw directly on the worksheet', { tag: '@positive' }, async ({ page }) => {
+test('PLR-WS-05: An annotation toolbar lets the teacher draw directly on the worksheet', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const body = page.locator('body');
@@ -86,7 +86,7 @@ test('PLR-WS-05: An annotation toolbar lets the teacher draw directly on the wor
   expect(toolbarVisible).toBe(true);
 });
 
-test('PLR-WS-06: The pencil tool offers color and thickness options', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WS-06: The pencil tool offers color and thickness options', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const pencilTool = page.locator('[class*="pencil" i]').first();
@@ -100,14 +100,14 @@ test('PLR-WS-06: The pencil tool offers color and thickness options', { tag: '@u
   expect(paletteVisible).toBe(true);
 });
 
-test('PLR-WS-07: A drawn annotation persists when navigating away and back', { tag: '@positive' }, async ({ page }) => {
+test('PLR-WS-07: A drawn annotation persists when navigating away and back', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   test.fail(true, 'Needs a confirmed, reachable drawing gesture on this specific worksheet resource to test persistence against -- not independently confirmed reachable this pass (see PLR-WS-05/06)');
   expect(true).toBe(false);
 });
 
-test('PLR-WS-08: Page navigation (Prev/Next and Go to Page) moves between pages', { tag: '@positive' }, async ({ page }) => {
+test('PLR-WS-08: Page navigation (Prev/Next and Go to Page) moves between pages', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const nextBtn = page.locator('.pagination-next .mypage-link, li.page-item.next-item .mypage-link').first();
@@ -122,7 +122,7 @@ test('PLR-WS-08: Page navigation (Prev/Next and Go to Page) moves between pages'
   expect(after).not.toBe(before);
 });
 
-test('PLR-WS-09: Zoom controls (+/-) change the document zoom level', { tag: '@positive' }, async ({ page }) => {
+test('PLR-WS-09: Zoom controls (+/-) change the document zoom level', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const zoomIn = page.locator('[class*="zoom-in" i], [aria-label*="zoom in" i]').first();
@@ -140,7 +140,7 @@ test('PLR-WS-09: Zoom controls (+/-) change the document zoom level', { tag: '@p
   expect(boxBefore && boxAfter && boxAfter.width > boxBefore.width).toBe(true);
 });
 
-test('PLR-WS-10: A theme/background swatch changes the worksheet\'s display background', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WS-10: A theme/background swatch changes the worksheet\'s display background', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const swatch = page.locator('[class*="color-swatch" i], [class*="theme" i]').first();
@@ -149,7 +149,7 @@ test('PLR-WS-10: A theme/background swatch changes the worksheet\'s display back
   expect(swatchVisible).toBe(true);
 });
 
-test('PLR-WS-11: The orientation toggle and Answer Key toggle are real, functioning controls', { tag: '@positive' }, async ({ page }) => {
+test('PLR-WS-11: The orientation toggle and Answer Key toggle are real, functioning controls', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const orientationVisible = await plr.worksheetOrientationToggle.isVisible({ timeout: 3000 }).catch(() => false);
@@ -168,7 +168,7 @@ test('PLR-WS-11: The orientation toggle and Answer Key toggle are real, function
   }
 });
 
-test('PLR-WS-12: Print icon triggers a print flow', { tag: '@positive' }, async ({ page }) => {
+test('PLR-WS-12: Print icon triggers a print flow', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const printVisible = await plr.worksheetPrintIcon.isVisible({ timeout: 3000 }).catch(() => false);
@@ -193,19 +193,19 @@ test('PLR-WS-13: The worksheet\'s close control exits cleanly', { tag: '@positiv
   await expect(plr.closeIcon.first()).toBeHidden();
 });
 
-test('PLR-WS-14: Annotations are per-teacher/session and do not leak into another class\'s copy (needs a 2nd account)', { tag: '@security' }, async ({ page }) => {
+test('PLR-WS-14: Annotations are per-teacher/session and do not leak into another class\'s copy (needs a 2nd account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a second teacher account/class to compare against -- not available in this project (this session uses a single confirmed working account, VALID_PIN_2)');
   expect(true).toBe(false);
 });
 
-test('PLR-WS-15: A very long (20+ page) worksheet remains navigable (boundary, no such resource confirmed to exist)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-WS-15: A very long (20+ page) worksheet remains navigable (boundary, no such resource confirmed to exist)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   test.fail(true, 'No worksheet resource with 20+ pages confirmed available on this account this pass -- the one confirmed Worksheet resource used throughout this file is not that large');
   expect(true).toBe(false);
 });
 
-test('PLR-WS-16: Eraser tool removes a drawn annotation correctly, including a long continuous stroke', { tag: '@negative' }, async ({ page }) => {
+test('PLR-WS-16: Eraser tool removes a drawn annotation correctly, including a long continuous stroke', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   test.fail(true, 'Cross-referenced: this is the same confirmed eraser bug already covered by tests/toolbar/gap-analysis.spec.js (TB-CYP-03: eraser cannot reliably remove a Pen stroke longer than ~700px) and tests/whiteboard/whiteboard.spec.js (WB-ERASER-01) -- see PLR-WS-23 for the consolidated cross-cutting citation applied specifically to the Worksheet annotation layer');
@@ -220,7 +220,7 @@ test('PLR-WS-17: No stable selectors exist on the PDF.js Prev/Next chrome -- onl
   expect(dataQaIdCount).toBe(0);
 });
 
-test('PLR-WS-18: The annotation overlay is real SVG with genuine path elements, not raster', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WS-18: The annotation overlay is real SVG with genuine path elements, not raster', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const svgCount = await plr.worksheetAnnotationLayer.count();
@@ -242,7 +242,7 @@ test('PLR-WS-19: Worksheet features are conditional per-resource flags; absence 
   expect(typeof orientationVisible).toBe('boolean');
 });
 
-test('PLR-WS-20: Annotations persist to localStorage keyed only by assetId, not by user (needs a 2nd account on the same device)', { tag: '@security' }, async ({ page }) => {
+test('PLR-WS-20: Annotations persist to localStorage keyed only by assetId, not by user (needs a 2nd account on the same device)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const keys = await page.evaluate(() => Object.keys(localStorage));
@@ -263,7 +263,7 @@ test('PLR-WS-21: A worksheet WITHOUT an answer key correctly hides the answer-ke
   expect(typeof answerKeyVisible).toBe('boolean');
 });
 
-test('PLR-WS-22: A multi-page worksheet stress-tests pagination/zoom/orientation together (blocked, single-page resource only)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-WS-22: A multi-page worksheet stress-tests pagination/zoom/orientation together (blocked, single-page resource only)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   test.fail(true, 'No multi-page (10+) worksheet resource confirmed available on this account this pass to stress-test');
@@ -280,17 +280,17 @@ test('PLR-WS-23: CROSS-CUTTING -- the confirmed Toolbar eraser bugs apply to Wor
   await expect(plr.closeIcon.first()).toBeVisible();
 });
 
-test('PLR-EXP-SEC-07: The Worksheet Answer Key is never accessible from a student-facing view (teacher-only enforcement)', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-07: The Worksheet Answer Key is never accessible from a student-facing view (teacher-only enforcement)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'This app has no student-facing UI reachable from a teacher QA account -- server-side enforcement of teacher-only Answer Key access cannot be verified from this Playwright-only, single-role-account environment this pass');
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-03 (Worksheet variant): a zero-page/malformed worksheet resource does not crash the player (no such resource confirmed to exist)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-03 (Worksheet variant): a zero-page/malformed worksheet resource does not crash the player (no such resource confirmed to exist)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'No malformed/zero-page Worksheet resource exists in the real curriculum browsed this session -- this is a defensive/synthetic-data test needing a specially-crafted resource not available here');
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-04 (Worksheet variant): clicking Next on the last page does not wrap to page 1 or error', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-04 (Worksheet variant): clicking Next on the last page does not wrap to page 1 or error', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const nextBtn = page.locator('.pagination-next .mypage-link, li.page-item.next-item .mypage-link').first();
@@ -314,7 +314,7 @@ test('PLR-EXP-04 (Worksheet variant): clicking Next on the last page does not wr
   expect(afterExtraNext).toBe(lastPageText);
 });
 
-test('PLR-EXP-05: Typing an out-of-range page number into "Go to Page" is handled gracefully', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-05: Typing an out-of-range page number into "Go to Page" is handled gracefully', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const goInput = page.locator('input[placeholder*="page" i], input[type="number"]').first();
@@ -330,7 +330,7 @@ test('PLR-EXP-05: Typing an out-of-range page number into "Go to Page" is handle
   expect(crashed).toBe(false);
 });
 
-test('PLR-EXP-21: The Answer Key toggle state does NOT persist across closing and reopening -- always defaults OFF', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-21: The Answer Key toggle state does NOT persist across closing and reopening -- always defaults OFF', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const answerKeyVisible = await plr.worksheetAnswerKeyBtn.isVisible({ timeout: 3000 }).catch(() => false);

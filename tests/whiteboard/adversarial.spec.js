@@ -25,7 +25,7 @@ const OFFSET_X = Math.floor(Math.random() * 300) - 150;
 const OFFSET_Y = Math.floor(Math.random() * 300) - 150;
 const at = (x, y) => ({ x: Math.max(120, x + OFFSET_X), y: Math.max(120, y + OFFSET_Y) });
 
-test('WB-BREAK-01: reloading mid-drag (mouse down, moving, before mouseup) leaves no corrupt half-drawn stroke after the page comes back', { tag: '@negative' }, async ({ page }) => {
+test('WB-BREAK-01: reloading mid-drag (mouse down, moving, before mouseup) leaves no corrupt half-drawn stroke after the page comes back', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const tb = new ToolbarPage(page);
   const wb = new WhiteboardPage(page);
@@ -53,7 +53,7 @@ test('WB-BREAK-01: reloading mid-drag (mouse down, moving, before mouseup) leave
   expect(pageAlive).toBe(true);
 });
 
-test('WB-BREAK-02: two browser tabs on the same account drawing on the SAME class/topic concurrently do not corrupt each other\'s strokes', { tag: '@cross-cutting' }, async ({ page, context }) => {
+test('WB-BREAK-02: two browser tabs on the same account drawing on the SAME class/topic concurrently do not corrupt each other\'s strokes', { tag: ['@cross-cutting', '@bug'] }, async ({ page, context }) => {
   test.setTimeout(60000);
   const tb1 = new ToolbarPage(page);
   await tb1.waitForBoardToSettle();
@@ -91,7 +91,7 @@ test('WB-BREAK-02: two browser tabs on the same account drawing on the SAME clas
   await page2.close();
 });
 
-test('WB-BREAK-03: drawing a stroke then IMMEDIATELY switching Class (before any autosave could plausibly fire) -- does the stroke survive?', { tag: '@state-persistence' }, async ({ page }) => {
+test('WB-BREAK-03: drawing a stroke then IMMEDIATELY switching Class (before any autosave could plausibly fire) -- does the stroke survive?', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   // Follows up directly on this suite's own WB-SAVE-DEAD-01 finding
   // (WhiteboardSaveService.save() has zero UI callers) -- if there is truly
   // no explicit save path, an immediate class switch is a real, plausible

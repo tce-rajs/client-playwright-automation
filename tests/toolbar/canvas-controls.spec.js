@@ -29,7 +29,7 @@ test('TB-ZOOM-01: The zoom control changes the canvas zoom level', { tag: '@posi
   await expect(tb.zoomSlider).toHaveAttribute('aria-valuetext', '100');
 });
 
-test('TB-TOGGLE-01: The toolbar-position toggle moves the toolbar to the opposite side of the screen', { tag: '@positive' }, async ({ page }) => {
+test('TB-TOGGLE-01: The toolbar-position toggle moves the toolbar to the opposite side of the screen', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const sideClassBefore = (await tb.container.getAttribute('class')) || '';
   console.log('Toolbar container class before:', sideClassBefore);

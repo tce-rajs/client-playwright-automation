@@ -13,7 +13,7 @@ test.beforeEach(async ({ page }) => {
   await pl.loginWithPin(process.env.VALID_PIN);
 });
 
-test('PL-BREAK-01: an HTML/script-tag string in the Contents/TOC search box is treated as literal text, never executed', { tag: '@security' }, async ({ page }) => {
+test('PL-BREAK-01: an HTML/script-tag string in the Contents/TOC search box is treated as literal text, never executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.contentsTile.click();
   await pl.contentsSearchToggle.click({ timeout: 5000 }).catch(() => {});
@@ -30,7 +30,7 @@ test('PL-BREAK-01: an HTML/script-tag string in the Contents/TOC search box is t
   expect(xssRan).toBe(false);
 });
 
-test('PL-BREAK-02: rapidly toggling ALL resource-type filter checkboxes off then on, 3 full cycles fast, leaves a consistent final resource-card count', { tag: '@boundary' }, async ({ page }) => {
+test('PL-BREAK-02: rapidly toggling ALL resource-type filter checkboxes off then on, 3 full cycles fast, leaves a consistent final resource-card count', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const pl = new PlaylistPage(page);
   await pl.openOptionsMenu();
@@ -63,7 +63,7 @@ test('PL-BREAK-02: rapidly toggling ALL resource-type filter checkboxes off then
   expect(finalCardCount).toBe(baselineCardCount);
 });
 
-test('PL-BREAK-03: opening Playlist Options and immediately the Contents popup (no wait in between) does not stack two open overlays at once', { tag: '@ui-state' }, async ({ page }) => {
+test('PL-BREAK-03: opening Playlist Options and immediately the Contents popup (no wait in between) does not stack two open overlays at once', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.openOptionsMenu();
   await pl.contentsTile.click({ timeout: 5000 }).catch(() => {});
@@ -78,7 +78,7 @@ test('PL-BREAK-03: opening Playlist Options and immediately the Contents popup (
   expect(bothOpenAtOnce).toBe(false);
 });
 
-test('PL-BREAK-04: rapidly clicking through 8 different Chapters in quick succession settles on exactly the last-clicked one with no stuck/duplicated resource cards', { tag: '@boundary' }, async ({ page }) => {
+test('PL-BREAK-04: rapidly clicking through 8 different Chapters in quick succession settles on exactly the last-clicked one with no stuck/duplicated resource cards', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const pl = new PlaylistPage(page);
   await pl.contentsTile.click();

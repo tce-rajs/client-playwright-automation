@@ -34,7 +34,7 @@ test('PL-ADD-02: Closing the Add Resources picker returns cleanly with no side e
   expect(afterTopic).toBe(beforeTopic);
 });
 
-test('PL-ADD-03: Each Add Resources option actually opens its respective flow (smoke check)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PL-ADD-03: Each Add Resources option actually opens its respective flow (smoke check)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000); // 6 options x (open + click + reset) comfortably exceeds the default 30s
   const pl = new PlaylistPage(page);
   const results = {};

@@ -121,7 +121,7 @@ test('MM-CLOSE-01: Close exits the Minimap cleanly', { tag: '@positive' }, async
   expect(await mm.isOpen()).toBe(false);
 });
 
-test('MM-TOGGLE-BUG-01: ADVERSARIAL -- reopening Minimap after Reset via the same click sequence can silently revert the active tool', { tag: '@cross-cutting' }, async ({ page }) => {
+test('MM-TOGGLE-BUG-01: ADVERSARIAL -- reopening Minimap after Reset via the same click sequence can silently revert the active tool', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const mm = new MinimapPage(page);
 
@@ -171,7 +171,7 @@ test('MM-CONTENT-01: Minimap accurately reflects the current viewport as the mai
   await mm.resetBtn.click({ force: true }).catch(() => {});
 });
 
-test('MM-PAN-01: Clicking inside the Minimap pans the main canvas', { tag: '@positive' }, async ({ page }) => {
+test('MM-PAN-01: Clicking inside the Minimap pans the main canvas', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const mm = new MinimapPage(page);
   await tb.openToolPanel('gtZoom');
@@ -201,12 +201,12 @@ test('MM-PAN-01: Clicking inside the Minimap pans the main canvas', { tag: '@pos
   await mm.close();
 });
 
-test('MM-NEG-01: Minimap responsiveness on an extremely large accumulated canvas', { tag: '@negative' }, async ({ page }) => {
+test('MM-NEG-01: Minimap responsiveness on an extremely large accumulated canvas', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Constructing a canvas with an extremely large amount of accumulated content is not practically reachable through normal UI-driven browser automation in a single pass -- would need either a long-lived, already-heavily-used shared canvas or direct data injection, neither available here');
   expect(true).toBe(false);
 });
 
-test('MM-SEC-01: Minimap reflects only the CURRENTLY active class\'s content after a class switch, not stale content from before', { tag: '@security' }, async ({ page }) => {
+test('MM-SEC-01: Minimap reflects only the CURRENTLY active class\'s content after a class switch, not stale content from before', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   const mm = new MinimapPage(page);
   await mm.open();
@@ -277,7 +277,7 @@ test('MM-EXP-01: Panning beyond content bounds via the Minimap stays clean and R
   expect(recovered).toBe('100');
 });
 
-test('MM-EXP-02: The Minimap shows a clean thumbnail immediately after Clear Whiteboard, with no stale ghost content', { tag: '@negative' }, async ({ page }) => {
+test('MM-EXP-02: The Minimap shows a clean thumbnail immediately after Clear Whiteboard, with no stale ghost content', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const mm = new MinimapPage(page);
   await tb.openToolPanel('gtErase');
@@ -297,7 +297,7 @@ test('MM-EXP-02: The Minimap shows a clean thumbnail immediately after Clear Whi
   await mm.close();
 });
 
-test('MM-EXP-03: Rapid zoom in/out spam while Minimap is open does not desync it from the real canvas state', { tag: '@negative' }, async ({ page }) => {
+test('MM-EXP-03: Rapid zoom in/out spam while Minimap is open does not desync it from the real canvas state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const mm = new MinimapPage(page);
   await mm.open();
@@ -351,7 +351,7 @@ test('MM-EXP-05: The Minimap viewport rectangle remains non-degenerate at minimu
   await tb.zoomResetBtn.click({ force: true }).catch(() => {});
 });
 
-test('MM-EXP-06: The Minimap panel does not overlap the Playlist strip or Add Resources button at a mobile viewport', { tag: '@boundary' }, async ({ page }) => {
+test('MM-EXP-06: The Minimap panel does not overlap the Playlist strip or Add Resources button at a mobile viewport', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.waitForTimeout(800);
   const mm = new MinimapPage(page);

@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
-test('AUTH-BREAK-01: signing in with the SAME account concurrently from two genuinely independent browser contexts both resolve to a real, usable session', { tag: '@cross-cutting' }, async ({ page, browser }) => {
+test('AUTH-BREAK-01: signing in with the SAME account concurrently from two genuinely independent browser contexts both resolve to a real, usable session', { tag: ['@cross-cutting', '@bug'] }, async ({ page, browser }) => {
   // CONFIRMED LIVE (this pass): a second page via context.newPage() shares
   // cookies/localStorage with the first -- once tab 1's PIN auto-submits
   // (fill()-ing all 5 boxes auto-submits, per this app's own confirmed
@@ -43,7 +43,7 @@ test('AUTH-BREAK-01: signing in with the SAME account concurrently from two genu
   await context2.close();
 });
 
-test('AUTH-BREAK-02: reloading the instant after a successful PIN submit (before the dashboard fully renders) recovers to a real usable session, not a half-loaded state', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-BREAK-02: reloading the instant after a successful PIN submit (before the dashboard fully renders) recovers to a real usable session, not a half-loaded state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const login = new LoginPage(page);
   await login.openSignIn();
@@ -64,7 +64,7 @@ test('AUTH-BREAK-02: reloading the instant after a successful PIN submit (before
   expect(cleanOutcome).toBe(true);
 });
 
-test('AUTH-BREAK-03: rapidly toggling the PIN <-> Password view 10 times in immediate succession (pure UI spam, no request in flight) does not corrupt either form', { tag: '@boundary' }, async ({ page }) => {
+test('AUTH-BREAK-03: rapidly toggling the PIN <-> Password view 10 times in immediate succession (pure UI spam, no request in flight) does not corrupt either form', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const login = new LoginPage(page);
   await login.openSignIn();
@@ -88,7 +88,7 @@ test('AUTH-BREAK-03: rapidly toggling the PIN <-> Password view 10 times in imme
   expect(pinFormVisible || pwdFormVisible).toBe(true);
 });
 
-test('AUTH-BREAK-04: an emoji/Unicode-heavy User ID does not crash the Password-view form or its validation', { tag: '@boundary' }, async ({ page }) => {
+test('AUTH-BREAK-04: an emoji/Unicode-heavy User ID does not crash the Password-view form or its validation', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   await login.switchToPasswordView();

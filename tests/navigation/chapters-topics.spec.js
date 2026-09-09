@@ -26,7 +26,7 @@ test('NAV-CHP-01: Chapters Popup shows a two-column layout: Chapter tree left, T
   expect(chapterBox.x).toBeLessThan(topicBox.x);
 });
 
-test('NAV-CHP-02: Chapters are shown as an expandable/collapsible nested tree', { tag: '@ui-state' }, async ({ page }) => {
+test('NAV-CHP-02: Chapters are shown as an expandable/collapsible nested tree', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   // FINDING: for this account's active subject, the chapter column renders
   // as a flat numbered list (1., 2., 3., ...) with no expand/collapse
@@ -66,7 +66,7 @@ test('NAV-CHP-04: Selecting a different Topic under the same Chapter updates the
   await expect(nav.currentChapterTopicBtn).toContainText(otherTopicText, { timeout: 10000 });
 });
 
-test('NAV-CHP-05: Selecting a different Chapter refreshes the Topic list on the right', { tag: '@positive' }, async ({ page }) => {
+test('NAV-CHP-05: Selecting a different Chapter refreshes the Topic list on the right', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // CONFIRMED FINDING (reproduced across 6+ separate attempts with
   // progressively more robust retry logic — different chapter indices,
   // longer waits, dedicated timeout budget): once the Topic list has been
@@ -105,7 +105,7 @@ test('NAV-CHP-05: Selecting a different Chapter refreshes the Topic list on the 
   expect(secondChapterTopics).not.toEqual(firstChapterTopics);
 });
 
-test('NAV-CHP-06: Reopening the Chapters Popup preserves the last-selected Chapter/Topic highlight', { tag: '@state-persistence' }, async ({ page }) => {
+test('NAV-CHP-06: Reopening the Chapters Popup preserves the last-selected Chapter/Topic highlight', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   // CONFIRMED FLAKY (reproduced across 3 separate fix attempts): clicking
   // through chapters searching for one with topics reliably hangs on a
   // specific chapter item mid-loop (Playwright can never resolve a stable,
@@ -143,7 +143,7 @@ test('NAV-CHP-06: Reopening the Chapters Popup preserves the last-selected Chapt
   expect(reopenedActiveChapter.trim()).toBe(selectedChapterText);
 });
 
-test('NAV-CHP-07: A Chapter with zero mapped Topics', { tag: '@boundary' }, async ({ page }) => {
+test('NAV-CHP-07: A Chapter with zero mapped Topics', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // Same confirmed loop-hang issue as NAV-CHP-06 -- iterating through
   // chapter items reliably stalls on one of them. See that test's comment.
   test.fail(true, 'Iterating chapter items reliably hangs on one of them — same DOM-instability issue as NAV-CHP-06');
@@ -169,7 +169,7 @@ test('NAV-CHP-07: A Chapter with zero mapped Topics', { tag: '@boundary' }, asyn
   }
 });
 
-test('NAV-CHP-08: Opening the Chapters Popup for a class/subject with no curriculum content mapped yet', { tag: '@boundary' }, async ({ page }) => {
+test('NAV-CHP-08: Opening the Chapters Popup for a class/subject with no curriculum content mapped yet', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // Needs a class/subject known in advance to have zero mapped chapters --
   // not identifiable from this account without exhaustively clicking
   // through every Grade/Division/Subject combination first (expensive and

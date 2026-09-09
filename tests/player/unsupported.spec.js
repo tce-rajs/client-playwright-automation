@@ -55,7 +55,7 @@ function findByTitle(pl, title) {
   return pl.resourceCards.filter({ hasText: title }).first();
 }
 
-test('PLR-UNS-01: An Unsupported resource type shows a clear, graceful "UNSUPPORTED FILE" message', { tag: '@positive' }, async ({ page }) => {
+test('PLR-UNS-01: An Unsupported resource type shows a clear, graceful "UNSUPPORTED FILE" message', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   const plr = new PlayerPage(page);
@@ -73,7 +73,7 @@ test('PLR-UNS-01: An Unsupported resource type shows a clear, graceful "UNSUPPOR
   await expect(plr.closeIcon.first()).toBeVisible();
 });
 
-test('PLR-UNS-02: A .txt upload correctly showing UNSUPPORTED FILE + Download is EXPECTED BEHAVIOR (positive re-confirmation)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-UNS-02: A .txt upload correctly showing UNSUPPORTED FILE + Download is EXPECTED BEHAVIOR (positive re-confirmation)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   const plr = new PlayerPage(page);
@@ -89,7 +89,7 @@ test('PLR-UNS-02: A .txt upload correctly showing UNSUPPORTED FILE + Download is
   expect(downloadBtnVisible).toBe(true);
 });
 
-test('PLR-UNS-03: No "Close All Resources" control affects an open Unsupported player', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-UNS-03: No "Close All Resources" control affects an open Unsupported player', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   const plr = new PlayerPage(page);
@@ -106,7 +106,7 @@ test('PLR-UNS-03: No "Close All Resources" control affects an open Unsupported p
   expect(closeAllVisible).toBe(false);
 });
 
-test('PLR-UNS-04: Downloaded file content and edge-case filenames need a human-verified check (not independently automatable)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-UNS-04: Downloaded file content and edge-case filenames need a human-verified check (not independently automatable)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'CONFIRMED cross-repo: downloaded-file content and filename-handling verification cannot be inspected from browser automation at all -- Playwright can observe the Download click but not open/verify the resulting file\'s content on disk in this sandboxed environment. Needs a human tester.');
   expect(true).toBe(false);
 });

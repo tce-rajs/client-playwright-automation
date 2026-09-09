@@ -117,7 +117,7 @@ test('PLR-CKP-04: The roster screen shows a timer and the student roster', { tag
   expect(studentCount).toBeGreaterThan(0);
 });
 
-test('PLR-CKP-05: The timer badge can be hidden', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-CKP-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -152,7 +152,7 @@ test('PLR-CKP-06: Concept coverage tags are shown for the assessment', { tag: '@
   // the browser.
 });
 
-test('PLR-CKP-07: Closing while the test is active asks to Lock it first, instead of silently closing', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-CKP-07: Closing while the test is active asks to Lock it first, instead of silently closing', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -211,7 +211,7 @@ test('PLR-CHK-04: Excel export is not available on a checkpoint with zero comple
   expect(typeof exportVisible).toBe('boolean');
 });
 
-test('PLR-CHK-05: Confirmed state machine -- Online launch is a one-shot irreversible transition (documentation-verification, no NEW launch performed)', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-CHK-05: Confirmed state machine -- Online launch is a one-shot irreversible transition (documentation-verification, no NEW launch performed)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   const onModeSelect = await plr.checkpointModeOnlineBtn.isVisible({ timeout: 3000 }).catch(() => false);
@@ -226,7 +226,7 @@ test('PLR-CHK-05: Confirmed state machine -- Online launch is a one-shot irrever
   expect(onDashboard || onRoster).toBe(true);
 });
 
-test('PLR-CHK-06: Only ONE STARTED checkpoint is allowed per class at a time (observation only -- not provoking a real 2nd Start)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-CHK-06: Only ONE STARTED checkpoint is allowed per class at a time (observation only -- not provoking a real 2nd Start)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -248,7 +248,7 @@ test('PLR-CHK-07: A checkpoint card\'s status label lags the real status by a co
   expect(typeof timerVisibleAfterWait).toBe('boolean');
 });
 
-test('PLR-CHK-08: The End button sits under a position:fixed timer overlay -- an un-forced click may not land reliably', { tag: '@negative' }, async ({ page }) => {
+test('PLR-CHK-08: The End button sits under a position:fixed timer overlay -- an un-forced click may not land reliably', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -281,7 +281,7 @@ test('PLR-CHK-09: Open a checkpoint card by index or a short title substring, no
   expect(fullText.length).toBeGreaterThan('testR-25.08.26'.length);
 });
 
-test('PLR-CHK-10: Excel score upload/download round-trip validation (invalid file rejected with a clear message)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-CHK-10: Excel score upload/download round-trip validation (invalid file rejected with a clear message)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -292,7 +292,7 @@ test('PLR-CHK-10: Excel score upload/download round-trip validation (invalid fil
   expect(true).toBe(false);
 });
 
-test('PLR-CHK-11: Does the one-STARTED-per-class rule apply across DIFFERENT classes? (needs a 2nd class with its own STARTED checkpoint)', { tag: '@security' }, async ({ page }) => {
+test('PLR-CHK-11: Does the one-STARTED-per-class rule apply across DIFFERENT classes? (needs a 2nd class with its own STARTED checkpoint)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a second class with its OWN independent STARTED checkpoint to compare against -- this account\'s confirmed checkpoint content is scoped to a single class (Class 8R Mathematics), and this pass\'s finite resource pool (per PLR-CHK-12) makes deliberately consuming another CREATED checkpoint on a different class too risky to do casually');
   expect(true).toBe(false);
 });
@@ -308,12 +308,12 @@ test('PLR-CHK-12: Resource pool exhaustion -- this account\'s CREATED/PAUSED che
   expect(checkpointCardCount).toBeGreaterThanOrEqual(0);
 });
 
-test('PLR-EXP-SEC-05: A Checkpoint\'s recorded score cannot be tampered with via client-side manipulation', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-05: A Checkpoint\'s recorded score cannot be tampered with via client-side manipulation', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs DOM/console-level score manipulation tooling against a checkpoint mid-attempt with a real student submitting answers -- this teacher-facing QA account has no way to submit answers AS a student to produce a real score to tamper with');
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-10: Attempting to start a SECOND Checkpoint while one is already STARTED is blocked with a clear message (observation only)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-10: Attempting to start a SECOND Checkpoint while one is already STARTED is blocked with a clear message (observation only)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -324,7 +324,7 @@ test('PLR-EXP-10: Attempting to start a SECOND Checkpoint while one is already S
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-11: Losing network connectivity during the offline-capable flow does not lose already-entered answers', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-11: Losing network connectivity during the offline-capable flow does not lose already-entered answers', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);

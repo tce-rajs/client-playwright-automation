@@ -77,7 +77,7 @@ async function searchAndOpenFirstResult(page, ar, term) {
   return true;
 }
 
-test('TCE-PREV-01: Selecting a search result opens a preview dialog with title, media preview, and action buttons', { tag: '@ui-state' }, async ({ page }) => {
+test('TCE-PREV-01: Selecting a search result opens a preview dialog with title, media preview, and action buttons', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const opened = await searchAndOpenFirstResult(page, ar, 'Worksheet');
   test.fail(!opened, 'No "Worksheet" search results found this pass to open a preview dialog against');
@@ -96,7 +96,7 @@ test('TCE-PREV-01: Selecting a search result opens a preview dialog with title, 
   expect(openWbVisible && addPlaylistVisible && closeVisible).toBe(true);
 });
 
-test('TCE-PREV-02: "Open in Whiteboard" from a preview dialog places the content directly on the board', { tag: '@positive' }, async ({ page }) => {
+test('TCE-PREV-02: "Open in Whiteboard" from a preview dialog places the content directly on the board', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const opened = await searchAndOpenFirstResult(page, ar, 'Worksheet');
   test.fail(!opened, 'No "Worksheet" search results found this pass');
@@ -113,7 +113,7 @@ test('TCE-PREV-02: "Open in Whiteboard" from a preview dialog places the content
   expect(successToastVisible).toBe(true);
 });
 
-test('TCE-PREV-03: "Add to Playlist" from a preview dialog attaches the content to the current topic (reachability only -- not executed)', { tag: '@positive' }, async ({ page }) => {
+test('TCE-PREV-03: "Add to Playlist" from a preview dialog attaches the content to the current topic (reachability only -- not executed)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Deliberately not clicked for real -- matches ADD-LIB-06's own
   // established reasoning: a real attach durably grows the shared QA
   // account's Playlist strip. The underlying behavior is already
@@ -137,7 +137,7 @@ test('TCE-PREV-03: "Add to Playlist" from a preview dialog attaches the content 
   expect(addPlaylistVisible).toBe(true);
 });
 
-test('TCE-PREV-04: Close (X) on a preview dialog exits cleanly without side effects', { tag: '@positive' }, async ({ page }) => {
+test('TCE-PREV-04: Close (X) on a preview dialog exits cleanly without side effects', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const searchTerm = 'Worksheet';
   const opened = await searchAndOpenFirstResult(page, ar, searchTerm);
@@ -158,7 +158,7 @@ test('TCE-PREV-04: Close (X) on a preview dialog exits cleanly without side effe
   expect(resultsStillShown).toBeGreaterThan(0);
 });
 
-test('TCE-BOUND-01: A single- or two-character search query is handled gracefully -- Search stays disabled, not an error', { tag: '@boundary' }, async ({ page }) => {
+test('TCE-BOUND-01: A single- or two-character search query is handled gracefully -- Search stays disabled, not an error', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('');
   await ar.librarySearchInput.type('a');
@@ -175,7 +175,7 @@ test('TCE-BOUND-01: A single- or two-character search query is handled gracefull
   expect(disabledAt1 && disabledAt2 && !disabledAt3).toBe(true);
 });
 
-test('TCE-BOUND-02: Special/script-like characters in a search query are safely escaped, not executed', { tag: '@security' }, async ({ page }) => {
+test('TCE-BOUND-02: Special/script-like characters in a search query are safely escaped, not executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   let dialogFired = false;
   page.on('dialog', async (d) => { dialogFired = true; await d.dismiss(); });
@@ -190,12 +190,12 @@ test('TCE-BOUND-02: Special/script-like characters in a search query are safely 
   expect(dialogFired).toBe(false);
 });
 
-test('TCE-SEC-01: Search results are scoped to the signed-in teacher\'s own school/curriculum access (blocked -- needs a second school account)', { tag: '@security' }, async ({ page }) => {
+test('TCE-SEC-01: Search results are scoped to the signed-in teacher\'s own school/curriculum access (blocked -- needs a second school account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Confirming school/curriculum scoping needs a second school/tenant account to compare search result sets against -- only this project\'s one school (Goyal Brothers) is available, same blocker class as GAL-SEC-01/TB-EXP-15/17 elsewhere in this suite');
   expect(true).toBe(false);
 });
 
-test('TCE-XCUT-01: Closing content opened via "Open in Whiteboard" also triggers the known Playlist-vanishing bug (cross-ref: PL-BUG-01)', { tag: '@negative' }, async ({ page }) => {
+test('TCE-XCUT-01: Closing content opened via "Open in Whiteboard" also triggers the known Playlist-vanishing bug (cross-ref: PL-BUG-01)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // Same underlying bug as Playlist_Module_Test_Cases_Final.xlsx's PL-BUG-01
   // -- logged here too since this module's own "Open in Whiteboard" action
   // is a distinct trigger path for it.
@@ -219,7 +219,7 @@ test('TCE-XCUT-01: Closing content opened via "Open in Whiteboard" also triggers
   expect(playlistTriggerVisible).toBe(true);
 });
 
-test('LIB-TYPE-MIX-01: A single search\'s results are not guaranteed to be one uniform content type', { tag: '@negative' }, async ({ page }) => {
+test('LIB-TYPE-MIX-01: A single search\'s results are not guaranteed to be one uniform content type', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('Database');
   await ar.librarySearchBtn.click();
@@ -236,7 +236,7 @@ test('LIB-TYPE-MIX-01: A single search\'s results are not guaranteed to be one u
   expect(typeIconSrcs.length).toBeGreaterThan(0);
 });
 
-test('LIB-AUTOSEARCH-RACE-01: A manual search issued immediately on open is not silently overwritten by Library\'s own background auto-search', { tag: '@negative' }, async ({ page }) => {
+test('LIB-AUTOSEARCH-RACE-01: A manual search issued immediately on open is not silently overwritten by Library\'s own background auto-search', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const uniqueTerm = 'zzzuniqueterm' + Date.now().toString().slice(-5);
   // Fire the manual search as fast as possible after the panel appeared
@@ -252,7 +252,7 @@ test('LIB-AUTOSEARCH-RACE-01: A manual search issued immediately on open is not 
   expect(currentSearchValue).toBe(uniqueTerm);
 });
 
-test('LIB-WORKSHEET-POOL-01: The "Worksheet" search term\'s result pool is finite and non-paginated (~22 results)', { tag: '@negative' }, async ({ page }) => {
+test('LIB-WORKSHEET-POOL-01: The "Worksheet" search term\'s result pool is finite and non-paginated (~22 results)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // The attach-and-watch-for-a-silent-failure half of this case is NOT
   // executed here -- it would require attaching multiple real resources to
   // the shared QA account's Playlist, which this project's established
@@ -270,12 +270,12 @@ test('LIB-WORKSHEET-POOL-01: The "Worksheet" search term\'s result pool is finit
   expect(loadMoreVisible).toBe(false);
 });
 
-test('LIB-STUCK-PREVIEW-01: A silent-failure attach leaving its preview stuck open (not independently reproduced -- depends on LIB-WORKSHEET-POOL-01\'s un-executed attach step)', { tag: '@negative' }, async ({ page }) => {
+test('LIB-STUCK-PREVIEW-01: A silent-failure attach leaving its preview stuck open (not independently reproduced -- depends on LIB-WORKSHEET-POOL-01\'s un-executed attach step)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Reproducing this requires deliberately triggering the specific silent-failure attach documented in LIB-WORKSHEET-POOL-01, which this pass does not execute (would mean attaching real resources to the shared QA account\'s Playlist to find the one broken result) -- not independently reproduced this pass');
   expect(true).toBe(false);
 });
 
-test('LIB-PREVTYPE-GAP-01: Attempting to find search terms surfacing additional preview-dialog content types (Image, TCE, Weblink, Code)', { tag: '@ui-state' }, async ({ page }) => {
+test('LIB-PREVTYPE-GAP-01: Attempting to find search terms surfacing additional preview-dialog content types (Image, TCE, Weblink, Code)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const candidateTerms = ['Image', 'Quiz', 'Ebook', 'Weblink', 'Code'];
   const found = [];
@@ -292,7 +292,7 @@ test('LIB-PREVTYPE-GAP-01: Attempting to find search terms surfacing additional 
   expect(anyResults).toBe(true);
 });
 
-test('LIB-FOOTERBTN-01: Preview dialog footer-action button IDs are type-prefixed (confirmed pattern: tce-library-pdf-*)', { tag: '@ui-state' }, async ({ page }) => {
+test('LIB-FOOTERBTN-01: Preview dialog footer-action button IDs are type-prefixed (confirmed pattern: tce-library-pdf-*)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const opened = await searchAndOpenFirstResult(page, ar, 'Worksheet');
   test.fail(!opened, 'No "Worksheet" search results found this pass');
@@ -305,7 +305,7 @@ test('LIB-FOOTERBTN-01: Preview dialog footer-action button IDs are type-prefixe
   expect(pdfOpenWb && pdfAddPlaylist && pdfClose).toBe(true);
 });
 
-test('LIB-BOUND-03: Rapidly double-clicking "Add to playlist" (reachability only -- not executed, see TCE-PREV-03)', { tag: '@boundary' }, async ({ page }) => {
+test('LIB-BOUND-03: Rapidly double-clicking "Add to playlist" (reachability only -- not executed, see TCE-PREV-03)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // Deliberately not executed for real, same reasoning as TCE-PREV-03 --
   // this workbook's own row already documents the confirmed live outcome
   // (correctly debounced to one toast, but also reproduces the
@@ -325,7 +325,7 @@ test('LIB-BOUND-03: Rapidly double-clicking "Add to playlist" (reachability only
   expect(addPlaylistVisible).toBe(true);
 });
 
-test('LIB-XCUT-02: Existing Playlist resource cards expose a standard Remove/Edit overflow menu (positive contrast to Gallery\'s no-asset-record behavior)', { tag: '@positive' }, async ({ page }) => {
+test('LIB-XCUT-02: Existing Playlist resource cards expose a standard Remove/Edit overflow menu (positive contrast to Gallery\'s no-asset-record behavior)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const count = await pl.resourceCards.count();
   test.fail(count === 0, 'No existing Playlist resource cards found on this account/topic to check the overflow menu against');
@@ -336,7 +336,7 @@ test('LIB-XCUT-02: Existing Playlist resource cards expose a standard Remove/Edi
   expect(overflowVisible).toBe(true);
 });
 
-test('TCE-EXP-01: A Library search request returning a 5xx error shows a distinguishable error state, not a silent zero-match "no results"', { tag: '@negative' }, async ({ page }) => {
+test('TCE-EXP-01: A Library search request returning a 5xx error shows a distinguishable error state, not a silent zero-match "no results"', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await page.route('**/*search*', (route) => {
     if (route.request().method() === 'GET' || route.request().method() === 'POST') {
@@ -355,12 +355,12 @@ test('TCE-EXP-01: A Library search request returning a 5xx error shows a disting
   expect(distinctErrorShown || !genericNoResults).toBe(true);
 });
 
-test('TCE-EXP-02: Add to Playlist on a since-removed resource fails clearly (hard-to-force race, not reliably reproducible)', { tag: '@negative' }, async ({ page }) => {
+test('TCE-EXP-02: Add to Playlist on a since-removed resource fails clearly (hard-to-force race, not reliably reproducible)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'A genuinely hard-to-force race condition (resource removed server-side between preview-open and Add click) -- flagged as a design consideration rather than a reliably reproducible live test, per this workbook\'s own note');
   expect(true).toBe(false);
 });
 
-test('TCE-EXP-03: A purely numeric/decimal search query (e.g. a chapter number like "2.4") is treated as normal text search', { tag: '@boundary' }, async ({ page }) => {
+test('TCE-EXP-03: A purely numeric/decimal search query (e.g. a chapter number like "2.4") is treated as normal text search', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('2.4');
   await ar.librarySearchBtn.click();
@@ -374,7 +374,7 @@ test('TCE-EXP-03: A purely numeric/decimal search query (e.g. a chapter number l
   expect(resultCount > 0 || noResultShown).toBe(true);
 });
 
-test('TCE-EXP-04: Opening a second preview while one is already open does not stack overlapping dialogs', { tag: '@boundary' }, async ({ page }) => {
+test('TCE-EXP-04: Opening a second preview while one is already open does not stack overlapping dialogs', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('Worksheet');
   await ar.librarySearchBtn.click();
@@ -392,7 +392,7 @@ test('TCE-EXP-04: Opening a second preview while one is already open does not st
   expect(closeButtonCount).toBeLessThanOrEqual(1);
 });
 
-test('TCE-EXP-05: A search returning many matches (e.g. a common word) remains correctly paginated with no duplicate/missing results', { tag: '@boundary' }, async ({ page }) => {
+test('TCE-EXP-05: A search returning many matches (e.g. a common word) remains correctly paginated with no duplicate/missing results', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('the');
   await ar.librarySearchBtn.click();
@@ -411,7 +411,7 @@ test('TCE-EXP-05: A search returning many matches (e.g. a common word) remains c
   expect(uniqueIds.size).toBe(ids.length);
 });
 
-test('TCE-EXP-06: A crafted search term cannot surface a different school\'s private curriculum content (blocked -- needs a second school account)', { tag: '@security' }, async ({ page }) => {
+test('TCE-EXP-06: A crafted search term cannot surface a different school\'s private curriculum content (blocked -- needs a second school account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Extends TCE-SEC-01 with a targeted/crafted-search-term angle -- still blocked on the same second-school/tenant-account gap, none available this pass');
   expect(true).toBe(false);
 });

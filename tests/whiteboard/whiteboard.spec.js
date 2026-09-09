@@ -52,7 +52,7 @@ test('WB-HDR-01: Header shows logo/version/live clock, and the bottom-left bar s
   await expect(wb.currentChapterTopicBtn).toBeVisible();
 });
 
-test('WB-WELCOME-01: Welcome Back container -- computed style vs. rendered-visibility paradox', { tag: '@negative' }, async ({ page }) => {
+test('WB-WELCOME-01: Welcome Back container -- computed style vs. rendered-visibility paradox', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const wb = new WhiteboardPage(page);
   const count = await wb.welcomeBackContainer.count();
   if (count === 0) {
@@ -95,7 +95,7 @@ test('WB-DRAW-01: Drawing surface is a real SVG -- strokes are genuine <path> el
   expect(lastPathD).toMatch(/^M\s?-?\d/);
 });
 
-test('WB-CHOOSE-01: First-time "Choose a class" control is a confirmed dead no-op (onChooseAClass has an empty method body)', { tag: '@negative' }, async ({ page }) => {
+test('WB-CHOOSE-01: First-time "Choose a class" control is a confirmed dead no-op (onChooseAClass has an empty method body)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const wb = new WhiteboardPage(page);
   const present = await wb.chooseAClassBtn.isVisible({ timeout: 3000 }).catch(() => false);
   console.log('.choose-class prompt reachable on this (non-first-time) account:', present);
@@ -117,7 +117,7 @@ test('WB-CHOOSE-01: First-time "Choose a class" control is a confirmed dead no-o
   expect(anyPopupOpened).toBe(true);
 });
 
-test('WB-SAVE-DEAD-01: WhiteboardSaveService.save() has zero callers -- the "save Whiteboard to Playlist" pipeline is unreachable from any UI path', { tag: '@negative' }, async ({ page }) => {
+test('WB-SAVE-DEAD-01: WhiteboardSaveService.save() has zero callers -- the "save Whiteboard to Playlist" pipeline is unreachable from any UI path', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // CONFIRMED cross-repo via a repo-wide dev-team source search: this is a
   // structural (zero-callers) finding, not something a black-box UI click
   // can independently re-derive -- WB-SAVE-DEAD-02 below exercises the one
@@ -126,7 +126,7 @@ test('WB-SAVE-DEAD-01: WhiteboardSaveService.save() has zero callers -- the "sav
   expect(true).toBe(false);
 });
 
-test('WB-SAVE-DEAD-02: Add Resource -> Whiteboard card\'s Save-to-Playlist / Download PDF buttons are dead ends (same root cause as WB-SAVE-DEAD-01)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('WB-SAVE-DEAD-02: Add Resource -> Whiteboard card\'s Save-to-Playlist / Download PDF buttons are dead ends (same root cause as WB-SAVE-DEAD-01)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const wb = new WhiteboardPage(page);
   const { stillStuck } = await ar.openPickerReliably(ar.actions.whiteboard);
@@ -163,7 +163,7 @@ test('WB-PANZOOM-01: Two distinct pan/zoom mechanisms exist -- the outer wb-draw
   expect(outer !== undefined).toBe(true);
 });
 
-test('WB-TEXT-01: Whether a newly inserted text object is auto-focused (re-checked live -- contradicts the cross-repo workbook claim)', { tag: '@ui-state' }, async ({ page }) => {
+test('WB-TEXT-01: Whether a newly inserted text object is auto-focused (re-checked live -- contradicts the cross-repo workbook claim)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const wb = new WhiteboardPage(page);
   const textObj = await wb.insertTextAt(400, 500);
   await expect(textObj).toBeVisible({ timeout: 5000 });
@@ -224,7 +224,7 @@ test('WB-TEXT-02: Whether any gesture reopens the editor on already-committed te
   expect(editorOpen).toBe(true);
 });
 
-test('WB-CLEAR-01: Clear Whiteboard asks for confirmation, removes canvas content, leaves Playlist resources untouched', { tag: '@positive' }, async ({ page }) => {
+test('WB-CLEAR-01: Clear Whiteboard asks for confirmation, removes canvas content, leaves Playlist resources untouched', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const wb = new WhiteboardPage(page);
   await tb.waitForBoardToSettle();
@@ -260,7 +260,7 @@ test('WB-CLEAR-01: Clear Whiteboard asks for confirmation, removes canvas conten
   expect(resourceCountAfter).toBe(resourceCountBefore);
 });
 
-test('WB-ANCH-01: Header anchors stay in place across interactions; the class/chapter context bar does NOT (new finding)', { tag: '@ui-state' }, async ({ page }) => {
+test('WB-ANCH-01: Header anchors stay in place across interactions; the class/chapter context bar does NOT (new finding)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const wb = new WhiteboardPage(page);
   const nav = new NavigationPage(page);
   const box = (loc) => loc.boundingBox();
@@ -395,7 +395,7 @@ test('WB-EXP-01: Canvas remains responsive after 500 rapid pen strokes (memory/p
   expect(afterExtra).toBeGreaterThan(beforeExtra);
 });
 
-test('WB-EXP-02: Canvas does not corrupt/overflow at max zoom, and content is not permanently mispositioned after zooming back out', { tag: '@boundary' }, async ({ page }) => {
+test('WB-EXP-02: Canvas does not corrupt/overflow at max zoom, and content is not permanently mispositioned after zooming back out', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const wb = new WhiteboardPage(page);
   await tb.waitForBoardToSettle();
@@ -430,7 +430,7 @@ test('WB-EXP-02: Canvas does not corrupt/overflow at max zoom, and content is no
   expect(toolbarStillVisible).toBe(true);
 });
 
-test('WB-EXP-03: Two overlapping simulated pointer inputs at different canvas locations do not corrupt drawing state into one merged stroke', { tag: '@boundary' }, async ({ page }) => {
+test('WB-EXP-03: Two overlapping simulated pointer inputs at different canvas locations do not corrupt drawing state into one merged stroke', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const wb = new WhiteboardPage(page);
   await tb.waitForBoardToSettle();
@@ -507,7 +507,7 @@ test('WB-EXP-04: Switching tools mid-stroke does not leave a stuck/orphaned part
   expect(afterRecoveryStroke).toBeGreaterThan(after);
 });
 
-test('WB-EXP-05: A script/HTML payload typed into a Text object renders as literal text, never executes (XSS)', { tag: '@security' }, async ({ page }) => {
+test('WB-EXP-05: A script/HTML payload typed into a Text object renders as literal text, never executes (XSS)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const wb = new WhiteboardPage(page);
   let dialogFired = false;
   page.on('dialog', async (dialog) => { dialogFired = true; await dialog.dismiss(); });
@@ -569,7 +569,7 @@ test('WB-DRAW-XREF-01: Toolbar-level drawing behavior (Pen/Eraser/Shapes/Widgets
   expect(after).toBeGreaterThan(before);
 });
 
-test('WB-ERASER-01: Eraser cannot reliably remove a Pen stroke once it exceeds roughly 700px (cross-ref: TB-CYP-03)', { tag: '@negative' }, async ({ page }) => {
+test('WB-ERASER-01: Eraser cannot reliably remove a Pen stroke once it exceeds roughly 700px (cross-ref: TB-CYP-03)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   // CONFIRMED LIVE (verifier pass): at y>=950 in this 1920x1080 viewport,
   // document.elementFromPoint resolves to the Playlist resource strip
@@ -598,7 +598,7 @@ test('WB-ERASER-01: Eraser cannot reliably remove a Pen stroke once it exceeds r
   expect(countAfterErase).toBeLessThan(countAfterDraw);
 });
 
-test('WB-ERASER-02: Erasing one word of connected cursive handwriting deletes an adjacent word too (cross-ref: TB-CYP-04)', { tag: '@negative' }, async ({ page }) => {
+test('WB-ERASER-02: Erasing one word of connected cursive handwriting deletes an adjacent word too (cross-ref: TB-CYP-04)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   // Same coordinate-safety fix as WB-ERASER-01 above -- y:1000 landed on the
   // Playlist strip, not the canvas.

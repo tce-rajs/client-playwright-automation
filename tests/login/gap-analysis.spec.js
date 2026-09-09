@@ -35,7 +35,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
-test('SESS-08: CRITICAL -- the logged-in session may expire extremely quickly during active use (re-check)', { tag: '@negative' }, async ({ page }) => {
+test('SESS-08: CRITICAL -- the logged-in session may expire extremely quickly during active use (re-check)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // This test's own loop below can legitimately run up to ~100s -- give
   // real headroom beyond the default 30s test timeout.
   test.setTimeout(120000);
@@ -63,7 +63,7 @@ test('SESS-08: CRITICAL -- the logged-in session may expire extremely quickly du
   expect(droppedToGuest).toBe(false);
 });
 
-test('SESS-09: Re-entering the PIN after a session drop via the on-screen keypad (reachability re-check)', { tag: '@negative' }, async ({ page }) => {
+test('SESS-09: Re-entering the PIN after a session drop via the on-screen keypad (reachability re-check)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   const before = await login.pinDigitBox(0).boundingBox().catch(() => null);
@@ -75,12 +75,12 @@ test('SESS-09: Re-entering the PIN after a session drop via the on-screen keypad
   expect(repositioned).toBe(false);
 });
 
-test('MFA-01: MFA setup/verification flow (blocked -- no MFA enrollment path in this account)', { tag: '@positive' }, async ({ page }) => {
+test('MFA-01: MFA setup/verification flow (blocked -- no MFA enrollment path in this account)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same blocker already confirmed elsewhere in this suite (USR-LOGIN-03/04 in the User Profile module) -- no MFA enrollment option was found anywhere in this account\'s reachable Account/Profile tabs');
   expect(true).toBe(false);
 });
 
-test('MFA-02: MFA Verify login-time challenge (blocked -- same reason as MFA-01)', { tag: '@positive' }, async ({ page }) => {
+test('MFA-02: MFA Verify login-time challenge (blocked -- same reason as MFA-01)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same blocker as MFA-01 -- no MFA is registered on this account, so there is no login-time verify challenge to test against');
   expect(true).toBe(false);
 });
@@ -123,7 +123,7 @@ test('AUTH-CYP-01: The confirmed Sign-Out control chain (avatar -> profile menu 
   expect(guestVisible).toBe(true);
 });
 
-test('AUTH-CYP-02: Clearing the token/clientId localStorage keys simulates session loss gracefully', { tag: '@state-persistence' }, async ({ page }) => {
+test('AUTH-CYP-02: Clearing the token/clientId localStorage keys simulates session loss gracefully', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   await login.enterPin(process.env.VALID_PIN);
@@ -153,17 +153,17 @@ test('AUTH-CYP-03: The inactivity timeout duration is not overridable via a URL/
   expect(modalReachable).toBe(true);
 });
 
-test('AUTH-GAP-01: An inactivity session-timeout warning popup with a countdown appears, and "Stay Signed In" extends the session (opportunistic re-check)', { tag: '@positive' }, async ({ page }) => {
+test('AUTH-GAP-01: An inactivity session-timeout warning popup with a countdown appears, and "Stay Signed In" extends the session (opportunistic re-check)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'This "Are you still there?" countdown warning was originally encountered opportunistically during unrelated testing, not deterministically triggered -- reproducing it on demand needs a reliable idle-timing trigger not established in this pass');
   expect(true).toBe(false);
 });
 
-test('AUTH-GAP-02: 30-minute inactivity forces a full session expiry (blocked -- impractically slow for an automated pass)', { tag: '@boundary' }, async ({ page }) => {
+test('AUTH-GAP-02: 30-minute inactivity forces a full session expiry (blocked -- impractically slow for an automated pass)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Waiting a real 30 idle minutes is impractical to run as part of this automated suite without materially slowing down the whole run -- not attempted this pass');
   expect(true).toBe(false);
 });
 
-test('AUTH-GAP-03: A rapid double-tap on the 5th PIN digit box fires exactly one login request via auto-submit', { tag: '@boundary' }, async ({ page }) => {
+test('AUTH-GAP-03: A rapid double-tap on the 5th PIN digit box fires exactly one login request via auto-submit', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   const digits = String(process.env.VALID_PIN).split('');
@@ -186,7 +186,7 @@ test('AUTH-GAP-03: A rapid double-tap on the 5th PIN digit box fires exactly one
   expect(loginRequestCount).toBeLessThanOrEqual(1);
 });
 
-test('AUTH-GAP-04: Toggling PIN <-> Password view mid-entry does not corrupt either form\'s state', { tag: '@boundary' }, async ({ page }) => {
+test('AUTH-GAP-04: Toggling PIN <-> Password view mid-entry does not corrupt either form\'s state', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   await login.pinDigitBox(0).fill('2');
@@ -204,7 +204,7 @@ test('AUTH-GAP-04: Toggling PIN <-> Password view mid-entry does not corrupt eit
   expect(box1Value || '').toBe('');
 });
 
-test('AUTH-GAP-05: Copying the auth localStorage keys into a second, unauthenticated browser context', { tag: '@security' }, async ({ page, browser }) => {
+test('AUTH-GAP-05: Copying the auth localStorage keys into a second, unauthenticated browser context', { tag: ['@security', '@bug'] }, async ({ page, browser }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   await login.enterPin(process.env.VALID_PIN);
@@ -229,12 +229,12 @@ test('AUTH-GAP-05: Copying the auth localStorage keys into a second, unauthentic
   await context2.close();
 });
 
-test('AUTH-EXP-06: Account lockout cannot be bypassed by spoofing client headers between failed attempts (blocked -- no header-manipulation tooling)', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-06: Account lockout cannot be bypassed by spoofing client headers between failed attempts (blocked -- no header-manipulation tooling)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs request-header manipulation tooling to vary User-Agent/client-ID headers across repeated failed attempts while confirming server-side lockout tracking -- not available in this environment, and deliberately not attempted live to avoid risking real account lockout (same caution as SEC-01/SEC-02 elsewhere in this suite)');
   expect(true).toBe(false);
 });
 
-test('AUTH-EXP-07: No alternate input path lets a non-numeric injection-style string reach the PIN field', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-07: No alternate input path lets a non-numeric injection-style string reach the PIN field', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   await login.pinDigitBox(0).click();
@@ -245,7 +245,7 @@ test('AUTH-EXP-07: No alternate input path lets a non-numeric injection-style st
   expect(value).toMatch(/^[0-9]?$/);
 });
 
-test('AUTH-EXP-08: Signing in as a second, different account in a new tab does not corrupt the first tab\'s active session', { tag: '@negative' }, async ({ page, context }) => {
+test('AUTH-EXP-08: Signing in as a second, different account in a new tab does not corrupt the first tab\'s active session', { tag: ['@negative', '@bug'] }, async ({ page, context }) => {
   const login = new LoginPage(page);
   // CONFIRMED LIVE (verifier pass): the page can already be authenticated
   // when this test starts (a real session carryover, not a fresh Guest
@@ -290,12 +290,12 @@ test('AUTH-EXP-09: A malformed/oversized PIN submission is rejected cleanly, not
   expect(box0Value.length).toBeLessThanOrEqual(1);
 });
 
-test('AUTH-EXP-10: A replayed old token cannot re-authenticate after Sign Out (blocked -- no token-capture/replay tooling)', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-10: A replayed old token cannot re-authenticate after Sign Out (blocked -- no token-capture/replay tooling)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs token-capture and raw HTTP request-replay tooling beyond this browser-automation environment to directly verify server-side token invalidation on Sign Out -- not attempted this pass');
   expect(true).toBe(false);
 });
 
-test('AUTH-EXP-11: Entering the correct PIN digits in a shuffled order does not accidentally succeed', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-11: Entering the correct PIN digits in a shuffled order does not accidentally succeed', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   const correctDigits = String(process.env.VALID_PIN).split('');
@@ -310,7 +310,7 @@ test('AUTH-EXP-11: Entering the correct PIN digits in a shuffled order does not 
   expect(avatarVisible).toBe(false);
 });
 
-test('AUTH-EXP-12: A real school paired with credentials for a different school is rejected (blocked -- needs a second school\'s credentials)', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-12: A real school paired with credentials for a different school is rejected (blocked -- needs a second school\'s credentials)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a second school\'s known-working User ID/Password to construct this cross-tenant scenario -- only this project\'s one school (Goyal Brothers) is available, same blocker class as GAL-SEC-01/TCE-SEC-01 elsewhere in this suite');
   expect(true).toBe(false);
 });
@@ -335,7 +335,7 @@ test('AUTH-EXP-13: Whitespace-only User ID/Password values are rejected as inval
   }
 });
 
-test('AUTH-EXP-14: No plaintext password/PIN is exposed in the console or browser storage after a login attempt', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-14: No plaintext password/PIN is exposed in the console or browser storage after a login attempt', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const consoleTexts = [];
   page.on('console', (msg) => consoleTexts.push(msg.text()));
   const login = new LoginPage(page);
@@ -351,7 +351,7 @@ test('AUTH-EXP-14: No plaintext password/PIN is exposed in the console or browse
   expect(pinLeakedInStorage).toBe(false);
 });
 
-test('AUTH-EXP-15: Rapidly toggling PIN <-> Password views while a login request is in flight does not produce a stuck or mismatched state', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-15: Rapidly toggling PIN <-> Password views while a login request is in flight does not produce a stuck or mismatched state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await login.openSignIn();
   await login.enterPin(process.env.INVALID_PIN || '12745');
@@ -378,7 +378,7 @@ test('AUTH-EXP-16: Browser autofill does not corrupt the numeric PIN box structu
   expect(true).toBe(true);
 });
 
-test('AUTH-EXP-17: Navigating directly to a deep authenticated route while logged out redirects to Sign In, exposing no content', { tag: '@negative' }, async ({ page }) => {
+test('AUTH-EXP-17: Navigating directly to a deep authenticated route while logged out redirects to Sign In, exposing no content', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   await page.goto('./whiteboard');
   await page.waitForTimeout(1500);
   const login = new LoginPage(page);
@@ -403,7 +403,7 @@ test('AUTH-EXP-18: An extremely long Password (200+ chars) is handled without a 
   expect(formStillUsable).toBe(true);
 });
 
-test('AUTH-EXP-19: A tampered/forged session cookie grants no access without a valid server-side session (blocked -- cookie name/format not confirmed)', { tag: '@negative' }, async ({ page, context }) => {
+test('AUTH-EXP-19: A tampered/forged session cookie grants no access without a valid server-side session (blocked -- cookie name/format not confirmed)', { tag: ['@negative', '@bug'] }, async ({ page, context }) => {
   const cookiesBefore = await context.cookies();
   console.log('Cookies visible before any forgery attempt:', cookiesBefore.map((c) => c.name));
   test.fail(true, 'Needs the exact session-cookie name/format identified first (this app appears to rely primarily on localStorage token/clientId per AUTH-CYP-02, not a clearly-identified session cookie) plus cookie-manipulation tooling -- not attempted this pass');

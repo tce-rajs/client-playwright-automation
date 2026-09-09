@@ -95,7 +95,7 @@ test('PWD-10: Sign In button enables once all fields are filled', { tag: '@posit
   await expect(login.submitButton).toBeEnabled();
 });
 
-test('PWD-11: Login with valid school, user ID and password', { tag: '@positive' }, async ({ page }) => {
+test('PWD-11: Login with valid school, user ID and password', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Per project notes, this specific PASSWORD value has been rejected by
   // the auth server twice before (400 invalid_grant) — parked pending a
   // fresh password from the account owner, PIN login is the confirmed

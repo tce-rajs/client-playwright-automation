@@ -56,7 +56,7 @@ test('USR-ACCESS-02: The outer flat menu and inner Account/Profile tab group are
   await expect(acc.accountTab).toBeVisible({ timeout: 10000 });
 });
 
-test('USR-ACCOUNT-01: Account tab shows Preferred Resource Type and Subjects', { tag: '@positive' }, async ({ page }) => {
+test('USR-ACCOUNT-01: Account tab shows Preferred Resource Type and Subjects', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const resourceTypeVisible = await acc.preferredResourceTypeDropdown.isVisible({ timeout: 5000 }).catch(() => false);
@@ -91,7 +91,7 @@ test('USR-PWD-01: Change Password form fields render correctly', { tag: '@positi
   await expect(acc.changePasswordCancelBtn).toBeVisible();
 });
 
-test('USR-PWD-02: A weak new password is flagged in real time, before Save is attempted', { tag: '@negative' }, async ({ page }) => {
+test('USR-PWD-02: A weak new password is flagged in real time, before Save is attempted', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   await acc.drilldownTrigger.click({ force: true });
@@ -135,17 +135,17 @@ test('USR-PWD-04: Cancel safely discards the form without changing the password'
   expect(formStillVisible).toBe(false);
 });
 
-test('USR-PWD-05: A wrong Current Password is rejected server-side (not executed -- destructive)', { tag: '@negative' }, async ({ page }) => {
+test('USR-PWD-05: A wrong Current Password is rejected server-side (not executed -- destructive)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real Save submit against the shared QA account (arjun.reddy) -- deliberately not executed to avoid risking the working credential relied on by every other test/session');
   expect(true).toBe(false);
 });
 
-test('USR-PWD-06: New Password / Repeat New Password mismatch is caught (not executed -- destructive)', { tag: '@negative' }, async ({ page }) => {
+test('USR-PWD-06: New Password / Repeat New Password mismatch is caught (not executed -- destructive)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real Save submit against the shared QA account -- deliberately not executed for the same credential-safety reason as USR-PWD-05');
   expect(true).toBe(false);
 });
 
-test('USR-PWD-07: A successful password change works next login and invalidates the old one (not executed -- destructive)', { tag: '@positive' }, async ({ page }) => {
+test('USR-PWD-07: A successful password change works next login and invalidates the old one (not executed -- destructive)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires actually changing the shared QA account\'s real password -- deliberately not executed');
   expect(true).toBe(false);
 });
@@ -181,7 +181,7 @@ test('USR-PIN-02: New PIN boxes only accept numeric characters via a restricted 
   expect(value).not.toContain('a');
 });
 
-test('USR-PIN-04: Auto-Generate PIN displays the generated value in plaintext (security-relevant finding)', { tag: '@security' }, async ({ page }) => {
+test('USR-PIN-04: Auto-Generate PIN displays the generated value in plaintext (security-relevant finding)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   await acc.drilldownTrigger.click({ force: true });
@@ -212,17 +212,17 @@ test('USR-PIN-05: PIN boxes are a fixed digit-count group, structurally preventi
   expect(box5Exists).toBe(0);
 });
 
-test('USR-SEC-07: A trivially weak/sequential New PIN pattern (not executed -- destructive)', { tag: '@boundary' }, async ({ page }) => {
+test('USR-SEC-07: A trivially weak/sequential New PIN pattern (not executed -- destructive)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real Save submit of a weak PIN against the shared QA account -- deliberately not executed for the same credential-safety reason as USR-PWD-05');
   expect(true).toBe(false);
 });
 
-test('USR-PIN-03: A successful PIN change is usable next login (not executed -- destructive)', { tag: '@positive' }, async ({ page }) => {
+test('USR-PIN-03: A successful PIN change is usable next login (not executed -- destructive)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires actually changing the shared QA account\'s real PIN (currently 26826, documented and relied on throughout this project) -- deliberately not executed');
   expect(true).toBe(false);
 });
 
-test('USR-BUG-01: Change Password and Change PIN forms can both be open simultaneously (naming implies mutual exclusion)', { tag: '@negative' }, async ({ page }) => {
+test('USR-BUG-01: Change Password and Change PIN forms can both be open simultaneously (naming implies mutual exclusion)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   await acc.drilldownTrigger.click({ force: true });
@@ -256,7 +256,7 @@ test('USR-UI-01: Dark Mode / Virtual Keyboard toggles are raw checkboxes, not Ma
   expect(inputType).toBe('checkbox');
 });
 
-test('USR-UI-02: Release Notes dialog content renders inside a Shadow DOM web component', { tag: '@ui-state' }, async ({ page }) => {
+test('USR-UI-02: Release Notes dialog content renders inside a Shadow DOM web component', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   const buildBtnVisible = await acc.buildInfoBtn.isVisible({ timeout: 3000 }).catch(() => false);
@@ -290,17 +290,17 @@ test('USR-UI-03: Account/Profile tab labels carry identical classes regardless o
   expect(accountClass).toBe(accountClassWhileNotSelected);
 });
 
-test('USR-LOGIN-01: Server-flagged forced-password-change flow at login (not available)', { tag: '@positive' }, async ({ page }) => {
+test('USR-LOGIN-01: Server-flagged forced-password-change flow at login (not available)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'No account in this project\'s known credential set is server-flagged with a forced-password-change-at-login state');
   expect(true).toBe(false);
 });
 
-test('USR-LOGIN-02: Server-flagged forced-PIN-set flow at login (not available)', { tag: '@positive' }, async ({ page }) => {
+test('USR-LOGIN-02: Server-flagged forced-PIN-set flow at login (not available)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'No account in this project\'s known credential set is server-flagged with a no-PIN-set state');
   expect(true).toBe(false);
 });
 
-test('USR-LOGIN-03: MFA Register flow (no MFA enrollment path found in this account)', { tag: '@security' }, async ({ page }) => {
+test('USR-LOGIN-03: MFA Register flow (no MFA enrollment path found in this account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const mfaOptionVisible = await page.getByText(/mfa|two-factor|2fa|multi-factor/i).isVisible({ timeout: 3000 }).catch(() => false);
@@ -309,27 +309,27 @@ test('USR-LOGIN-03: MFA Register flow (no MFA enrollment path found in this acco
   expect(mfaOptionVisible).toBe(true);
 });
 
-test('USR-LOGIN-04: MFA Verify flow blocks wrong codes and enforces limits (blocked -- no MFA path exists)', { tag: '@security' }, async ({ page }) => {
+test('USR-LOGIN-04: MFA Verify flow blocks wrong codes and enforces limits (blocked -- no MFA path exists)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same blocker as USR-LOGIN-03 -- no MFA enrollment path was found, so there is no MFA Verify flow to test against');
   expect(true).toBe(false);
 });
 
-test('USR-SEC-01: Repeated wrong-Current-Password attempts are rate-limited (not executed -- risks account lockout)', { tag: '@security' }, async ({ page }) => {
+test('USR-SEC-01: Repeated wrong-Current-Password attempts are rate-limited (not executed -- risks account lockout)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Deliberately not attempted -- repeated wrong-password submissions risk actually locking out the shared QA account used throughout this project');
   expect(true).toBe(false);
 });
 
-test('USR-SEC-02: Account lockout/CAPTCHA after repeated failed sign-in attempts (not executed -- risks account lockout)', { tag: '@security' }, async ({ page }) => {
+test('USR-SEC-02: Account lockout/CAPTCHA after repeated failed sign-in attempts (not executed -- risks account lockout)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same lockout risk as USR-SEC-01, at the sign-in surface instead of the in-app form -- deliberately not attempted');
   expect(true).toBe(false);
 });
 
-test('USR-SEC-03: A credential change invalidates other logged-in sessions (not executed -- needs a real credential change + second session)', { tag: '@security' }, async ({ page }) => {
+test('USR-SEC-03: A credential change invalidates other logged-in sessions (not executed -- needs a real credential change + second session)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs an actual password/PIN change on the shared QA account plus a second logged-in session to check invalidation -- neither set up, and the credential change itself is deliberately avoided');
   expect(true).toBe(false);
 });
 
-test('USR-SEC-04: New Password identical to Current Password is rejected as a no-op (not executed -- destructive)', { tag: '@negative' }, async ({ page }) => {
+test('USR-SEC-04: New Password identical to Current Password is rejected as a no-op (not executed -- destructive)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real Save submit against the shared QA account -- deliberately not executed for the same credential-safety reason as USR-PWD-05');
   expect(true).toBe(false);
 });
@@ -353,7 +353,7 @@ test('USR-SEC-05: An extremely long/Unicode New Password does not crash the form
   expect(formStillUsable).toBe(true);
 });
 
-test('USR-SEC-06: Leading/trailing whitespace in New Password is preserved, not silently trimmed', { tag: '@boundary' }, async ({ page }) => {
+test('USR-SEC-06: Leading/trailing whitespace in New Password is preserved, not silently trimmed', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   await acc.drilldownTrigger.click({ force: true });
@@ -370,7 +370,7 @@ test('USR-SEC-06: Leading/trailing whitespace in New Password is preserved, not 
   expect(actualValue).toBe(withSpaces);
 });
 
-test('USR-SUBJ-01: Adding a subject via Add Subjects persists immediately', { tag: '@positive' }, async ({ page }) => {
+test('USR-SUBJ-01: Adding a subject via Add Subjects persists immediately', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const beforeCount = await acc.subjectChips.count();
@@ -397,7 +397,7 @@ test('USR-SUBJ-01: Adding a subject via Add Subjects persists immediately', { ta
   await page.keyboard.press('Escape');
 });
 
-test('USR-SUBJ-02: Removing a subject chip is handled gracefully, one at a time', { tag: '@negative' }, async ({ page }) => {
+test('USR-SUBJ-02: Removing a subject chip is handled gracefully, one at a time', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const count = await acc.subjectChips.count();
@@ -412,7 +412,7 @@ test('USR-SUBJ-02: Removing a subject chip is handled gracefully, one at a time'
   }
 });
 
-test('USR-SUBJ-03: Adding the same subject twice is prevented at the picker level', { tag: '@boundary' }, async ({ page }) => {
+test('USR-SUBJ-03: Adding the same subject twice is prevented at the picker level', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const existingSubjects = await acc.subjectChips.allTextContents();
@@ -432,7 +432,7 @@ test('USR-SUBJ-03: Adding the same subject twice is prevented at the picker leve
   await page.keyboard.press('Escape');
 });
 
-test('USR-SUBJ-04: Rapidly double-clicking a chip\'s remove icon does not remove two chips', { tag: '@boundary' }, async ({ page }) => {
+test('USR-SUBJ-04: Rapidly double-clicking a chip\'s remove icon does not remove two chips', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const beforeCount = await acc.subjectChips.count();
@@ -447,7 +447,7 @@ test('USR-SUBJ-04: Rapidly double-clicking a chip\'s remove icon does not remove
   await expect(removeIcon).toBeVisible();
 });
 
-test('USR-RES-01: Preferred Resource Type selection persists across a full page refresh', { tag: '@positive' }, async ({ page }) => {
+test('USR-RES-01: Preferred Resource Type selection persists across a full page refresh', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const dropdownVisible = await acc.preferredResourceTypeDropdown.isVisible({ timeout: 5000 }).catch(() => false);
@@ -459,7 +459,7 @@ test('USR-RES-01: Preferred Resource Type selection persists across a full page 
   // shared account.
 });
 
-test('USR-CLASSMODE-01: Classroom Mode toggle (Teaching/Planning) may silently change the active class', { tag: '@positive' }, async ({ page }) => {
+test('USR-CLASSMODE-01: Classroom Mode toggle (Teaching/Planning) may silently change the active class', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   const beforeClass = await page.locator('[data-qa-id="playlist-current-grade-subject-btn"]').textContent().catch(() => '');
   await acc.openProfileMenu();
@@ -502,22 +502,22 @@ test('USR-CROSS-01: Sign Out clears local auth such that a stale tab cannot resu
   // case in the workbook, not a hard pass/fail bar on its own.
 });
 
-test('USR-CROSS-02: A credential change does not disrupt unrelated in-progress unsaved work (not executed -- needs a real credential change)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('USR-CROSS-02: A credential change does not disrupt unrelated in-progress unsaved work (not executed -- needs a real credential change)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs an actual credential change (deliberately avoided, see USR-PWD-05) at the exact moment of unrelated unsaved work elsewhere -- not attempted this pass');
   expect(true).toBe(false);
 });
 
-test('USR-EXP-01: Removing the LAST remaining Subject chip is not an ambiguous silent failure (not executed -- would leave account with zero subjects)', { tag: '@negative' }, async ({ page }) => {
+test('USR-EXP-01: Removing the LAST remaining Subject chip is not an ambiguous silent failure (not executed -- would leave account with zero subjects)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Reducing this account\'s real Subjects list down to zero is not safely reversible in an automated run -- deliberately not executed to protect the shared QA account\'s working state');
   expect(true).toBe(false);
 });
 
-test('USR-EXP-02: New PIN identical to Current PIN is rejected as a no-op (not executed -- destructive)', { tag: '@negative' }, async ({ page }) => {
+test('USR-EXP-02: New PIN identical to Current PIN is rejected as a no-op (not executed -- destructive)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real Save submit against the shared QA account -- deliberately not executed for the same credential-safety reason as USR-PWD-05');
   expect(true).toBe(false);
 });
 
-test('USR-EXP-03: Saving Preferred Resource Type with ZERO types selected is blocked', { tag: '@negative' }, async ({ page }) => {
+test('USR-EXP-03: Saving Preferred Resource Type with ZERO types selected is blocked', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const dropdownVisible = await acc.preferredResourceTypeDropdown.isVisible({ timeout: 5000 }).catch(() => false);
@@ -528,7 +528,7 @@ test('USR-EXP-03: Saving Preferred Resource Type with ZERO types selected is blo
   // unattended.
 });
 
-test('USR-EXP-04: Change Password/PIN forms do not retain stale values if reopened after cancelling', { tag: '@boundary' }, async ({ page }) => {
+test('USR-EXP-04: Change Password/PIN forms do not retain stale values if reopened after cancelling', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   await acc.drilldownTrigger.click({ force: true });
@@ -550,7 +550,7 @@ test('USR-EXP-04: Change Password/PIN forms do not retain stale values if reopen
   expect(valueAfterReopen).not.toContain('9');
 });
 
-test('USR-EXP-05: Adding 10+ subjects does not break the chip-wrapping layout (not executed -- would require adding many real subjects)', { tag: '@boundary' }, async ({ page }) => {
+test('USR-EXP-05: Adding 10+ subjects does not break the chip-wrapping layout (not executed -- would require adding many real subjects)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Adding 10+ real subjects to the shared QA account is not safely reversible in an automated run -- deliberately not executed');
   expect(true).toBe(false);
 });

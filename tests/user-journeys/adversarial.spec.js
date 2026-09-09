@@ -22,7 +22,7 @@ test.beforeEach(async ({ page }) => {
   await pl.loginWithPin(process.env.VALID_PIN_2);
 });
 
-test('UJ-BREAK-01: a realistic lesson journey -- draw notes, open Minimap to check layout, open Attendance, then switch class -- leaves at most ONE stuck panel, and confirms whether the drawing survived', { tag: '@cross-cutting' }, async ({ page }) => {
+test('UJ-BREAK-01: a realistic lesson journey -- draw notes, open Minimap to check layout, open Attendance, then switch class -- leaves at most ONE stuck panel, and confirms whether the drawing survived', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const tb = new ToolbarPage(page);
   const mm = new MinimapPage(page);
@@ -62,7 +62,7 @@ test('UJ-BREAK-01: a realistic lesson journey -- draw notes, open Minimap to che
   console.log('Stroke count before drawing:', beforeStrokeCount, '| after the whole journey + returning to the original class:', afterRoundTripCount);
 });
 
-test('UJ-BREAK-02: opening AI Homework\'s composer then, WITHOUT closing it, trying to open AI Notices via the Magnet menu -- two different composers colliding', { tag: '@ui-state' }, async ({ page }) => {
+test('UJ-BREAK-02: opening AI Homework\'s composer then, WITHOUT closing it, trying to open AI Notices via the Magnet menu -- two different composers colliding', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const nav = new NavigationPage(page);
   await nav.resetToClass('Class 11', 'A', 'Mathematics').catch(() => {});
@@ -91,7 +91,7 @@ test('UJ-BREAK-02: opening AI Homework\'s composer then, WITHOUT closing it, try
   expect(pageAlive).toBe(true);
 });
 
-test('UJ-BREAK-03: signing out immediately after switching class (before the new class\'s content has finished loading) recovers to a clean, re-loginable state', { tag: '@state-persistence' }, async ({ page }) => {
+test('UJ-BREAK-03: signing out immediately after switching class (before the new class\'s content has finished loading) recovers to a clean, re-loginable state', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const nav = new NavigationPage(page);
   const pl = new PlaylistPage(page);

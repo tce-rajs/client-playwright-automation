@@ -63,7 +63,7 @@ test('NAV-STATE-03: Dismissing a popup without selecting anything leaves the pri
   await expect(nav.currentChapterTopicBtn).toHaveText(beforeTopic.trim());
 });
 
-test('NAV-STATE-04: Switching Class while the Chapters Popup is still open for the previous class', { tag: '@boundary' }, async ({ page }) => {
+test('NAV-STATE-04: Switching Class while the Chapters Popup is still open for the previous class', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();
   await expect(nav.chapterTpPopup).toBeVisible();
@@ -118,7 +118,7 @@ test('NAV-STATE-05: Session/token expiring while a Navigation popup is open', { 
 
 // --- Network ---
 
-test('NAV-NET-01: Grade/Division/Subject data fetch fails when opening All My Classes', { tag: '@cross-cutting' }, async ({ page }) => {
+test('NAV-NET-01: Grade/Division/Subject data fetch fails when opening All My Classes', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const nav2 = new NavigationPage(page);
   await page.context().clearCookies();
   await page.route('**/tce-school-api/1/api/1/curriculum', (route) => route.fulfill({ status: 500, body: '{}' }));
@@ -136,7 +136,7 @@ test('NAV-NET-01: Grade/Division/Subject data fetch fails when opening All My Cl
   expect(errorStateVisible).toBe(true);
 });
 
-test('NAV-NET-02: Chapter/Topic data fetch fails when opening the Chapters Popup', { tag: '@cross-cutting' }, async ({ page }) => {
+test('NAV-NET-02: Chapter/Topic data fetch fails when opening the Chapters Popup', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const nav2 = new NavigationPage(page);
   await page.route('**/tce-school-api/1/api/1/curriculum', (route) => route.fulfill({ status: 500, body: '{}' }));
 
@@ -173,7 +173,7 @@ test('NAV-NET-02: Chapter/Topic data fetch fails when opening the Chapters Popup
   expect(errorStateVisible).toBe(true);
 });
 
-test('NAV-NET-03: Class switch succeeds but the follow-up content fetch fails', { tag: '@cross-cutting' }, async ({ page }) => {
+test('NAV-NET-03: Class switch succeeds but the follow-up content fetch fails', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await page.route('**/serve/wb**', (route) => route.fulfill({ status: 500, body: '{}' }));
 
@@ -255,7 +255,7 @@ test('NAV-RACE-01: Out-of-order network responses across a fast double class swi
   expect(finalClass).toContain(subjectC);
 });
 
-test('NAV-RACE-02: Two browser tabs, same account, switching to different classes nearly simultaneously', { tag: '@cross-cutting' }, async ({ context }) => {
+test('NAV-RACE-02: Two browser tabs, same account, switching to different classes nearly simultaneously', { tag: ['@cross-cutting', '@bug'] }, async ({ context }) => {
   // CONFIRMED ENVIRONMENT LIMITATION: logging in on a page created via
   // context.newPage() (as opposed to the built-in `page` fixture every
   // other test uses) reliably times out finding the sign-in button here,
@@ -305,7 +305,7 @@ test('NAV-RACE-02: Two browser tabs, same account, switching to different classe
 
 // --- Security ---
 
-test('NAV-SEC-01: Forging/replaying the class-switch request with a classId this teacher is not assigned to', { tag: '@security' }, async ({ page }) => {
+test('NAV-SEC-01: Forging/replaying the class-switch request with a classId this teacher is not assigned to', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Needs a known classId belonging to a different teacher/school to
   // rewrite the request with -- not available without a second reference
   // account or back-office access. Documenting the constraint rather than
@@ -314,7 +314,7 @@ test('NAV-SEC-01: Forging/replaying the class-switch request with a classId this
   expect(true).toBe(false);
 });
 
-test('NAV-SEC-02: Curriculum data containing a Chapter/Topic name with embedded script/markup', { tag: '@security' }, async ({ page }) => {
+test('NAV-SEC-02: Curriculum data containing a Chapter/Topic name with embedded script/markup', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   let dialogFired = false;
   page.on('dialog', async (d) => {
@@ -401,7 +401,7 @@ test('NAV-DUP-01: A single normal click fires exactly one network request, not a
 
 // --- Cross-Module ---
 
-test('NAV-E2E-01: Switching Current Class stops any actively playing Player content', { tag: '@cross-cutting' }, async ({ page }) => {
+test('NAV-E2E-01: Switching Current Class stops any actively playing Player content', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   // Needs a Video resource actively playing under the current Topic to
   // observe stopping -- this account's default topic doesn't have one

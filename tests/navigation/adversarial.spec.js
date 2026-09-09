@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
   await applyClassMap(nav, 'navigationBoundary');
 });
 
-test('NAV-BREAK-01: pasting a 300-character string into the Chapter/Topic search box does not crash the popup or freeze the list', { tag: '@boundary' }, async ({ page }) => {
+test('NAV-BREAK-01: pasting a 300-character string into the Chapter/Topic search box does not crash the popup or freeze the list', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();
   await nav.chapterTpSearchToggle.click({ timeout: 10000 });
@@ -39,7 +39,7 @@ test('NAV-BREAK-01: pasting a 300-character string into the Chapter/Topic search
   expect(chapterCount).toBeLessThan(5);
 });
 
-test('NAV-BREAK-02: emoji/Unicode input in the Chapter/Topic search box is handled gracefully with a real empty state, not a crash', { tag: '@negative' }, async ({ page }) => {
+test('NAV-BREAK-02: emoji/Unicode input in the Chapter/Topic search box is handled gracefully with a real empty state, not a crash', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();
   await nav.chapterTpSearchToggle.click({ timeout: 10000 });
@@ -58,7 +58,7 @@ test('NAV-BREAK-02: emoji/Unicode input in the Chapter/Topic search box is handl
   expect(chapterCount).toBe(0);
 });
 
-test('NAV-BREAK-03: an HTML/script-tag string in the Chapter/Topic search box is rendered as literal text, never executed or injected raw', { tag: '@security' }, async ({ page }) => {
+test('NAV-BREAK-03: an HTML/script-tag string in the Chapter/Topic search box is rendered as literal text, never executed or injected raw', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   let dialogFired = false;
   page.on('dialog', async (d) => { dialogFired = true; await d.dismiss(); });
@@ -80,7 +80,7 @@ test('NAV-BREAK-03: an HTML/script-tag string in the Chapter/Topic search box is
   expect(dialogFired).toBe(false);
 });
 
-test('NAV-BREAK-04: rapidly toggling the Chapter/Topic search open/closed 6 times in immediate succession leaves exactly one clean state, not a stuck/duplicated input', { tag: '@boundary' }, async ({ page }) => {
+test('NAV-BREAK-04: rapidly toggling the Chapter/Topic search open/closed 6 times in immediate succession leaves exactly one clean state, not a stuck/duplicated input', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000); // 6x click-with-timeout loop can approach the default 30s budget on its own -- see LIVE_FINDINGS.md's general lesson on this
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();
@@ -102,7 +102,7 @@ test('NAV-BREAK-04: rapidly toggling the Chapter/Topic search open/closed 6 time
   expect(visibleCount).toBeLessThanOrEqual(1);
 });
 
-test('NAV-BREAK-05: using the browser\'s native Back button after a class switch does not resurrect stale content over the new class\'s playlist', { tag: '@state-persistence' }, async ({ page }) => {
+test('NAV-BREAK-05: using the browser\'s native Back button after a class switch does not resurrect stale content over the new class\'s playlist', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const nav = new NavigationPage(page);
   const beforeClassLabel = await nav.currentClassBtn.textContent();
@@ -126,7 +126,7 @@ test('NAV-BREAK-05: using the browser\'s native Back button after a class switch
   expect(stillShowsAClass).toBe(true);
 });
 
-test('NAV-BREAK-06: opening the Class Popup and immediately the Chapters Popup (no wait in between) does not stack two open overlays at once', { tag: '@ui-state' }, async ({ page }) => {
+test('NAV-BREAK-06: opening the Class Popup and immediately the Chapters Popup (no wait in between) does not stack two open overlays at once', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   // Fire both open actions back-to-back, mirroring a user double-tapping
   // two different nav controls before the first popup has settled.
@@ -168,7 +168,7 @@ test('NAV-BREAK-07: a whitespace-only Chapter/Topic search query is treated as e
   expect(chapterCountAfter).toBeGreaterThanOrEqual(0); // sanity: never negative/undefined
 });
 
-test('NAV-BREAK-08: clicking a chapter item immediately after clearing an active search filter selects the CURRENTLY shown chapter, not a stale pre-search reference', { tag: '@negative' }, async ({ page }) => {
+test('NAV-BREAK-08: clicking a chapter item immediately after clearing an active search filter selects the CURRENTLY shown chapter, not a stale pre-search reference', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(180000); // this account's environment has documented general slowness (LIVE_FINDINGS.md) -- generous budget so the real assertion below fires cleanly instead of a hard timeout
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();

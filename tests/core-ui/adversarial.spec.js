@@ -11,7 +11,7 @@ test.beforeEach(async ({ page }) => {
   await page.goto('./');
 });
 
-test('CORE-BREAK-01: an extremely small viewport (320x480, a real low-end phone size) does not overlap the logo/date/toolbar', { tag: '@boundary' }, async ({ page }) => {
+test('CORE-BREAK-01: an extremely small viewport (320x480, a real low-end phone size) does not overlap the logo/date/toolbar', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   await page.setViewportSize({ width: 320, height: 480 });
   await page.reload();
 
@@ -36,7 +36,7 @@ test('CORE-BREAK-01: an extremely small viewport (320x480, a real low-end phone 
   expect(overlap || overflowsViewport).toBe(false);
 });
 
-test('CORE-BREAK-02: an unusually large 4K viewport (3840x2160) keeps the logo pinned left and clock pinned right, not floating in the middle', { tag: '@boundary' }, async ({ page }) => {
+test('CORE-BREAK-02: an unusually large 4K viewport (3840x2160) keeps the logo pinned left and clock pinned right, not floating in the middle', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   await page.setViewportSize({ width: 3840, height: 2160 });
   await page.reload();
 
@@ -60,7 +60,7 @@ test('CORE-BREAK-02: an unusually large 4K viewport (3840x2160) keeps the logo p
   expect(logoNearLeft && calendarNearRight).toBe(true);
 });
 
-test('CORE-BREAK-03: rapidly reloading the page 8 times in immediate succession never leaves duplicate header elements mounted', { tag: '@boundary' }, async ({ page }) => {
+test('CORE-BREAK-03: rapidly reloading the page 8 times in immediate succession never leaves duplicate header elements mounted', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   for (let i = 0; i < 8; i++) {
     // Fire-and-forget style: don't always wait for full networkidle, mirroring
@@ -82,7 +82,7 @@ test('CORE-BREAK-03: rapidly reloading the page 8 times in immediate succession 
   await expect(page.locator('[data-qa-id="wb-header-calendar-container"]')).toBeVisible();
 });
 
-test('CORE-BREAK-04: a nonexistent local time inside a DST spring-forward gap does not crash or blank the clock', { tag: '@boundary' }, async ({ page }) => {
+test('CORE-BREAK-04: a nonexistent local time inside a DST spring-forward gap does not crash or blank the clock', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // 2026-03-08 02:30:00 America/New_York does not exist -- clocks jump
   // 2:00 AM straight to 3:00 AM that day (US DST start). Forcing the
   // system clock to a technically-impossible local time is a genuine
@@ -103,7 +103,7 @@ test('CORE-BREAK-04: a nonexistent local time inside a DST spring-forward gap do
   expect(looksSane).toBe(true);
 });
 
-test('CORE-BREAK-05: an Arabic (RTL) locale + Asia/Riyadh timezone context renders the header without breaking layout direction', { tag: '@boundary' }, async ({ browser }) => {
+test('CORE-BREAK-05: an Arabic (RTL) locale + Asia/Riyadh timezone context renders the header without breaking layout direction', { tag: ['@boundary', '@bug'] }, async ({ browser }) => {
   const context = await browser.newContext({ locale: 'ar-SA', timezoneId: 'Asia/Riyadh' });
   const page = await context.newPage();
   await page.goto('./');

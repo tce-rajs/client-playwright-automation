@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   await expect(ar.createForm).toBeVisible({ timeout: 10000 });
 });
 
-test('AR-BREAK-01: submitting Create with a zero-byte (empty) file is rejected or handled gracefully, not silently accepted as valid', { tag: '@boundary' }, async ({ page }) => {
+test('AR-BREAK-01: submitting Create with a zero-byte (empty) file is rejected or handled gracefully, not silently accepted as valid', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.titleInput.fill('Zero-byte file adversarial test');
   await ar.fileInput.setInputFiles({ name: 'empty.pdf', mimeType: 'application/pdf', buffer: Buffer.alloc(0) });
@@ -44,7 +44,7 @@ test('AR-BREAK-01: submitting Create with a zero-byte (empty) file is rejected o
   }
 });
 
-test('AR-BREAK-02: a double-extension filename ("notes.pdf.exe") is evaluated by real content/type, not just a naive extension string match', { tag: '@security' }, async ({ page }) => {
+test('AR-BREAK-02: a double-extension filename ("notes.pdf.exe") is evaluated by real content/type, not just a naive extension string match', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.titleInput.fill('Double-extension filename test');
   await ar.fileInput.setInputFiles({ name: 'notes.pdf.exe', mimeType: 'application/x-msdownload', buffer: Buffer.from('MZ fake exe header bytes for adversarial testing') });
@@ -58,7 +58,7 @@ test('AR-BREAK-02: a double-extension filename ("notes.pdf.exe") is evaluated by
   expect(submitEnabled && !fileErrorVisible).toBe(false);
 });
 
-test('AR-BREAK-03: an emoji + 150-character filename does not crash the Create form or corrupt the displayed filename', { tag: '@boundary' }, async ({ page }) => {
+test('AR-BREAK-03: an emoji + 150-character filename does not crash the Create form or corrupt the displayed filename', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const crazyName = '🔥📄'.repeat(3) + 'a'.repeat(150) + '.pdf';
   await ar.titleInput.fill('Extreme filename test');
@@ -74,7 +74,7 @@ test('AR-BREAK-03: an emoji + 150-character filename does not crash the Create f
   expect(overflowsViewport).toBe(false);
 });
 
-test('AR-BREAK-04: clicking where the first source card WILL be, immediately (0ms) after clicking the "+" FAB, does not misfire on stale/wrong content', { tag: '@ui-state' }, async ({ page }) => {
+test('AR-BREAK-04: clicking where the first source card WILL be, immediately (0ms) after clicking the "+" FAB, does not misfire on stale/wrong content', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // Re-open the picker fresh (beforeEach already opened Create) to test the
   // FAB's own opening instant, not a source card's.
   const ar = new AddResourcePage(page);
@@ -100,7 +100,7 @@ test('AR-BREAK-04: clicking where the first source card WILL be, immediately (0m
   expect(noOtherSourceAccidentallyOpened).toBe(true);
 });
 
-test('AR-BREAK-05: two browser tabs on the same account both submitting a Create resource to the same Topic at nearly the same instant do not corrupt each other\'s upload', { tag: '@cross-cutting' }, async ({ page, context }) => {
+test('AR-BREAK-05: two browser tabs on the same account both submitting a Create resource to the same Topic at nearly the same instant do not corrupt each other\'s upload', { tag: ['@cross-cutting', '@bug'] }, async ({ page, context }) => {
   test.setTimeout(90000); // a second tab's fresh login can be slow under this project's documented environmental network instability
   const ar1 = new AddResourcePage(page);
   await ar1.titleInput.fill('Concurrent-tab resource A');

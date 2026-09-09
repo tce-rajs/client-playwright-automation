@@ -137,7 +137,7 @@ test('PLR-CODE-08: Text Size changes the editor font size', { tag: '@ui-state' }
   expect(fontSize).toBe('22px');
 });
 
-test('PLR-CODE-09: Force Stop stops a long-running execution (console-kind editors only)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-CODE-09: Force Stop stops a long-running execution (console-kind editors only)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const isWeb = await plr.codeLanguageTabs.count() > 0;
@@ -219,7 +219,7 @@ test('PLR-CODE-10: Code Editor mounts same-origin with zero iframes/shadow roots
   expect(fontSizeSelectId).toBe('fontSize');
 });
 
-test('PLR-CODE-11: Force Stop only exists for the Python ("console") editor kind, never HTML/CSS/JS ("web")', { tag: '@negative' }, async ({ page }) => {
+test('PLR-CODE-11: Force Stop only exists for the Python ("console") editor kind, never HTML/CSS/JS ("web")', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const isWeb = await plr.codeLanguageTabs.count() > 0;
@@ -235,7 +235,7 @@ test('PLR-CODE-11: Force Stop only exists for the Python ("console") editor kind
   }
 });
 
-test('PLR-CODE-12: Monaco renders indentation as non-breaking spaces (test-design guardrail, re-verified)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-CODE-12: Monaco renders indentation as non-breaking spaces (test-design guardrail, re-verified)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const text = await plr.monacoViewLines.textContent();
@@ -245,7 +245,7 @@ test('PLR-CODE-12: Monaco renders indentation as non-breaking spaces (test-desig
   expect(hasNbsp).toBe(true);
 });
 
-test('PLR-CODE-13: Real shipped typo -- "Expand All" flips to "Collpase All" (misspelled) the instant it\'s clicked', { tag: '@negative' }, async ({ page }) => {
+test('PLR-CODE-13: Real shipped typo -- "Expand All" flips to "Collpase All" (misspelled) the instant it\'s clicked', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const expandAllBtn = page.getByText('Expand All', { exact: true });
@@ -269,7 +269,7 @@ test('PLR-CODE-14: The Whiteboard\'s own unrelated minimap coexists with the Cod
   expect(wbMinimapCount).toBeGreaterThanOrEqual(0);
 });
 
-test('PLR-CODE-15: Editor settings (theme/font/minimap) persist on the account across sessions', { tag: '@state-persistence' }, async ({ page }) => {
+test('PLR-CODE-15: Editor settings (theme/font/minimap) persist on the account across sessions', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   await plr.codeSettingsGear.click({ force: true });
@@ -320,7 +320,7 @@ test('PLR-CODE-16: Rapid double-click on Run/Rerun does not cause overlapping ou
   await expect(plr.codeRunBtn).toContainText('Rerun');
 });
 
-test('PLR-EXP-SEC-02: The Code Editor sandbox deny-list is bypassable via Python object-introspection (re-check of a partially-confirmed finding)', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-02: The Code Editor sandbox deny-list is bypassable via Python object-introspection (re-check of a partially-confirmed finding)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const isWeb = await plr.codeLanguageTabs.count() > 0;
@@ -338,7 +338,7 @@ test('PLR-EXP-SEC-02: The Code Editor sandbox deny-list is bypassable via Python
   expect(blacklisted).toBe(true);
 });
 
-test('PLR-EXP-04 (Code Editor variant): an infinite loop is terminated by a timeout rather than hanging indefinitely', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-04 (Code Editor variant): an infinite loop is terminated by a timeout rather than hanging indefinitely', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
@@ -356,7 +356,7 @@ test('PLR-EXP-04 (Code Editor variant): an infinite loop is terminated by a time
   expect(editorStillResponsive).toBe(true);
 });
 
-test('PLR-EXP-08: A deliberate syntax error\'s message specifically identifies the line number and error type', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-08: A deliberate syntax error\'s message specifically identifies the line number and error type', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const isWeb = await plr.codeLanguageTabs.count() > 0;
@@ -374,7 +374,7 @@ test('PLR-EXP-08: A deliberate syntax error\'s message specifically identifies t
   expect(hasErrorType).toBe(true);
 });
 
-test('PLR-EXP-09: Running HTML/CSS/JS-kind code that throws a runtime JS error surfaces the error somewhere visible', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-09: Running HTML/CSS/JS-kind code that throws a runtime JS error surfaces the error somewhere visible', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const isWeb = await plr.codeLanguageTabs.count() > 0;

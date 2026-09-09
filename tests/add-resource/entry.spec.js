@@ -24,7 +24,7 @@ test('ADD-CORE-02: Add Resources shows all 6 source options', { tag: '@ui-state'
   }
 });
 
-test('ADD-CORE-03: Reopening "+" while a source popup is already open stacks a second picker instead of closing the first', { tag: '@ui-state' }, async ({ page }) => {
+test('ADD-CORE-03: Reopening "+" while a source popup is already open stacks a second picker instead of closing the first', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await ar.actions.gallery.click();
@@ -40,7 +40,7 @@ test('ADD-CORE-03: Reopening "+" while a source popup is already open stacks a s
   expect(galleryStillOpen && pickerAlsoOpen).toBe(false);
 });
 
-test('ADD-CORE-04: Closing an individual resource-source popup via its own close control', { tag: '@positive' }, async ({ page }) => {
+test('ADD-CORE-04: Closing an individual resource-source popup via its own close control', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
 
   // Library's own close control (confirmed reliable).

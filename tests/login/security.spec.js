@@ -129,7 +129,7 @@ test('SEC-05: Reflected XSS via school name / error rendering', { tag: '@securit
   expect(scriptTagCount).toBe(0);
 });
 
-test('SEC-06: Credentials not exposed in URL, query string, or client-side logs', { tag: '@security' }, async ({ page }) => {
+test('SEC-06: Credentials not exposed in URL, query string, or client-side logs', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // FINDING: the PIN is sent as a literal path segment in the login
   // request URL — confirmed via real captured network traffic:
   //   https://ce-qa-school.devstudi.com/tce-auth-api/0/api/1/sso/pin/<PIN>

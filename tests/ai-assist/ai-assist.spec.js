@@ -83,7 +83,7 @@ test('AIA-TABS-01: Three content tabs (Exercise, Videos, Teaching Tips) are pres
   await ar.aiAssistCloseBtn.click();
 });
 
-test('AIA-TABS-02: BUG check -- switching tabs requires two clicks, the first only updates the selection dot', { tag: '@negative' }, async ({ page }) => {
+test('AIA-TABS-02: BUG check -- switching tabs requires two clicks, the first only updates the selection dot', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
 
@@ -107,7 +107,7 @@ test('AIA-TABS-02: BUG check -- switching tabs requires two clicks, the first on
   await ar.aiAssistCloseBtn.click();
 });
 
-test('AIA-EXERCISE-01: Checking a question reveals Add to Playlist; the chevron reveals the answer', { tag: '@positive' }, async ({ page }) => {
+test('AIA-EXERCISE-01: Checking a question reveals Add to Playlist; the chevron reveals the answer', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
 
@@ -128,7 +128,7 @@ test('AIA-EXERCISE-01: Checking a question reveals Add to Playlist; the chevron 
   await ar.aiAssistCloseBtn.click();
 });
 
-test('AIA-EXERCISE-02: Header instructional text should reference the ACTUAL current topic, not a mismatched placeholder', { tag: '@negative' }, async ({ page }) => {
+test('AIA-EXERCISE-02: Header instructional text should reference the ACTUAL current topic, not a mismatched placeholder', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
 
@@ -193,7 +193,7 @@ test('AIA-VIDEOS-01: Videos tab shows topic-relevant video thumbnails', { tag: '
   await ar.aiAssistCloseBtn.click();
 });
 
-test('AIA-VIDEOS-02: Playing a video from AI Assist -- confirm whether it visibly works or remains an inconclusive/broken hit-region', { tag: '@negative' }, async ({ page }) => {
+test('AIA-VIDEOS-02: Playing a video from AI Assist -- confirm whether it visibly works or remains an inconclusive/broken hit-region', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
   await clickTabTwice(ar.aiAssistTabVideos);
@@ -226,7 +226,7 @@ test('AIA-TEACH-01: Teaching Tips shows Activities / Explanation / Real Life Exa
   await ar.aiAssistCloseBtn.click();
 });
 
-test('AIA-MINMAX-01: The window-control icon(s) produce a visible, non-broken repositioning effect', { tag: '@ui-state' }, async ({ page }) => {
+test('AIA-MINMAX-01: The window-control icon(s) produce a visible, non-broken repositioning effect', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
 
@@ -257,7 +257,7 @@ test('AIA-CLOSE-01: Close button exits AI Assist cleanly', { tag: '@positive' },
   await expect(page.getByText('AI Assist', { exact: true })).toBeHidden({ timeout: 5000 });
 });
 
-test('AIA-ERROR-01: A real HTTP-driven quota-exhaustion error (429/400/403/500) shows a clear, actionable message', { tag: '@negative' }, async ({ page }) => {
+test('AIA-ERROR-01: A real HTTP-driven quota-exhaustion error (429/400/403/500) shows a clear, actionable message', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   // Force the AI-generation fetch to fail with a real 429, since naturally
   // hitting the school's shared quota exhaustion is not reliably
@@ -297,7 +297,7 @@ test('AIA-ERROR-01: A real HTTP-driven quota-exhaustion error (429/400/403/500) 
   }
 });
 
-test('AIA-VIDEOPOOL-01: Repeatedly adding the same video to the Playlist eventually stops growing the resource count (silent backend de-dup)', { tag: '@boundary' }, async ({ page }) => {
+test('AIA-VIDEOPOOL-01: Repeatedly adding the same video to the Playlist eventually stops growing the resource count (silent backend de-dup)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
@@ -327,7 +327,7 @@ test('AIA-VIDEOPOOL-01: Repeatedly adding the same video to the Playlist eventua
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-LOADSIGNAL-01: The loading spinner does not clear before tab content is actually fully populated', { tag: '@ui-state' }, async ({ page }) => {
+test('AIA-LOADSIGNAL-01: The loading spinner does not clear before tab content is actually fully populated', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const { stillStuck } = await ar.openPickerReliably(ar.actions.aiAssist);
   if (!stillStuck) await ar.actions.aiAssist.click({ force: true });
@@ -359,7 +359,7 @@ test('AIA-FLAKE-01: This session\'s own AI Assist tests ran with real, non-"pend
   await ar.aiAssistCloseBtn.click();
 });
 
-test('AIA-ADV-01: Rapid double-click on Add to Playlist does not create a duplicate exercise card', { tag: '@boundary' }, async ({ page }) => {
+test('AIA-ADV-01: Rapid double-click on Add to Playlist does not create a duplicate exercise card', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
   await ar.aiAssistExerciseCheckboxes.first().click({ force: true });
@@ -380,7 +380,7 @@ test('AIA-ADV-01: Rapid double-click on Add to Playlist does not create a duplic
   expect(toastCount).toBeLessThanOrEqual(1);
 });
 
-test('AIA-ADV-02: AI Assist opened on a topic with effectively zero curriculum content', { tag: '@boundary' }, async ({ page }) => {
+test('AIA-ADV-02: AI Assist opened on a topic with effectively zero curriculum content', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(75000); // 3 class switches, each potentially with a picker-reload retry
   const nav = new NavigationPage(page);
   let pageCrashed = false;
@@ -451,7 +451,7 @@ test('AIA-ADV-03: Switching Class/Topic while AI Assist remains open', { tag: '@
   expect(true).toBe(true);
 });
 
-test('AIA-ADV-04: Rapid multi-tab-switch spam (Exercise/Videos/Teaching Tips/Exercise) does not break the content area', { tag: '@boundary' }, async ({ page }) => {
+test('AIA-ADV-04: Rapid multi-tab-switch spam (Exercise/Videos/Teaching Tips/Exercise) does not break the content area', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
 
@@ -475,7 +475,7 @@ test('AIA-ADV-04: Rapid multi-tab-switch spam (Exercise/Videos/Teaching Tips/Exe
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-ADV-05: Generated content does not leak between classes/subjects under quick back-to-back generation', { tag: '@security' }, async ({ page }) => {
+test('AIA-ADV-05: Generated content does not leak between classes/subjects under quick back-to-back generation', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000); // two full AI Assist opens + a class switch can exceed the 30s default
   const nav = new NavigationPage(page);
   const ar = new AddResourcePage(page);
@@ -496,7 +496,7 @@ test('AIA-ADV-05: Generated content does not leak between classes/subjects under
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-EXP-01: A network failure during the initial content-generation fetch shows a clear error, not an indefinite spinner', { tag: '@negative' }, async ({ page }) => {
+test('AIA-EXP-01: A network failure during the initial content-generation fetch shows a clear error, not an indefinite spinner', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   let aborted = false;
   await page.route('**/*', async (route) => {
@@ -551,7 +551,7 @@ test('AIA-EXP-02: The Teaching Tips tab loads real content without error (not in
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-EXP-03: Reopening AI Assist on a different Chapter shows fresh, correctly-scoped content, not a stale cached response', { tag: '@security' }, async ({ page }) => {
+test('AIA-EXP-03: Reopening AI Assist on a different Chapter shows fresh, correctly-scoped content, not a stale cached response', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000); // two full AI Assist opens + a chapter switch can exceed the 30s default
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
@@ -595,7 +595,7 @@ test('AIA-EXP-03: Reopening AI Assist on a different Chapter shows fresh, correc
 // build on top of.
 // ============================================================================
 
-test('AIA-BREAK-01: Rapid open/close AI Assist 5x in immediate succession leaves exactly one clean modal instance', { tag: '@negative' }, async ({ page }) => {
+test('AIA-BREAK-01: Rapid open/close AI Assist 5x in immediate succession leaves exactly one clean modal instance', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const ar = new AddResourcePage(page);
   for (let i = 0; i < 4; i++) {
@@ -616,7 +616,7 @@ test('AIA-BREAK-01: Rapid open/close AI Assist 5x in immediate succession leaves
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-BREAK-02: Clicking Add to Playlist 10x rapidly on the same exercise does not create 10 duplicate playlist entries', { tag: '@boundary' }, async ({ page }) => {
+test('AIA-BREAK-02: Clicking Add to Playlist 10x rapidly on the same exercise does not create 10 duplicate playlist entries', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
@@ -638,7 +638,7 @@ test('AIA-BREAK-02: Clicking Add to Playlist 10x rapidly on the same exercise do
   expect(added).toBeLessThan(5);
 });
 
-test('AIA-BREAK-03: Reloading mid-generation does not leave AI Assist permanently stuck on the next open', { tag: '@negative' }, async ({ page }) => {
+test('AIA-BREAK-03: Reloading mid-generation does not leave AI Assist permanently stuck on the next open', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
@@ -665,7 +665,7 @@ test('AIA-BREAK-03: Reloading mid-generation does not leave AI Assist permanentl
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-BREAK-04: Selecting ALL available exercise checkboxes and clicking Add to Playlist does not crash or silently no-op', { tag: '@boundary' }, async ({ page }) => {
+test('AIA-BREAK-04: Selecting ALL available exercise checkboxes and clicking Add to Playlist does not crash or silently no-op', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
@@ -688,7 +688,7 @@ test('AIA-BREAK-04: Selecting ALL available exercise checkboxes and clicking Add
   console.log('Playlist resource count before/after mass-select Add to Playlist:', countBefore, '->', countAfter);
 });
 
-test('AIA-BREAK-05: Three consecutive forced network failures do not progressively degrade the modal', { tag: '@negative' }, async ({ page }) => {
+test('AIA-BREAK-05: Three consecutive forced network failures do not progressively degrade the modal', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const ar = new AddResourcePage(page);
   await page.route(/ai[-_]?assist|ai[-_]?generat/i, route => route.abort());
@@ -714,7 +714,7 @@ test('AIA-BREAK-05: Three consecutive forced network failures do not progressive
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-BREAK-06: Instant-close x3 right after opening does not leave the 4th legitimate open permanently blank', { tag: '@negative' }, async ({ page }) => {
+test('AIA-BREAK-06: Instant-close x3 right after opening does not leave the 4th legitimate open permanently blank', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const ar = new AddResourcePage(page);
   for (let i = 0; i < 3; i++) {
@@ -732,7 +732,7 @@ test('AIA-BREAK-06: Instant-close x3 right after opening does not leave the 4th 
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-BREAK-07: An exercise added to Playlist under Class A is NOT visible in a different Class B Playlist', { tag: '@security' }, async ({ page }) => {
+test('AIA-BREAK-07: An exercise added to Playlist under Class A is NOT visible in a different Class B Playlist', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
@@ -760,7 +760,7 @@ test('AIA-BREAK-07: An exercise added to Playlist under Class A is NOT visible i
   expect(leaked).toBe(false);
 });
 
-test('AIA-BREAK-08: Rapidly interleaved tab/close/reopen cycles leave tab selection and displayed content mutually consistent', { tag: '@ui-state' }, async ({ page }) => {
+test('AIA-BREAK-08: Rapidly interleaved tab/close/reopen cycles leave tab selection and displayed content mutually consistent', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);
@@ -787,7 +787,7 @@ test('AIA-BREAK-08: Rapidly interleaved tab/close/reopen cycles leave tab select
   await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
 });
 
-test('AIA-BREAK-09: Rapidly pressing Escape 10x while AI Assist is open does not corrupt the DOM into a half-torn-down state', { tag: '@negative' }, async ({ page }) => {
+test('AIA-BREAK-09: Rapidly pressing Escape 10x while AI Assist is open does not corrupt the DOM into a half-torn-down state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const ar = new AddResourcePage(page);
   await openAiAssist(page, ar);

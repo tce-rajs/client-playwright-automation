@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => {
   await expect(ar.libraryPopup).toBeVisible({ timeout: 10000 });
 });
 
-test('TCE-BREAK-01: a 500-character search query does not crash or hang the Library results panel', { tag: '@boundary' }, async ({ page }) => {
+test('TCE-BREAK-01: a 500-character search query does not crash or hang the Library results panel', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('a'.repeat(500));
   await ar.librarySearchBtn.click({ timeout: 5000 }).catch(() => {});
@@ -34,7 +34,7 @@ test('TCE-BREAK-01: a 500-character search query does not crash or hang the Libr
   expect(stillResponsive).toBe(true);
 });
 
-test('TCE-BREAK-02: typing a real query character-by-character with minimal delay settles on the FULL query\'s results, not a stale partial-substring response', { tag: '@negative' }, async ({ page }) => {
+test('TCE-BREAK-02: typing a real query character-by-character with minimal delay settles on the FULL query\'s results, not a stale partial-substring response', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.librarySearchInput.fill('');
   const fullQuery = 'photosynthesis';
@@ -53,7 +53,7 @@ test('TCE-BREAK-02: typing a real query character-by-character with minimal dela
   expect(finalInputValue).toBe(fullQuery);
 });
 
-test('TCE-BREAK-03: rapidly filling then clearing then refilling the search box 4 times in a row leaves the UI in a consistent, non-stuck final state', { tag: '@boundary' }, async ({ page }) => {
+test('TCE-BREAK-03: rapidly filling then clearing then refilling the search box 4 times in a row leaves the UI in a consistent, non-stuck final state', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const queries = ['algebra', '', 'geometry', '', 'trigonometry', '', 'calculus', ''];
   for (const q of queries) {

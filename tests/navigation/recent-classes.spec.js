@@ -50,7 +50,7 @@ test('NAV-REC-03: Switching to a class via Recent Classes moves it to the top of
   expect(firstText).toBe(targetText);
 });
 
-test('NAV-REC-04: Recent Classes list does not visually mark which class is currently active', { tag: '@ui-state' }, async ({ page }) => {
+test('NAV-REC-04: Recent Classes list does not visually mark which class is currently active', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // LIVE FINDING (from the test case doc, re-verified here): every entry's
   // radio indicator looks identical -- nothing distinguishes "this is
   // where you already are." Confirmed by comparing the first (current)
@@ -73,7 +73,7 @@ test('NAV-REC-04: Recent Classes list does not visually mark which class is curr
   expect(firstMarkup).not.toBe(secondMarkup);
 });
 
-test('NAV-REC-05: Recent Classes tab with zero history (brand-new teacher)', { tag: '@negative' }, async ({ page }) => {
+test('NAV-REC-05: Recent Classes tab with zero history (brand-new teacher)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // The real "brand-new teacher, zero history" scenario needs an account
   // that has never selected a class -- not available here (VALID_PIN's
   // account already has 10+ entries, confirmed below). What we CAN verify

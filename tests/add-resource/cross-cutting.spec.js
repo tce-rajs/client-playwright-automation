@@ -61,7 +61,7 @@ test('ADD-STATE-01: Newly added resources appear in the Playlist strip immediate
   expect(finalCount).toBe(beforeCount);
 });
 
-test('ADD-NET-01: The resource-creation/upload request fails mid-submit', { tag: '@cross-cutting' }, async ({ page }) => {
+test('ADD-NET-01: The resource-creation/upload request fails mid-submit', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await page.route('**/serve/custom/asset', (route) => route.fulfill({ status: 500, body: '{}' }));
 
@@ -80,7 +80,7 @@ test('ADD-NET-01: The resource-creation/upload request fails mid-submit', { tag:
   expect(errorShown || !formClosed).toBe(true);
 });
 
-test('ADD-NET-02: A Library search request itself fails (not just zero results)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('ADD-NET-02: A Library search request itself fails (not just zero results)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await page.route('**/content/search**', (route) => route.fulfill({ status: 500, body: '{}' }));
 
@@ -100,7 +100,7 @@ test('ADD-NET-02: A Library search request itself fails (not just zero results)'
   expect(errorStateVisible).toBe(true);
 });
 
-test('ADD-RACE-01: Rapidly double-clicking Submit on a valid Create form', { tag: '@boundary' }, async ({ page }) => {
+test('ADD-RACE-01: Rapidly double-clicking Submit on a valid Create form', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   let createRequestCount = 0;
   // Intercept and fulfill locally so a double-click can be safely tested
@@ -128,7 +128,7 @@ test('ADD-RACE-01: Rapidly double-clicking Submit on a valid Create form', { tag
   expect(createRequestCount).toBeLessThanOrEqual(1);
 });
 
-test('ADD-SEC-01: Added resources are scoped to the correct class/topic and never leak into another class\'s playlist', { tag: '@security' }, async ({ page }) => {
+test('ADD-SEC-01: Added resources are scoped to the correct class/topic and never leak into another class\'s playlist', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Needs a second known teacher/class account to cross-check against --
   // not available in this environment (same limitation as Playlist's own
   // PL-SEC-01).
@@ -136,7 +136,7 @@ test('ADD-SEC-01: Added resources are scoped to the correct class/topic and neve
   expect(true).toBe(false);
 });
 
-test('ADD-SEC-02: Tampering the create-resource request to target a different chapterId/topicId than shown in the UI', { tag: '@security' }, async ({ page }) => {
+test('ADD-SEC-02: Tampering the create-resource request to target a different chapterId/topicId than shown in the UI', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Deliberately not executed against the real backend: if the server does
   // NOT validate (the exact defect this case is checking for), the tampered
   // request would succeed and create a real, permanent resource under a

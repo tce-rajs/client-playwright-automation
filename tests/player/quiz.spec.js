@@ -96,7 +96,7 @@ test('PLR-QZ-01: Play Quiz opens a launch screen with a counter and Launch butto
   expect(onLaunchScreen || rendererVisible).toBe(true);
 });
 
-test('PLR-QZ-02: Launch AIR Card loads the first quiz question (BLOCKED -- camera-dependent, see file header)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-02: Launch AIR Card loads the first quiz question (BLOCKED -- camera-dependent, see file header)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion, cameraBlocked } = await openQuiz(page, plr);
   console.log('Reached a real question:', reachedQuestion, '| camera-blocked:', cameraBlocked);
@@ -104,7 +104,7 @@ test('PLR-QZ-02: Launch AIR Card loads the first quiz question (BLOCKED -- camer
   expect(reachedQuestion).toBe(true);
 });
 
-test('PLR-QZ-03: A question shows prompt text and a grid of lettered options (BLOCKED -- camera-dependent)', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-QZ-03: A question shows prompt text and a grid of lettered options (BLOCKED -- camera-dependent)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -114,7 +114,7 @@ test('PLR-QZ-03: A question shows prompt text and a grid of lettered options (BL
   expect(await plr.quizOptions.count()).toBeGreaterThanOrEqual(2);
 });
 
-test('PLR-QZ-04: Submit Answer is disabled until an option is selected (BLOCKED -- camera-dependent)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-QZ-04: Submit Answer is disabled until an option is selected (BLOCKED -- camera-dependent)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -122,7 +122,7 @@ test('PLR-QZ-04: Submit Answer is disabled until an option is selected (BLOCKED 
   await expect(plr.quizSubmitBtn).toBeDisabled();
 });
 
-test('PLR-QZ-05: Selecting an option enables Submit Answer (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-05: Selecting an option enables Submit Answer (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -132,7 +132,7 @@ test('PLR-QZ-05: Selecting an option enables Submit Answer (BLOCKED -- camera-de
   await expect(plr.quizSubmitBtn).toBeEnabled();
 });
 
-test('PLR-QZ-06: Submitting a correct answer highlights it and advances to Next Question (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-06: Submitting a correct answer highlights it and advances to Next Question (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -152,7 +152,7 @@ test('PLR-QZ-06: Submitting a correct answer highlights it and advances to Next 
   await expect(plr.quizNextQuestionBtn).toBeVisible();
 });
 
-test('PLR-QZ-07: Show Answer reveals the correct option without requiring a selection (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-07: Show Answer reveals the correct option without requiring a selection (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -163,7 +163,7 @@ test('PLR-QZ-07: Show Answer reveals the correct option without requiring a sele
   await expect(plr.quizNextQuestionBtn).toBeVisible();
 });
 
-test('PLR-QZ-08: Bottom pagination shows a numbered dot per question and supports direct jump (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-08: Bottom pagination shows a numbered dot per question and supports direct jump (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -177,7 +177,7 @@ test('PLR-QZ-08: Bottom pagination shows a numbered dot per question and support
   expect(currentText.trim().length).toBeGreaterThan(0);
 });
 
-test('PLR-QZ-09: Prev/Next chevrons navigate one question at a time (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-09: Prev/Next chevrons navigate one question at a time (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -192,7 +192,7 @@ test('PLR-QZ-09: Prev/Next chevrons navigate one question at a time (BLOCKED -- 
   expect(await plr.quizQuestion.textContent()).toBe(q1Text);
 });
 
-test('PLR-QZ-10: A Split Screen control opens a side-by-side comparison view (BLOCKED -- camera-dependent)', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-QZ-10: A Split Screen control opens a side-by-side comparison view (BLOCKED -- camera-dependent)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -203,7 +203,7 @@ test('PLR-QZ-10: A Split Screen control opens a side-by-side comparison view (BL
   expect(rollNumberVisible).toBe(true);
 });
 
-test('PLR-QZ-11: The quiz\'s own close control exits cleanly (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-11: The quiz\'s own close control exits cleanly (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -213,7 +213,7 @@ test('PLR-QZ-11: The quiz\'s own close control exits cleanly (BLOCKED -- camera-
   await expect(plr.quizRenderer).toBeHidden();
 });
 
-test('PLR-QZ-12: Submitting an incorrect answer shows Incorrect AND reveals the correct answer simultaneously (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-12: Submitting an incorrect answer shows Incorrect AND reveals the correct answer simultaneously (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -234,7 +234,7 @@ test('PLR-QZ-12: Submitting an incorrect answer shows Incorrect AND reveals the 
   await expect(plr.quizCorrectOptions).toHaveCount(1);
 });
 
-test('PLR-QZ-13: Reopening Play Quiz after closing it fully restarts from Question 1 (BLOCKED -- camera-dependent)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-QZ-13: Reopening Play Quiz after closing it fully restarts from Question 1 (BLOCKED -- camera-dependent)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -249,7 +249,7 @@ test('PLR-QZ-13: Reopening Play Quiz after closing it fully restarts from Questi
   expect(anyAnsweredStyling).toBe(0);
 });
 
-test('PLR-QZ-14: Answered progress is not lost when navigating between questions in the same session (BLOCKED -- camera-dependent)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-QZ-14: Answered progress is not lost when navigating between questions in the same session (BLOCKED -- camera-dependent)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -263,7 +263,7 @@ test('PLR-QZ-14: Answered progress is not lost when navigating between questions
   await expect(plr.quizCorrectOptions).toHaveCount(1);
 });
 
-test('PLR-QZ-15: Rapid double-click on Submit Answer does not cause a double-submission (BLOCKED -- camera-dependent)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-QZ-15: Rapid double-click on Submit Answer does not cause a double-submission (BLOCKED -- camera-dependent)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -276,7 +276,7 @@ test('PLR-QZ-15: Rapid double-click on Submit Answer does not cause a double-sub
   expect(answeredCount).toBe(1);
 });
 
-test('PLR-QZ-16: A quiz with a very large number of questions keeps pagination usable (BLOCKED -- camera-dependent)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-QZ-16: A quiz with a very large number of questions keeps pagination usable (BLOCKED -- camera-dependent)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -287,7 +287,7 @@ test('PLR-QZ-16: A quiz with a very large number of questions keeps pagination u
   expect(nums.length ? Math.max(...nums) : 0).toBeGreaterThan(0);
 });
 
-test('PLR-QZ-17: Confirmed real selectors -- same-origin, zero iframes (BLOCKED -- camera-dependent)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-QZ-17: Confirmed real selectors -- same-origin, zero iframes (BLOCKED -- camera-dependent)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -295,7 +295,7 @@ test('PLR-QZ-17: Confirmed real selectors -- same-origin, zero iframes (BLOCKED 
   expect(await plr.quizRenderer.locator('iframe').count()).toBe(0);
 });
 
-test('PLR-QZ-18: Options are visually checkboxes but behave as single-answer (BLOCKED -- camera-dependent)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-QZ-18: Options are visually checkboxes but behave as single-answer (BLOCKED -- camera-dependent)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -312,7 +312,7 @@ test('PLR-QZ-18: Options are visually checkboxes but behave as single-answer (BL
   expect(secondChecked).toBe(true);
 });
 
-test('PLR-QZ-19: CONFIRMED RACE -- rapid multi-click on a Quiz card can open duplicate stacked instances', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-QZ-19: CONFIRMED RACE -- rapid multi-click on a Quiz card can open duplicate stacked instances', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await expect(plr.quizCards.first()).toBeAttached({ timeout: 10000 });
   await plr.quizCards.first().evaluate((el) => { el.click(); el.click(); el.click(); });
@@ -323,7 +323,7 @@ test('PLR-QZ-19: CONFIRMED RACE -- rapid multi-click on a Quiz card can open dup
   expect(rendererCount).toBeLessThanOrEqual(1);
 });
 
-test('PLR-QZ-20: A naive DOM read of question count undercounts on truncated pagination (BLOCKED -- camera-dependent)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-QZ-20: A naive DOM read of question count undercounts on truncated pagination (BLOCKED -- camera-dependent)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -336,7 +336,7 @@ test('PLR-QZ-20: A naive DOM read of question count undercounts on truncated pag
   expect(realCount).toBeGreaterThanOrEqual(naiveCount > 0 ? 1 : 0);
 });
 
-test('PLR-QZ-21: Never hardcode a "correct answer" index -- discovered live via Show Answer (BLOCKED -- camera-dependent)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-QZ-21: Never hardcode a "correct answer" index -- discovered live via Show Answer (BLOCKED -- camera-dependent)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -354,7 +354,7 @@ test('PLR-QZ-RECONCILE-01: RESOLVED -- the "Launch AIR Card" flow genuinely requ
   expect(typeof cameraBlocked).toBe('boolean');
 });
 
-test('PLR-EXP-SEC-03: A quiz answer submission cannot be replayed after completion (BLOCKED -- camera-dependent)', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-03: A quiz answer submission cannot be replayed after completion (BLOCKED -- camera-dependent)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(true, reachedQuestion
@@ -363,7 +363,7 @@ test('PLR-EXP-SEC-03: A quiz answer submission cannot be replayed after completi
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-01 (Quiz, network-loss variant): losing connectivity before Submit is handled with a clear error (BLOCKED -- camera-dependent)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-01 (Quiz, network-loss variant): losing connectivity before Submit is handled with a clear error (BLOCKED -- camera-dependent)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -379,7 +379,7 @@ test('PLR-EXP-01 (Quiz, network-loss variant): losing connectivity before Submit
   expect(answeredStyling).toBe(0);
 });
 
-test('PLR-EXP-01 (Quiz, Show-Answer-then-Submit variant): (BLOCKED -- camera-dependent)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-01 (Quiz, Show-Answer-then-Submit variant): (BLOCKED -- camera-dependent)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -391,7 +391,7 @@ test('PLR-EXP-01 (Quiz, Show-Answer-then-Submit variant): (BLOCKED -- camera-dep
   expect(submitStillPresent).toBe(false);
 });
 
-test('PLR-EXP-02 (Quiz variant): a question data load failure does not corrupt navigation (BLOCKED -- camera-dependent)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-02 (Quiz variant): a question data load failure does not corrupt navigation (BLOCKED -- camera-dependent)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
@@ -405,14 +405,14 @@ test('PLR-EXP-02 (Quiz variant): a question data load failure does not corrupt n
   expect(rendererStillThere).toBe(true);
 });
 
-test('PLR-EXP-18: A single-question quiz renders sensibly (BLOCKED -- camera-dependent, plus no such quiz confirmed to exist)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-18: A single-question quiz renders sensibly (BLOCKED -- camera-dependent, plus no such quiz confirmed to exist)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(true, reachedQuestion ? 'This quiz has more than 1 question' : CAMERA_BLOCK_REASON);
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-19: A large quiz\'s pagination dots scroll rather than overflow (BLOCKED -- camera-dependent)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-19: A large quiz\'s pagination dots scroll rather than overflow (BLOCKED -- camera-dependent)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { reachedQuestion } = await openQuiz(page, plr);
   test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);

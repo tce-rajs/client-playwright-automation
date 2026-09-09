@@ -16,7 +16,7 @@ test('PL-EBK-01: E-Books tile opens "Choose an eBook" showing the subject\'s tex
   await expect(pl.eBookLaunchButtons.first()).toBeVisible();
 });
 
-test('PL-EBK-02: A subject with no eBook mapped', { tag: '@negative' }, async ({ page }) => {
+test('PL-EBK-02: A subject with no eBook mapped', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // Needs a class/subject known in advance to have no eBook mapped --
   // this account's default subjects all showed a book when checked, and
   // exhaustively trying every Grade/Division/Subject combination to find
@@ -25,7 +25,7 @@ test('PL-EBK-02: A subject with no eBook mapped', { tag: '@negative' }, async ({
   expect(true).toBe(false);
 });
 
-test('PL-EBK-03: A subject with more than one eBook available', { tag: '@boundary' }, async ({ page }) => {
+test('PL-EBK-03: A subject with more than one eBook available', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.eBooksTile.click();
   await expect(page.getByText('Choose an eBook')).toBeVisible();

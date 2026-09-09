@@ -33,7 +33,7 @@ test('TB-DRAW-02: Eraser removes a drawn stroke where dragged over it', { tag: '
   expect(afterErase).toBeLessThan(afterDraw);
 });
 
-test('TB-DRAW-03: Eraser can leave small fragments of a stroke behind', { tag: '@negative' }, async ({ page }) => {
+test('TB-DRAW-03: Eraser can leave small fragments of a stroke behind', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.penStroke({ x: 300, y: 500 }, { x: 400, y: 500 }); // ~100px stroke
   const afterDraw = await tb.pathCount();

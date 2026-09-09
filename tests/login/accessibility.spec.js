@@ -10,7 +10,7 @@ test.beforeEach(async ({ page }) => {
   await login.openSignIn();
 });
 
-test('A11Y-01: Full keyboard-only navigation through the modal', { tag: '@ui-state' }, async ({ page }) => {
+test('A11Y-01: Full keyboard-only navigation through the modal', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // Tab through everything and record what actually receives focus.
   const focusedSequence = [];
   for (let i = 0; i < 15; i++) {
@@ -35,7 +35,7 @@ test('A11Y-01: Full keyboard-only navigation through the modal', { tag: '@ui-sta
   expect(reachedPasswordLink).toBe(true);
 });
 
-test('A11Y-02: Screen reader announces the error banner', { tag: '@ui-state' }, async ({ page }) => {
+test('A11Y-02: Screen reader announces the error banner', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   // The banner only exists once a wrong PIN has actually been submitted.
   await login.enterPin(process.env.INVALID_PIN);
@@ -51,7 +51,7 @@ test('A11Y-02: Screen reader announces the error banner', { tag: '@ui-state' }, 
   expect(hasAnnouncementSemantics).toBe(true);
 });
 
-test('A11Y-03: Color contrast of the error state meets WCAG AA', { tag: '@ui-state' }, async ({ page }) => {
+test('A11Y-03: Color contrast of the error state meets WCAG AA', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // FINDING: measured contrast ratio ~3.16:1 (red text rgb(241,98,94) on
   // white), below the WCAG AA minimum of 4.5:1 for normal text — computed
   // via the standard relative-luminance formula, not eyeballed.
@@ -98,7 +98,7 @@ test('A11Y-03: Color contrast of the error state meets WCAG AA', { tag: '@ui-sta
   expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);
 });
 
-test('A11Y-04: Focus is trapped within the modal while open', { tag: '@ui-state' }, async ({ page }) => {
+test('A11Y-04: Focus is trapped within the modal while open', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   const escapedFocus = [];
   for (let i = 0; i < 20; i++) {
@@ -117,7 +117,7 @@ test('A11Y-04: Focus is trapped within the modal while open', { tag: '@ui-state'
   expect(everEscaped).toBe(false);
 });
 
-test('A11Y-05: Interactive icons have accessible names', { tag: '@ui-state' }, async ({ page }) => {
+test('A11Y-05: Interactive icons have accessible names', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   const icons = {
     'close (X)': login.closeButton,

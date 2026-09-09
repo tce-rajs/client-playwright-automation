@@ -41,7 +41,7 @@ async function openTextEditorAt(tb, page, point) {
   return { appeared: false, box };
 }
 
-test('TB-BREAK-01: a 2000-character text object does not crash the canvas or corrupt its own rendering', { tag: '@boundary' }, async ({ page }) => {
+test('TB-BREAK-01: a 2000-character text object does not crash the canvas or corrupt its own rendering', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const tb = new ToolbarPage(page);
   const point = at(200, 200);
@@ -63,7 +63,7 @@ test('TB-BREAK-01: a 2000-character text object does not crash the canvas or cor
   expect(pageAlive).toBe(true);
 });
 
-test('TB-BREAK-02: emoji + Arabic (RTL) text in a text object commits and renders without crashing the canvas', { tag: '@boundary' }, async ({ page }) => {
+test('TB-BREAK-02: emoji + Arabic (RTL) text in a text object commits and renders without crashing the canvas', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(30000);
   const tb = new ToolbarPage(page);
   const point = at(250, 250);
@@ -83,7 +83,7 @@ test('TB-BREAK-02: emoji + Arabic (RTL) text in a text object commits and render
   expect(pageAlive).toBe(true);
 });
 
-test('TB-BREAK-03: rapidly alternating Undo/Redo clicks 16 times does not corrupt the stroke count or crash the canvas', { tag: '@boundary' }, async ({ page }) => {
+test('TB-BREAK-03: rapidly alternating Undo/Redo clicks 16 times does not corrupt the stroke count or crash the canvas', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const tb = new ToolbarPage(page);
   // Draw two real strokes first so there's real history to alternate over.
@@ -109,7 +109,7 @@ test('TB-BREAK-03: rapidly alternating Undo/Redo clicks 16 times does not corrup
   expect(finalCount).toBeGreaterThanOrEqual(0);
 });
 
-test('TB-BREAK-04: switching from Pen to Eraser mid-drag (before mouseup) does not leave a stray half-drawn stroke or crash', { tag: '@negative' }, async ({ page }) => {
+test('TB-BREAK-04: switching from Pen to Eraser mid-drag (before mouseup) does not leave a stray half-drawn stroke or crash', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(30000);
   const tb = new ToolbarPage(page);
   await tb.selectTool('gtPen');
@@ -135,7 +135,7 @@ test('TB-BREAK-04: switching from Pen to Eraser mid-drag (before mouseup) does n
   expect(pageAlive).toBe(true);
 });
 
-test('TB-BREAK-05: rapidly clicking through 5 different Background options in quick succession settles on exactly ONE final background, not a corrupted/stacked state', { tag: '@boundary' }, async ({ page }) => {
+test('TB-BREAK-05: rapidly clicking through 5 different Background options in quick succession settles on exactly ONE final background, not a corrupted/stacked state', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(30000);
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtBackground');

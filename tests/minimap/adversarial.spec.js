@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }) => {
   await pl.ensureResourcesPresent();
 });
 
-test('MM-BREAK-01: switching Class while the Minimap panel is open does not leave it stuck visible over the new class\'s whiteboard', { tag: '@ui-state' }, async ({ page }) => {
+test('MM-BREAK-01: switching Class while the Minimap panel is open does not leave it stuck visible over the new class\'s whiteboard', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const mm = new MinimapPage(page);
   const nav = new NavigationPage(page);
@@ -36,7 +36,7 @@ test('MM-BREAK-01: switching Class while the Minimap panel is open does not leav
   expect(stillOpen).toBe(false);
 });
 
-test('MM-BREAK-02: rapidly opening and closing the Minimap 8 times in immediate succession does not leave a stuck or duplicated panel', { tag: '@boundary' }, async ({ page }) => {
+test('MM-BREAK-02: rapidly opening and closing the Minimap 8 times in immediate succession does not leave a stuck or duplicated panel', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const mm = new MinimapPage(page);
   for (let i = 0; i < 8; i++) {
@@ -57,7 +57,7 @@ test('MM-BREAK-02: rapidly opening and closing the Minimap 8 times in immediate 
   expect(finalOpen).toBe(false);
 });
 
-test('MM-BREAK-03: pressing the browser Back button while the Minimap is open does not leave a stuck overlay behind', { tag: '@ui-state' }, async ({ page }) => {
+test('MM-BREAK-03: pressing the browser Back button while the Minimap is open does not leave a stuck overlay behind', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const mm = new MinimapPage(page);
   const opened = await mm.open();
   test.fail(!opened, 'Minimap did not open this run -- could not exercise the Back-button case');
@@ -73,7 +73,7 @@ test('MM-BREAK-03: pressing the browser Back button while the Minimap is open do
   expect(pageUsable).toBe(true);
 });
 
-test('MM-BREAK-04: rapidly clicking many different points inside the Minimap in quick succession (pan spam) keeps the canvas responsive, never desyncing the viewport rectangle off-canvas', { tag: '@boundary' }, async ({ page }) => {
+test('MM-BREAK-04: rapidly clicking many different points inside the Minimap in quick succession (pan spam) keeps the canvas responsive, never desyncing the viewport rectangle off-canvas', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(30000);
   const mm = new MinimapPage(page);
   const opened = await mm.open();

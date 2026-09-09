@@ -46,7 +46,7 @@ test('PLR-XCUT-01: Consolidated close-icon selector matrix -- three different cl
   expect(isImgWithoutAlt).toBe(true);
 });
 
-test('PLR-XCUT-02: Opening two DIFFERENT player types simultaneously (Worksheet then Weblink)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-XCUT-02: Opening two DIFFERENT player types simultaneously (Worksheet then Weblink)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await plr.openResourceCard(plr.worksheetCards);
   await plr.closeIcon.first().waitFor({ state: 'visible', timeout: 15000 });
@@ -75,7 +75,7 @@ test('PLR-XCUT-03: Closing a player via Esc key, instead of its own X control', 
   if (stillOpen) await plr.closePlayer();
 });
 
-test('PLR-EXP-SEC-04: A briefly-cached player from the PREVIOUS class does not remain interactive after switching Current Class', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-04: A briefly-cached player from the PREVIOUS class does not remain interactive after switching Current Class', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const nav = new NavigationPage(page);
   await plr.openResourceCard(plr.worksheetCards);
@@ -88,7 +88,7 @@ test('PLR-EXP-SEC-04: A briefly-cached player from the PREVIOUS class does not r
   expect(oldPlayerStillThere).toBe(false);
 });
 
-test('PLR-EXP-16: Closing a player via the browser Back button leaves the same clean state as its own X control', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-16: Closing a player via the browser Back button leaves the same clean state as its own X control', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await plr.openResourceCard(plr.worksheetCards);
   await plr.closeIcon.first().waitFor({ state: 'visible', timeout: 15000 });
@@ -100,7 +100,7 @@ test('PLR-EXP-16: Closing a player via the browser Back button leaves the same c
   expect(stillOnAppShell).toBe(true);
 });
 
-test('PLR-EXP-17: A player left open across the confirmed ~60-120s session-expiry window does not silently lose state (long-running, generalizes an AI Homework/Worksheet finding to this type)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-17: A player left open across the confirmed ~60-120s session-expiry window does not silently lose state (long-running, generalizes an AI Homework/Worksheet finding to this type)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(150000);
   const plr = new PlayerPage(page);
   await plr.openResourceCard(plr.worksheetCards);
@@ -117,7 +117,7 @@ test('PLR-EXP-17: A player left open across the confirmed ~60-120s session-expir
   expect(playerStillOpen).toBe(true);
 });
 
-test('PLR-EXP-25: Opening the same NON-Video player resource twice in rapid succession does not open two overlapping instances', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-25: Opening the same NON-Video player resource twice in rapid succession does not open two overlapping instances', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await plr.worksheetCards.first().evaluate((el) => { el.click(); el.click(); });
   await page.waitForTimeout(2500);

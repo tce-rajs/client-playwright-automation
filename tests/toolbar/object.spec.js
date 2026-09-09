@@ -33,7 +33,7 @@ test('TB-OBJ-01: Clicking an inserted shape selects it with manipulation control
   await expect(tb.pathMenuDeleteBtn).toBeVisible();
 });
 
-test('TB-OBJ-02: Deleting a canvas object has no confirmation step', { tag: '@negative' }, async ({ page }) => {
+test('TB-OBJ-02: Deleting a canvas object has no confirmation step', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const before = await tb.pathCount();
   await tb.penStroke({ x: 300, y: 300 }, { x: 500, y: 400 });

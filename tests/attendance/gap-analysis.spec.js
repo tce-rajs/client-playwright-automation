@@ -49,7 +49,7 @@ async function openAndWaitForContent(att, timeoutMs = 10000) {
   return contentAppeared;
 }
 
-test('ATT-PANEL-01: CRITICAL -- the Attendance panel hangs indefinitely on a loading spinner with no way to exit', { tag: '@negative' }, async ({ page }) => {
+test('ATT-PANEL-01: CRITICAL -- the Attendance panel hangs indefinitely on a loading spinner with no way to exit', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att, 15000);
@@ -78,35 +78,35 @@ test('ATT-SEL-01: The confirmed plain-CSS selector map is reachable at least at 
   // not re-asserted here as a duplicate finding.
 });
 
-test('ATT-BUS-01: Marking a student creates a real, persistent draft for today', { tag: '@cross-cutting' }, async ({ page }) => {
+test('ATT-BUS-01: Marking a student creates a real, persistent draft for today', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the roster to mark anything');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-BUS-02: A tap toggles present<->absent only, with no way back to unmarked', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-BUS-02: A tap toggles present<->absent only, with no way back to unmarked', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the roster to tap a student cell');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-BUS-03: Once submitted, buttons swap to Edit/Submit (locked view) and Edit re-seeds previous marks', { tag: '@positive' }, async ({ page }) => {
+test('ATT-BUS-03: Once submitted, buttons swap to Edit/Submit (locked view) and Edit re-seeds previous marks', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach Submit to test the locked/Edit state');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-BUG-01: Close discards in-progress unsaved marks', { tag: '@negative' }, async ({ page }) => {
+test('ATT-BUG-01: Close discards in-progress unsaved marks', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot mark anything to test Close-discard behavior against');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-CLOSE-01: No Close control exists while the panel is stuck loading', { tag: '@negative' }, async ({ page }) => {
+test('ATT-CLOSE-01: No Close control exists while the panel is stuck loading', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   await att.open();
   await page.waitForTimeout(3000);
@@ -117,35 +117,35 @@ test('ATT-CLOSE-01: No Close control exists while the panel is stuck loading', {
   expect(closeControlVisible).toBe(true);
 });
 
-test('ATT-DBL-01: Submitting attendance twice in quick succession does not create duplicate records', { tag: '@negative' }, async ({ page }) => {
+test('ATT-DBL-01: Submitting attendance twice in quick succession does not create duplicate records', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach Submit to test double-submission against');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-SEC-01: Attendance data is scoped to the correct class and never leaks to/from another class', { tag: '@security' }, async ({ page }) => {
+test('ATT-SEC-01: Attendance data is scoped to the correct class and never leaks to/from another class', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach a roster under either class to compare');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-SEC-02: A teacher cannot submit attendance for a class they are not assigned to teach', { tag: '@security' }, async ({ page }) => {
+test('ATT-SEC-02: A teacher cannot submit attendance for a class they are not assigned to teach', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach Submit at all on any class to test authorization against');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-QUIRK-01: A tap on a roll-number cell occasionally does not register', { tag: '@negative' }, async ({ page }) => {
+test('ATT-QUIRK-01: A tap on a roll-number cell occasionally does not register', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the roster to tap a cell');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-GAP-01: Submit\'s real network request is unreachable to network-interception tooling (confirmed tooling gap, not a defect)', { tag: '@negative' }, async ({ page }) => {
+test('ATT-GAP-01: Submit\'s real network request is unreachable to network-interception tooling (confirmed tooling gap, not a defect)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   let sawAnyRequest = false;
   page.on('request', (req) => {
@@ -161,42 +161,42 @@ test('ATT-GAP-01: Submit\'s real network request is unreachable to network-inter
   expect(true).toBe(false);
 });
 
-test('ATT-SUMM-01: The Total row in the summary table shows only ONE number, not a Present/Absent/Total triple', { tag: '@negative' }, async ({ page }) => {
+test('ATT-SUMM-01: The Total row in the summary table shows only ONE number, not a Present/Absent/Total triple', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the summary table to inspect its Total row');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-BDAY-01: A student\'s birthday triggers a birthday popup during Play Attendance', { tag: '@positive' }, async ({ page }) => {
+test('ATT-BDAY-01: A student\'s birthday triggers a birthday popup during Play Attendance', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach Play Attendance\'s calling-marks flow');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-PASTDATE-01: Viewing a past date\'s attendance is view-only and cannot be re-edited', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-PASTDATE-01: Viewing a past date\'s attendance is view-only and cannot be re-edited', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the Play screen\'s date-nav controls');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-DRAG-01: Drag-to-mark-all-present gesture works as an alternative to individually tapping', { tag: '@positive' }, async ({ page }) => {
+test('ATT-DRAG-01: Drag-to-mark-all-present gesture works as an alternative to individually tapping', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the roster to perform the drag gesture');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-PLAY-01: Play Attendance\'s own calling-marks carousel functions correctly', { tag: '@positive' }, async ({ page }) => {
+test('ATT-PLAY-01: Play Attendance\'s own calling-marks carousel functions correctly', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach Play Attendance\'s .btn-start control');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-EXP-01: The panel\'s behavior on a class where attendance was ALREADY marked today (not "Pending")', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-EXP-01: The panel\'s behavior on a class where attendance was ALREADY marked today (not "Pending")', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const nav = new NavigationPage(page);
   let pageCrashed = false;
@@ -239,14 +239,14 @@ test('ATT-EXP-01: The panel\'s behavior on a class where attendance was ALREADY 
   expect(foundNonPending).toBe(true);
 });
 
-test('ATT-EXP-02: A large-roster class (30+ students) does not degrade Attendance panel performance', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-EXP-02: A large-roster class (30+ students) does not degrade Attendance panel performance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach any roster to measure scroll/mark performance against, regardless of class size');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-EXP-03: Rapidly double-clicking Attendance in the Magnet menu does not open two conflicting loading attempts', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-EXP-03: Rapidly double-clicking Attendance in the Magnet menu does not open two conflicting loading attempts', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   await att.openMagnetSubmenu();
   await expect(att.magnetAttendanceItem).toBeVisible();
@@ -260,14 +260,14 @@ test('ATT-EXP-03: Rapidly double-clicking Attendance in the Magnet menu does not
   expect(containerCount).toBeLessThanOrEqual(1);
 });
 
-test('ATT-EXP-04: Marking every student Absent (all-zero-present boundary) is accepted and reflected correctly', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-EXP-04: Marking every student Absent (all-zero-present boundary) is accepted and reflected correctly', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   test.fail(!contentAppeared, 'Blocked by ATT-PANEL-01 (stuck loading spinner) -- cannot reach the roster to mark every student Absent');
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-EXP-05: A teacher cannot submit attendance for a class by directly manipulating the request\'s class ID', { tag: '@security' }, async ({ page }) => {
+test('ATT-EXP-05: A teacher cannot submit attendance for a class by directly manipulating the request\'s class ID', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Same blocker class as NAV-SEC-01/EXP-06/AR-CYP-08 -- needs the real
   // attendance POST request's exact shape plus a known unauthorized class
   // ID, neither available without a second reference account, and

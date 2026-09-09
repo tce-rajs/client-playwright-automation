@@ -62,7 +62,7 @@ test('ADD-CRT-05: Typing 3 or more characters clears the Title error', { tag: '@
   await expect(ar.titleErrorText).toBeHidden();
 });
 
-test('ADD-CRT-06: Submitting a completely untouched, empty Title shows no validation feedback', { tag: '@negative' }, async ({ page }) => {
+test('ADD-CRT-06: Submitting a completely untouched, empty Title shows no validation feedback', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   // Title never focused/typed into at all.
   const submitDisabled = await ar.submitBtn.isDisabled();
@@ -74,7 +74,7 @@ test('ADD-CRT-06: Submitting a completely untouched, empty Title shows no valida
   expect(errorShown).toBe(true);
 });
 
-test('ADD-CRT-07: Submitting a valid Title with no File selected shows no validation feedback for the missing File', { tag: '@negative' }, async ({ page }) => {
+test('ADD-CRT-07: Submitting a valid Title with no File selected shows no validation feedback for the missing File', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.titleInput.fill('abc');
   await page.waitForTimeout(300);
@@ -100,14 +100,14 @@ test('ADD-CRT-08: Cancel closes the Create form and discards entered data', { ta
   expect(value).toBe('');
 });
 
-test('ADD-CRT-09: A fully valid submission creates the resource and attaches it to the current Topic', { tag: '@positive' }, async ({ page }) => {
+test('ADD-CRT-09: A fully valid submission creates the resource and attaches it to the current Topic', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Deliberately not executed -- would add a permanent asset to the shared
   // QA playlist/account, matching the workbook's own documented decision.
   test.fail(true, 'Deliberately not executed to avoid adding a permanent asset to the shared QA playlist/account');
   expect(true).toBe(false);
 });
 
-test('ADD-CRT-10: A file larger than the stated 10MB limit is rejected', { tag: '@negative' }, async ({ page }) => {
+test('ADD-CRT-10: A file larger than the stated 10MB limit is rejected', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const big = Buffer.alloc(11 * 1024 * 1024, 'a'); // 11MB, safely over the 10MB limit
   await ar.titleInput.fill('big file test');
@@ -122,7 +122,7 @@ test('ADD-CRT-10: A file larger than the stated 10MB limit is rejected', { tag: 
   expect(submitDisabled || errorVisible).toBe(true);
 });
 
-test('ADD-CRT-11: A file of an unsupported type is rejected', { tag: '@negative' }, async ({ page }) => {
+test('ADD-CRT-11: A file of an unsupported type is rejected', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const accept = await ar.fileInput.getAttribute('accept');
   console.log('File input accept list:', accept);
@@ -139,7 +139,7 @@ test('ADD-CRT-11: A file of an unsupported type is rejected', { tag: '@negative'
   expect(submitDisabled || errorVisible).toBe(true);
 });
 
-test('ADD-CRT-12: Turning Share OFF before submitting is respected', { tag: '@positive' }, async ({ page }) => {
+test('ADD-CRT-12: Turning Share OFF before submitting is respected', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Deliberately not executed via a real submit -- would add a permanent
   // asset to the shared QA account (same reasoning as ADD-CRT-09). Verify
   // only that the toggle itself is controllable and reflects OFF state.
@@ -164,7 +164,7 @@ test('ADD-CRT-13: A Title containing script/HTML markup is stored and rendered a
   expect(value).toContain('<script>');
 });
 
-test('ADD-CRT-14: Subtitle copy has a spelling/grammar issue', { tag: '@ui-state' }, async ({ page }) => {
+test('ADD-CRT-14: Subtitle copy has a spelling/grammar issue', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const subtitle = (await ar.createSubtitle.textContent()).trim();
   console.log('Create subtitle text:', subtitle);

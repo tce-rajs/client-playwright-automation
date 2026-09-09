@@ -121,7 +121,7 @@ test('PL-CHP-07: A Chapter with zero mapped Topics -- cross-ref NAV-CHP-07', { t
   expect(true).toBe(true);
 });
 
-test('PL-CHP-08: Chapters Popup for a class/subject with no curriculum content mapped -- cross-ref NAV-CHP-08', { tag: '@negative' }, async ({ page }) => {
+test('PL-CHP-08: Chapters Popup for a class/subject with no curriculum content mapped -- cross-ref NAV-CHP-08', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-ref NAV-CHP-08 -- no class/subject with zero mapped curriculum content has been identified in this account\'s reachable classes');
   expect(true).toBe(false);
 });
@@ -153,7 +153,7 @@ test('PL-XREF-01: Grade/Division/Subject (Class) selection is covered under the 
 // PL-CYP-01..07 -- genuinely new cases
 // ---------------------------------------------------------------------
 
-test('PL-CYP-01: Tapping the outer Quiz card wrapper is a no-op -- only the inner card responds', { tag: '@negative' }, async ({ page }) => {
+test('PL-CYP-01: Tapping the outer Quiz card wrapper is a no-op -- only the inner card responds', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const quizCardOuter = page.locator('[data-qa-id="playlist-quiz-card"]').first();
   const outerVisible = await quizCardOuter.isVisible({ timeout: 5000 }).catch(() => false);
   test.fail(!outerVisible, 'No Quiz-type resource card present on this topic this pass');
@@ -173,7 +173,7 @@ test('PL-CYP-01: Tapping the outer Quiz card wrapper is a no-op -- only the inne
   await page.keyboard.press('Escape').catch(() => {});
 });
 
-test('PL-CYP-02: The asset overflow menu\'s Edit option only appears for assets the signed-in teacher personally created', { tag: '@security' }, async ({ page }) => {
+test('PL-CYP-02: The asset overflow menu\'s Edit option only appears for assets the signed-in teacher personally created', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const assetCount = await pl.resourceCards.count();
   test.fail(assetCount === 0, 'No resource cards present to compare Edit-option scoping against this pass');
@@ -198,7 +198,7 @@ test('PL-CYP-02: The asset overflow menu\'s Edit option only appears for assets 
   expect(anyEditFound || anyNoEditFound).toBe(true);
 });
 
-test('PL-CYP-03: Toggle All does not cleanly restore a full selection from a partial one (confirmed cross-repo bug)', { tag: '@negative' }, async ({ page }) => {
+test('PL-CYP-03: Toggle All does not cleanly restore a full selection from a partial one (confirmed cross-repo bug)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.openOptionsMenu();
   const toggleAll = page.getByText('Toggle All', { exact: false }).first();
@@ -222,7 +222,7 @@ test('PL-CYP-03: Toggle All does not cleanly restore a full selection from a par
   await pl.closeOptionsMenu();
 });
 
-test('PL-CYP-04: A second, separate Show/Hide Drawer control exists as a persistent account-level setting', { tag: '@state-persistence' }, async ({ page }) => {
+test('PL-CYP-04: A second, separate Show/Hide Drawer control exists as a persistent account-level setting', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const drawerBtn = page.locator('[data-qa-id="playlist-drawer-btn"]');
   const visible = await drawerBtn.isVisible({ timeout: 5000 }).catch(() => false);
   test.fail(!visible, 'playlist-drawer-btn not found this pass');
@@ -253,12 +253,12 @@ test('PL-CYP-05: Resource cards stream onto the strip asynchronously -- an empty
   expect(settledCount).toBeGreaterThanOrEqual(immediateCount);
 });
 
-test('PL-CYP-06: The local unsaved Whiteboard card -> Save to Playlist path is confirmed dead code (cross-ref WB-SAVE-DEAD-01/02)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PL-CYP-06: The local unsaved Whiteboard card -> Save to Playlist path is confirmed dead code (cross-ref WB-SAVE-DEAD-01/02)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.fail(true, 'CONFIRMED cross-repo (source-read, same root cause as WB-SAVE-DEAD-01/02 in the Whiteboard module): WhiteboardSaveService.save() has zero callers anywhere in the app -- this feature is genuinely unreachable through any UI flow');
   expect(true).toBe(false);
 });
 
-test('PL-CYP-07: The resource-order save endpoint rejects a forged sequence payload for an unauthorized class (blocked -- no forging tooling)', { tag: '@security' }, async ({ page }) => {
+test('PL-CYP-07: The resource-order save endpoint rejects a forged sequence payload for an unauthorized class (blocked -- no forging tooling)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs the real PUT .../serve/tp/sequence request\'s exact shape plus a known classId/topicId this teacher is not authorized for, neither available without a second reference account -- same blocker class as NAV-SEC-01/TB-EXP-15/17 elsewhere in this suite');
   expect(true).toBe(false);
 });
@@ -267,7 +267,7 @@ test('PL-CYP-07: The resource-order save endpoint rejects a forged sequence payl
 // PL-GAP-01..03
 // ---------------------------------------------------------------------
 
-test('PL-GAP-01: Drag-and-drop reordering of resource cards persists the new order after reload', { tag: '@state-persistence' }, async ({ page }) => {
+test('PL-GAP-01: Drag-and-drop reordering of resource cards persists the new order after reload', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const cardCount = await pl.resourceCards.count();
   test.fail(cardCount < 2, 'Fewer than 2 resource cards present to reorder this pass');
@@ -294,7 +294,7 @@ test('PL-GAP-01: Drag-and-drop reordering of resource cards persists the new ord
   expect(persisted).toBe(true);
 });
 
-test('PL-GAP-02: Rapid multi-card drag-reordering, and dropping a card outside any valid zone, do not corrupt the saved order', { tag: '@boundary' }, async ({ page }) => {
+test('PL-GAP-02: Rapid multi-card drag-reordering, and dropping a card outside any valid zone, do not corrupt the saved order', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const cardCount = await pl.resourceCards.count();
   test.fail(cardCount < 3, 'Fewer than 3 resource cards present for a multi-card reorder stress test this pass');
@@ -313,7 +313,7 @@ test('PL-GAP-02: Rapid multi-card drag-reordering, and dropping a card outside a
   expect(titlesAfterInvalidDrop.length).toBe(titlesBefore.length);
 });
 
-test('PL-GAP-03: Removing a server-backed curriculum resource card (not a teacher-created asset)', { tag: '@negative' }, async ({ page }) => {
+test('PL-GAP-03: Removing a server-backed curriculum resource card (not a teacher-created asset)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const cardCount = await pl.resourceCards.count();
   test.fail(cardCount === 0, 'No resource cards present this pass');
@@ -330,7 +330,7 @@ test('PL-GAP-03: Removing a server-backed curriculum resource card (not a teache
 // PL-BUG-01, PL-DRW-01
 // ---------------------------------------------------------------------
 
-test('PL-BUG-01: CRITICAL -- closing certain resource previews leaves the Playlist strip/Contents/Add-Resource controls invisible', { tag: '@negative' }, async ({ page }) => {
+test('PL-BUG-01: CRITICAL -- closing certain resource previews leaves the Playlist strip/Contents/Add-Resource controls invisible', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const weblinkCard = page.locator('[data-qa-id*="weblink"], [class*="weblink"]').first();
   const weblinkVisible = await weblinkCard.isVisible({ timeout: 5000 }).catch(() => false);
@@ -362,7 +362,7 @@ test('PL-DRW-01: The Contents/Chapters slide-out panel is the client-named "Draw
 // PL-EXP-01..16
 // ---------------------------------------------------------------------
 
-test('PL-EXP-01: The Chapters Popup shows a clear error if its own chapter/topic data fetch fails (blocked -- no network-blocking tooling)', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-01: The Chapters Popup shows a clear error if its own chapter/topic data fetch fails (blocked -- no network-blocking tooling)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await page.route('**/chapter**', (route) => route.abort('failed'));
   await page.route('**/topic**', (route) => route.abort('failed'));
@@ -384,7 +384,7 @@ test('PL-EXP-01: The Chapters Popup shows a clear error if its own chapter/topic
   expect(errorShown).toBe(true);
 });
 
-test('PL-EXP-02: Removing a resource while its own thumbnail is still loading does not leave an orphaned loading spinner', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-02: Removing a resource while its own thumbnail is still loading does not leave an orphaned loading spinner', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const nav = new NavigationPage(page);
   await nav.goToChapterTopic(2, 0);
@@ -405,7 +405,7 @@ test('PL-EXP-02: Removing a resource while its own thumbnail is still loading do
   expect(true).toBe(true);
 });
 
-test('PL-EXP-03: Unchecking every resource-type filter checkbox leaves the checkboxes themselves interactive to recover from', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-03: Unchecking every resource-type filter checkbox leaves the checkboxes themselves interactive to recover from', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.openOptionsMenu();
   const optionCount = await pl.filterOptions.count();
@@ -426,12 +426,12 @@ test('PL-EXP-03: Unchecking every resource-type filter checkbox leaves the check
   await pl.closeOptionsMenu();
 });
 
-test('PL-EXP-04: A drag-reorder that fails to save server-side reverts the visual order rather than showing a falsely-persisted state (blocked -- no network-blocking tooling)', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-04: A drag-reorder that fails to save server-side reverts the visual order rather than showing a falsely-persisted state (blocked -- no network-blocking tooling)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs network-blocking tooling to cut connectivity at the precise moment right after a drag-drop release, not available in a way that reliably races the real save request this pass -- also depends on PL-GAP-01\'s own drag mechanics');
   expect(true).toBe(false);
 });
 
-test('PL-EXP-05: Adding the exact same resource a second time via Library is handled sensibly, not as an indistinguishable duplicate', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-05: Adding the exact same resource a second time via Library is handled sensibly, not as an indistinguishable duplicate', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   const beforeCount = await pl.resourceCards.count();
@@ -453,7 +453,7 @@ test('PL-EXP-05: Adding the exact same resource a second time via Library is han
   await ar.libraryCloseBtn.click({ force: true, timeout: 3000 }).catch(() => {});
 });
 
-test('PL-EXP-06: Typing into the Table of Contents search while chapter data is still loading does not search stale/incomplete data', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-06: Typing into the Table of Contents search while chapter data is still loading does not search stale/incomplete data', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.contentsTile.click({ force: true, timeout: 5000 });
   // Type immediately, without waiting for the popup's own data to settle.
@@ -468,12 +468,12 @@ test('PL-EXP-06: Typing into the Table of Contents search while chapter data is 
   expect(resultCount).toBeGreaterThanOrEqual(0);
 });
 
-test('PL-EXP-07: A Topic with 20+ resources across multiple types renders without performance degradation (no such topic identified)', { tag: '@boundary' }, async ({ page }) => {
+test('PL-EXP-07: A Topic with 20+ resources across multiple types renders without performance degradation (no such topic identified)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'No Topic with an unusually large (20+) resource count has been identified in this account\'s reachable curriculum this pass -- most topics browsed had 4-6 resources');
   expect(true).toBe(false);
 });
 
-test('PL-EXP-08: A Chapter/Topic name at maximum realistic length has a way to reveal its full un-truncated text', { tag: '@boundary' }, async ({ page }) => {
+test('PL-EXP-08: A Chapter/Topic name at maximum realistic length has a way to reveal its full un-truncated text', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();
   const topicTexts = await nav.topicItems.allTextContents();
@@ -503,7 +503,7 @@ test('PL-EXP-09: Playlist strip horizontal scroll chevrons correctly disable/hid
   expect(leftDisabledAtStart === true || leftDisabledAtStart === null).toBe(true);
 });
 
-test('PL-EXP-10: Filter checkbox state survives a page refresh (as opposed to a Topic switch)', { tag: '@boundary' }, async ({ page }) => {
+test('PL-EXP-10: Filter checkbox state survives a page refresh (as opposed to a Topic switch)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.openOptionsMenu();
   await pl.filterOptions.nth(0).click({ timeout: 3000 }).catch(() => {});
@@ -523,7 +523,7 @@ test('PL-EXP-10: Filter checkbox state survives a page refresh (as opposed to a 
   await pl.closeOptionsMenu();
 });
 
-test('PL-EXP-11: Opening Edit mode, making no changes, and Finish Editing leaves the Playlist byte-for-byte unchanged', { tag: '@boundary' }, async ({ page }) => {
+test('PL-EXP-11: Opening Edit mode, making no changes, and Finish Editing leaves the Playlist byte-for-byte unchanged', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const titlesBefore = await pl.resourceCards.allTextContents();
   await pl.openOptionsMenu();
@@ -543,7 +543,7 @@ test('PL-EXP-11: Opening Edit mode, making no changes, and Finish Editing leaves
   expect(titlesAfter).toEqual(titlesBefore);
 });
 
-test('PL-EXP-12: Rapidly clicking through every Chapter in quick succession settles correctly on the last-clicked chapter', { tag: '@boundary' }, async ({ page }) => {
+test('PL-EXP-12: Rapidly clicking through every Chapter in quick succession settles correctly on the last-clicked chapter', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openChaptersPopup();
   const chapterCount = await nav.chapterItems.count();
@@ -560,22 +560,22 @@ test('PL-EXP-12: Rapidly clicking through every Chapter in quick succession sett
   expect(topicCount).toBeGreaterThanOrEqual(0);
 });
 
-test('PL-EXP-13: A resource-order save request cannot be forged to reorder another teacher\'s/class\'s Playlist (blocked -- no forging tooling, same as PL-CYP-07)', { tag: '@security' }, async ({ page }) => {
+test('PL-EXP-13: A resource-order save request cannot be forged to reorder another teacher\'s/class\'s Playlist (blocked -- no forging tooling, same as PL-CYP-07)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same blocker as PL-CYP-07 -- needs the real PUT .../serve/tp/sequence request\'s exact shape plus a known unauthorized classId/topicId, neither available without a second reference account');
   expect(true).toBe(false);
 });
 
-test('PL-EXP-14: Add Resources -> Library/Gallery search results never surface another school\'s private assets (blocked -- needs a second school account)', { tag: '@security' }, async ({ page }) => {
+test('PL-EXP-14: Add Resources -> Library/Gallery search results never surface another school\'s private assets (blocked -- needs a second school account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Confirming cross-tenant isolation needs a second school/tenant account to compare search result sets against -- only this project\'s one school (Goyal Brothers) is available, same blocker class as GAL-SEC-01/TCE-SEC-01 elsewhere in this suite');
   expect(true).toBe(false);
 });
 
-test('PL-EXP-15: A teacher-created custom asset is never visible in another teacher\'s Playlist for the same class (blocked -- needs the Create file-upload flow plus a second teacher account)', { tag: '@security' }, async ({ page }) => {
+test('PL-EXP-15: A teacher-created custom asset is never visible in another teacher\'s Playlist for the same class (blocked -- needs the Create file-upload flow plus a second teacher account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Fully blocked pending both the file-upload tooling gap already documented for Add Resource\'s Create flow (see ADD-CRT-09) and a second teacher account assigned to the same class, neither available this pass');
   expect(true).toBe(false);
 });
 
-test('PL-EXP-16: Cancelling a Library/Gallery resource add mid-way through its own loading does not leave a corrupted Playlist entry', { tag: '@negative' }, async ({ page }) => {
+test('PL-EXP-16: Cancelling a Library/Gallery resource add mid-way through its own loading does not leave a corrupted Playlist entry', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   const beforeCount = await pl.resourceCards.count();

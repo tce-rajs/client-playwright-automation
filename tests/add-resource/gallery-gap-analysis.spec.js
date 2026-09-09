@@ -38,7 +38,7 @@ async function countCanvasImageCandidates(page) {
   return counts;
 }
 
-test('GAL-CLOSE-01: Gallery\'s own close (X) control -- re-testing an earlier "not found" finding', { tag: '@negative' }, async ({ page }) => {
+test('GAL-CLOSE-01: Gallery\'s own close (X) control -- re-testing an earlier "not found" finding', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const closeBtnVisible = await ar.galleryCloseBtn.isVisible({ timeout: 5000 }).catch(() => false);
   console.log('[data-qa-id="gallery-close-btn"] visible:', closeBtnVisible);
@@ -55,7 +55,7 @@ test('GAL-CLOSE-01: Gallery\'s own close (X) control -- re-testing an earlier "n
   expect(galleryStillOpen).toBe(false);
 });
 
-test('GAL-CLOSE-02: CONFLICT FLAG resolution -- cross-repo claims gallery-close-btn works, contradicting GAL-CLOSE-01\'s finding', { tag: '@negative' }, async ({ page }) => {
+test('GAL-CLOSE-02: CONFLICT FLAG resolution -- cross-repo claims gallery-close-btn works, contradicting GAL-CLOSE-01\'s finding', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // This IS the live re-test the workbook's own GAL-CLOSE-02 row explicitly
   // asks for: retry clicking data-qa-id="gallery-close-btn" specifically
   // rather than visually scanning for an X icon. GAL-CLOSE-01 immediately
@@ -72,7 +72,7 @@ test('GAL-CLOSE-02: CONFLICT FLAG resolution -- cross-repo claims gallery-close-
   expect(visible && pointerEventsOk).toBe(true);
 });
 
-test('GAL-ASSET-01: A Gallery-inserted image has no removable/editable Playlist asset record, unlike every other Add Resource path', { tag: '@cross-cutting' }, async ({ page }) => {
+test('GAL-ASSET-01: A Gallery-inserted image has no removable/editable Playlist asset record, unlike every other Add Resource path', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   const beforePlaylistCount = await pl.resourceCards.count();
@@ -100,7 +100,7 @@ test('GAL-ASSET-01: A Gallery-inserted image has no removable/editable Playlist 
   expect(noPlaylistCardCreated).toBe(true);
 });
 
-test('GAL-SYNC-01: Gallery\'s whiteboard-persistence network call is a distinct endpoint pattern from the Playlist/asset endpoints', { tag: '@ui-state' }, async ({ page }) => {
+test('GAL-SYNC-01: Gallery\'s whiteboard-persistence network call is a distinct endpoint pattern from the Playlist/asset endpoints', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const requestUrls = [];
   const onRequest = (req) => requestUrls.push(req.url());
@@ -118,7 +118,7 @@ test('GAL-SYNC-01: Gallery\'s whiteboard-persistence network call is a distinct 
   expect(customAssetMatch).toBe(false);
 });
 
-test('GAL-BOUND-01: BUG CHECK -- double-clicking a Gallery thumbnail may insert TWO duplicate copies instead of one', { tag: '@boundary' }, async ({ page }) => {
+test('GAL-BOUND-01: BUG CHECK -- double-clicking a Gallery thumbnail may insert TWO duplicate copies instead of one', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const before = await countCanvasImageCandidates(page);
   await ar.galleryImageCards.first().dblclick({ force: true });
@@ -136,7 +136,7 @@ test('GAL-BOUND-01: BUG CHECK -- double-clicking a Gallery thumbnail may insert 
   expect(bestDiff).toBe(1);
 });
 
-test('GAL-STATE-01: Gallery-inserted images survive a full page reload', { tag: '@state-persistence' }, async ({ page }) => {
+test('GAL-STATE-01: Gallery-inserted images survive a full page reload', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const beforeInsert = await countCanvasImageCandidates(page);
   await ar.galleryImageCards.first().click({ force: true });
@@ -155,7 +155,7 @@ test('GAL-STATE-01: Gallery-inserted images survive a full page reload', { tag: 
   expect(countAfterReload).toBeGreaterThanOrEqual(countAfterInsert);
 });
 
-test('GAL-XCUT-01: Reopening the Add Resource "+" FAB while Gallery is still open stacks a second popup instead of replacing the first', { tag: '@cross-cutting' }, async ({ page }) => {
+test('GAL-XCUT-01: Reopening the Add Resource "+" FAB while Gallery is still open stacks a second popup instead of replacing the first', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const galleryActionCountBefore = await page.locator('[data-qa-id="add-resource-action-gallery"]').count();
   await ar.addResourcesTrigger.click({ force: true });
@@ -168,12 +168,12 @@ test('GAL-XCUT-01: Reopening the Add Resource "+" FAB while Gallery is still ope
   expect(stacked).toBe(false);
 });
 
-test('GAL-SEC-01: Gallery\'s shared/global image library never leaks another tenant\'s content (blocked -- needs a second school account)', { tag: '@security' }, async ({ page }) => {
+test('GAL-SEC-01: Gallery\'s shared/global image library never leaks another tenant\'s content (blocked -- needs a second school account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Confirming no cross-tenant/cross-school image leakage into the shared Gallery grid requires a second school/tenant account to compare against -- only this project\'s one school (Goyal Brothers) is available, same blocker class as other cross-tenant checks elsewhere in this suite (e.g. TB-EXP-15/17, NAV-SEC-01)');
   expect(true).toBe(false);
 });
 
-test('GAL-EXP-01: A Gallery category/sub-category combination with zero images shows a clear empty state, not an indistinguishable blank grid', { tag: '@negative' }, async ({ page }) => {
+test('GAL-EXP-01: A Gallery category/sub-category combination with zero images shows a clear empty state, not an indistinguishable blank grid', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.gallerySubjectSelect.click({ force: true });
   await page.waitForTimeout(300);
@@ -206,7 +206,7 @@ test('GAL-EXP-01: A Gallery category/sub-category combination with zero images s
   }
 });
 
-test('GAL-EXP-02: Rapidly triggering Load More several times in quick succession does not skip, duplicate, or corrupt the image order', { tag: '@boundary' }, async ({ page }) => {
+test('GAL-EXP-02: Rapidly triggering Load More several times in quick succession does not skip, duplicate, or corrupt the image order', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const loadMoreVisible = await ar.galleryLoadMoreBtn.isVisible({ timeout: 5000 }).catch(() => false);
   test.fail(!loadMoreVisible, 'No Load More control found in the Gallery panel this pass -- current category may fit on a single page, cannot test rapid-paging integrity');
@@ -226,7 +226,7 @@ test('GAL-EXP-02: Rapidly triggering Load More several times in quick succession
   expect(uniqueIds.size).toBe(ids.length);
 });
 
-test('GAL-EXP-03: Inserting the same Gallery image 10+ times does not degrade whiteboard performance or compound the duplication bug', { tag: '@boundary' }, async ({ page }) => {
+test('GAL-EXP-03: Inserting the same Gallery image 10+ times does not degrade whiteboard performance or compound the duplication bug', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const ar = new AddResourcePage(page);
   const before = await countCanvasImageCandidates(page);
@@ -247,7 +247,7 @@ test('GAL-EXP-03: Inserting the same Gallery image 10+ times does not degrade wh
   expect(bodyText.length).toBeGreaterThan(0);
 });
 
-test('GAL-EXP-04: Gallery\'s shared image library cannot be used to insert an unauthorized tenant\'s asset by manipulating the insert request (blocked -- no forging tooling)', { tag: '@security' }, async ({ page }) => {
+test('GAL-EXP-04: Gallery\'s shared image library cannot be used to insert an unauthorized tenant\'s asset by manipulating the insert request (blocked -- no forging tooling)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same IDOR-class blocker as PLR-GAP-SEC-01/09 and TB-EXP-15/17 elsewhere in this suite -- needs the Gallery-insert request\'s exact asset-reference shape plus a known unauthorized asset ID from a different tenant, neither available without request-crafting tooling and a second tenant account');
   expect(true).toBe(false);
 });

@@ -30,7 +30,7 @@ test.beforeEach(async ({ page }) => {
   await page.waitForTimeout(1000);
 });
 
-test('ATT-BREAK-01: blocking the Attendance micro-frontend\'s own network requests shows a distinguishable error, not an indistinguishable-from-normal infinite spinner', { tag: '@negative' }, async ({ page }) => {
+test('ATT-BREAK-01: blocking the Attendance micro-frontend\'s own network requests shows a distinguishable error, not an indistinguishable-from-normal infinite spinner', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const att = new AttendancePage(page);
   await page.route(/attendance/i, (route) => route.abort());
@@ -49,7 +49,7 @@ test('ATT-BREAK-01: blocking the Attendance micro-frontend\'s own network reques
   expect(spinnerShowing && !anyErrorTextVisible).toBe(false);
 });
 
-test('ATT-BREAK-02: switching Class while Attendance is still on its loading spinner does not leave a stuck overlay/spinner over the new class\'s whiteboard', { tag: '@ui-state' }, async ({ page }) => {
+test('ATT-BREAK-02: switching Class while Attendance is still on its loading spinner does not leave a stuck overlay/spinner over the new class\'s whiteboard', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const att = new AttendancePage(page);
   const nav = new NavigationPage(page);
@@ -69,7 +69,7 @@ test('ATT-BREAK-02: switching Class while Attendance is still on its loading spi
   expect(leftoverOverlay).toBe(false);
 });
 
-test('ATT-BREAK-03: refreshing the page while Attendance is stuck on its loading spinner recovers to a single clean state, not a duplicated/worse one', { tag: '@state-persistence' }, async ({ page }) => {
+test('ATT-BREAK-03: refreshing the page while Attendance is stuck on its loading spinner recovers to a single clean state, not a duplicated/worse one', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const att = new AttendancePage(page);
   await att.open();
@@ -88,7 +88,7 @@ test('ATT-BREAK-03: refreshing the page while Attendance is stuck on its loading
   expect(pageIsAlive).toBe(true);
 });
 
-test('ATT-BREAK-04: opening the Magnet submenu, closing it, and reopening it 6 times in rapid alternation never leaves the submenu stuck open or duplicated', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-BREAK-04: opening the Magnet submenu, closing it, and reopening it 6 times in rapid alternation never leaves the submenu stuck open or duplicated', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const att = new AttendancePage(page);
   for (let i = 0; i < 6; i++) {
@@ -104,7 +104,7 @@ test('ATT-BREAK-04: opening the Magnet submenu, closing it, and reopening it 6 t
   expect(attendanceItemCount).toBeLessThanOrEqual(1);
 });
 
-test('ATT-BREAK-05: an extremely small viewport (375px mobile width) does not let the stuck loading spinner overflow or break the surrounding layout', { tag: '@boundary' }, async ({ page }) => {
+test('ATT-BREAK-05: an extremely small viewport (375px mobile width) does not let the stuck loading spinner overflow or break the surrounding layout', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const att = new AttendancePage(page);
   await page.setViewportSize({ width: 375, height: 667 });

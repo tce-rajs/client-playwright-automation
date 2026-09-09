@@ -53,7 +53,7 @@ test('CORE-05: toolbar and its opposite-side toggle button are visible', { tag: 
   await expect(page.locator('.leftRightBtn.left button')).toBeVisible();
 });
 
-test('CORE-06: toggle button moves the toolbar without moving logo/date', { tag: '@ui-state' }, async ({ page }) => {
+test('CORE-06: toggle button moves the toolbar without moving logo/date', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // BUG FOUND: the "You are currently in Guest Mode..." message is wrapped
   // in a full-width (1920px), pointer-events:auto div positioned right over
   // the toggle button's corner, so it swallows the click before the button
@@ -106,7 +106,7 @@ test('CORE-07: date/time format is correct across the AM/PM and midnight boundar
   await expect(calendar).toContainText(expectedNextDay);
 });
 
-test('CUI-EXP-01: a missing/404 logo image falls back gracefully, not as a broken-image icon', { tag: '@negative' }, async ({ page }) => {
+test('CUI-EXP-01: a missing/404 logo image falls back gracefully, not as a broken-image icon', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // CONFIRMED LIVE: [data-qa-id="wb-header-logo-image"] is a plain <div
   // class="logo"> with the logo painted via CSS background-image, not an
   // <img src>. That changes what "falls back gracefully" even means here --
@@ -149,7 +149,7 @@ test('CUI-EXP-02: an extreme/invalid system clock does not crash the header date
   expect(text && text.trim().length).toBeGreaterThan(0);
 });
 
-test('CUI-EXP-03: a network failure during the initial app-shell load shows an error state, not a silent blank screen', { tag: '@negative' }, async ({ page }) => {
+test('CUI-EXP-03: a network failure during the initial app-shell load shows an error state, not a silent blank screen', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   await page.route('**/*', (route) => route.abort());
   const navigation = page.goto('./', { timeout: 10_000 }).catch((err) => err);
   await navigation;
@@ -163,7 +163,7 @@ test('CUI-EXP-03: a network failure during the initial app-shell load shows an e
   expect(bodyIsBlank).toBe(false);
 });
 
-test('CUI-EXP-04: an unusually long version string does not break the header layout', { tag: '@boundary' }, async ({ page }) => {
+test('CUI-EXP-04: an unusually long version string does not break the header layout', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const logo = page.locator('[data-qa-id="wb-header-logo-image"]');
   const version = page.locator('[data-qa-id="wb-header-version-text"]');
   const logoBoxBefore = await logo.boundingBox();

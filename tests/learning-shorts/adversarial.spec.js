@@ -68,7 +68,7 @@ async function openComposerViaAltEntry(page, pl, ls) {
   return titleVisible;
 }
 
-test('LS-BREAK-01: an HTML/script-tag string in the Title field is treated as literal text, never executed', { tag: '@security' }, async ({ page }) => {
+test('LS-BREAK-01: an HTML/script-tag string in the Title field is treated as literal text, never executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
@@ -85,7 +85,7 @@ test('LS-BREAK-01: an HTML/script-tag string in the Title field is treated as li
   expect(xssRan).toBe(false);
 });
 
-test('LS-BREAK-02: rapidly opening the composer, discarding, and reopening 5 times leaves exactly one clean composer instance', { tag: '@boundary' }, async ({ page }) => {
+test('LS-BREAK-02: rapidly opening the composer, discarding, and reopening 5 times leaves exactly one clean composer instance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
@@ -110,7 +110,7 @@ test('LS-BREAK-02: rapidly opening the composer, discarding, and reopening 5 tim
   expect(titleInputCount).toBeLessThanOrEqual(1);
 });
 
-test('LS-BREAK-03: rapidly checking/unchecking all class-selection checkboxes 3 times in a row settles on a consistent final state', { tag: '@boundary' }, async ({ page }) => {
+test('LS-BREAK-03: rapidly checking/unchecking all class-selection checkboxes 3 times in a row settles on a consistent final state', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
@@ -137,7 +137,7 @@ test('LS-BREAK-03: rapidly checking/unchecking all class-selection checkboxes 3 
   expect(stillResponsive).toBe(true);
 });
 
-test('LS-BREAK-04: pressing the browser Back button while the composer is open does not leave a stuck overlay behind', { tag: '@ui-state' }, async ({ page }) => {
+test('LS-BREAK-04: pressing the browser Back button while the composer is open does not leave a stuck overlay behind', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
@@ -155,7 +155,7 @@ test('LS-BREAK-04: pressing the browser Back button while the composer is open d
   expect(pageUsable).toBe(true);
 });
 
-test('LS-BREAK-05: clicking Save to Playlist and Save Revision in immediate succession does not fire both simultaneously', { tag: '@negative' }, async ({ page }) => {
+test('LS-BREAK-05: clicking Save to Playlist and Save Revision in immediate succession does not fire both simultaneously', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);

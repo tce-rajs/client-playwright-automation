@@ -20,7 +20,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await applyClassMap(nav, 'aiNotices').catch(() => {});
 });
 
-test('AIN-BREAK-01: an HTML/script-tag string in the Notice Title field is treated as literal text, never executed', { tag: '@security' }, async ({ page }) => {
+test('AIN-BREAK-01: an HTML/script-tag string in the Notice Title field is treated as literal text, never executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const tb = new ToolbarPage(page);
   const ain = new AiNoticesPage(page);
@@ -37,7 +37,7 @@ test('AIN-BREAK-01: an HTML/script-tag string in the Notice Title field is treat
   expect(xssRan).toBe(false);
 });
 
-test('AIN-BREAK-02: switching Class while the Notice compose dialog is open does not leave it stuck visible over the new class\'s whiteboard', { tag: '@ui-state' }, async ({ page }) => {
+test('AIN-BREAK-02: switching Class while the Notice compose dialog is open does not leave it stuck visible over the new class\'s whiteboard', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const tb = new ToolbarPage(page);
   const ain = new AiNoticesPage(page);
@@ -65,7 +65,7 @@ test('AIN-BREAK-02: switching Class while the Notice compose dialog is open does
   expect(switchThrew && dialogStillVisible).toBe(false);
 });
 
-test('AIN-BREAK-03: rapidly opening and closing the compose dialog 5 times in a row leaves exactly one clean instance', { tag: '@boundary' }, async ({ page }) => {
+test('AIN-BREAK-03: rapidly opening and closing the compose dialog 5 times in a row leaves exactly one clean instance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const tb = new ToolbarPage(page);
   const ain = new AiNoticesPage(page);
@@ -90,7 +90,7 @@ test('AIN-BREAK-03: rapidly opening and closing the compose dialog 5 times in a 
   expect(titleInputCount).toBeLessThanOrEqual(1);
 });
 
-test('AIN-BREAK-04: pressing the browser Back button while the compose dialog is open does not leave a stuck overlay behind', { tag: '@ui-state' }, async ({ page }) => {
+test('AIN-BREAK-04: pressing the browser Back button while the compose dialog is open does not leave a stuck overlay behind', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const tb = new ToolbarPage(page);
   const ain = new AiNoticesPage(page);

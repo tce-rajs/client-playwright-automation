@@ -39,7 +39,7 @@ test('TB-WIDGET-02: Inserting the Ruler widget places a fully interactive overla
   // pass can get without one.
 });
 
-test('TB-WIDGET-03: Closing a widget removes it from the canvas cleanly', { tag: '@positive' }, async ({ page }) => {
+test('TB-WIDGET-03: Closing a widget removes it from the canvas cleanly', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtWidgets');
   await tb.widgetTool('Ruler').click({ force: true });

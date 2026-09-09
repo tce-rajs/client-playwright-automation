@@ -42,7 +42,7 @@ test('PLR-WL-01: A Weblink (YouTube) resource shows a rich preview card', { tag:
   await expect(plr.weblinkWrapper).toBeVisible();
 });
 
-test('PLR-WL-02: The central play icon overlay does not embed playback in-app', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WL-02: The central play icon overlay does not embed playback in-app', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWeblink(page, plr);
   const overlayVisible = await plr.weblinkPlayIconOverlay.isVisible({ timeout: 3000 }).catch(() => false);
@@ -61,7 +61,7 @@ test('PLR-WL-03: A "Watch on YouTube" control is shown', { tag: '@ui-state' }, a
   await expect(plr.weblinkWatchOnYoutubeBtn).toBeVisible({ timeout: 5000 });
 });
 
-test('PLR-WL-04: Clicking "Watch on YouTube" opens the video externally (new tab)', { tag: '@positive' }, async ({ page, context }) => {
+test('PLR-WL-04: Clicking "Watch on YouTube" opens the video externally (new tab)', { tag: ['@positive', '@bug'] }, async ({ page, context }) => {
   const plr = new PlayerPage(page);
   await openWeblink(page, plr);
   const watchBtnVisible = await plr.weblinkWatchOnYoutubeBtn.isVisible({ timeout: 5000 }).catch(() => false);
@@ -80,7 +80,7 @@ test('PLR-WL-04: Clicking "Watch on YouTube" opens the video externally (new tab
   expect(!!newPage).toBe(true);
 });
 
-test('PLR-WL-05: Purpose of the link/chain icon on the card', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-WL-05: Purpose of the link/chain icon on the card', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWeblink(page, plr);
   const chainVisible = await plr.weblinkChainIcon.isVisible({ timeout: 3000 }).catch(() => false);
@@ -93,7 +93,7 @@ test('PLR-WL-05: Purpose of the link/chain icon on the card', { tag: '@ui-state'
   expect(true).toBe(true);
 });
 
-test('PLR-WL-06: An invalid/dead weblink URL shows a graceful error (needs a broken-URL resource, not confirmed to exist)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-WL-06: An invalid/dead weblink URL shows a graceful error (needs a broken-URL resource, not confirmed to exist)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'No Weblink resource with a confirmed broken/dead target URL exists in this curriculum this pass -- only one working Weblink (YouTube) resource is confirmed available');
   expect(true).toBe(false);
 });
@@ -124,12 +124,12 @@ test('PLR-WL-08: Confirmed Weblink DOM -- no data-qa-id on the iframe itself, im
   expect(iframeQaId).toBeNull();
 });
 
-test('PLR-WL-09: Manual-only check -- does the Pan tool block interaction with the embedded YouTube player? (needs a human, cross-origin iframe)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-WL-09: Manual-only check -- does the Pan tool block interaction with the embedded YouTube player? (needs a human, cross-origin iframe)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.fail(true, 'CONFIRMED cross-repo: this check is genuinely unreachable to any automated tool -- Playwright (like Cypress) cannot see into or verify interaction blocking on a cross-origin YouTube iframe. Needs a human live tester.');
   expect(true).toBe(false);
 });
 
-test('PLR-WL-10: Only one confirmed Weblink resource exists -- multi-weblink and framing-restricted-site scenarios are blocked', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-WL-10: Only one confirmed Weblink resource exists -- multi-weblink and framing-restricted-site scenarios are blocked', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const count = await plr.weblinkCards.count();
   console.log('Distinct Weblink resources found on this topic:', count);
@@ -137,7 +137,7 @@ test('PLR-WL-10: Only one confirmed Weblink resource exists -- multi-weblink and
   expect(count).toBeGreaterThanOrEqual(2);
 });
 
-test('PLR-EXP-SEC-06: A Weblink resource cannot navigate the embedding frame to an arbitrary URL (frame-busting)', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-06: A Weblink resource cannot navigate the embedding frame to an arbitrary URL (frame-busting)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openWeblink(page, plr);
   const sandboxAttr = await plr.weblinkIframe.first().getAttribute('sandbox').catch(() => null);
@@ -148,7 +148,7 @@ test('PLR-EXP-SEC-06: A Weblink resource cannot navigate the embedding frame to 
   expect(hasTopNavAllowed).toBe(false);
 });
 
-test('PLR-EXP-07: An invalid/dead Weblink URL is checked for an app-branded error vs. a raw browser error page (needs a broken-URL resource, not confirmed to exist)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-07: An invalid/dead Weblink URL is checked for an app-branded error vs. a raw browser error page (needs a broken-URL resource, not confirmed to exist)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Refines the already-documented PLR-WL-06 blocker -- same root cause: no Weblink resource with a confirmed dead URL exists in this curriculum this pass');
   expect(true).toBe(false);
 });

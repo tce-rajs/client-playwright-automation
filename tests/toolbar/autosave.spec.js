@@ -49,7 +49,7 @@ test('TB-SAVE-02: Autosave reflects a running stroke count', { tag: '@positive' 
   expect(secondCount).toBeGreaterThan(firstCount);
 });
 
-test('TB-SAVE-03: A failed autosave shows an explicit error, not a false success', { tag: '@cross-cutting' }, async ({ page }) => {
+test('TB-SAVE-03: A failed autosave shows an explicit error, not a false success', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000); // needs the full ~15s countdown window to observe the (non-)outcome
   // Real autosave endpoint confirmed live: POST **/serve/wb/delta.
   const tb = new ToolbarPage(page);

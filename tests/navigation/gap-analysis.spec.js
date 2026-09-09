@@ -51,7 +51,7 @@ test('GSD-LVL-01: "Early Childhood Education" is one more Grade entry, not a sep
   expect(structure.allSameTag).toBe(true);
 });
 
-test('NAV-SEC-03: A teacher can reach a Grade/Subject combination outside their real assignment via the normal UI', { tag: '@security' }, async ({ page }) => {
+test('NAV-SEC-03: A teacher can reach a Grade/Subject combination outside their real assignment via the normal UI', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // CONFIRMED BLOCKER: reproducing this specific case needs a teacher
   // account with a known, LIMITED assignment (the workbook's own repro used
   // "teacher.four", assigned only a few specific Grade/Subject combos) --
@@ -192,7 +192,7 @@ test('GSD-CYP-04: A curriculum book already fetched this session cannot be force
   expect(curriculumRequestCount).toBe(0);
 });
 
-test('GSD-GAP-01: Multiple unassigned Grade/Subject combinations load only generic content, no roster/gradebook leakage', { tag: '@security' }, async ({ page }) => {
+test('GSD-GAP-01: Multiple unassigned Grade/Subject combinations load only generic content, no roster/gradebook leakage', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Same blocker as NAV-SEC-03 -- needs the same known-limited-assignment
   // account to identify combinations confirmed OUTSIDE that teacher's real
   // assignment. Not available in this project.
@@ -200,7 +200,7 @@ test('GSD-GAP-01: Multiple unassigned Grade/Subject combinations load only gener
   expect(true).toBe(false);
 });
 
-test('NAV-EXP-01: A Grade/Division with zero Subjects mapped shows a clear empty state', { tag: '@negative' }, async ({ page }) => {
+test('NAV-EXP-01: A Grade/Division with zero Subjects mapped shows a clear empty state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openClassPopup();
   await nav.allMyClassesTab.click();
@@ -225,7 +225,7 @@ test('NAV-EXP-01: A Grade/Division with zero Subjects mapped shows a clear empty
   expect(foundZeroSubjectCombo).toBe(true);
 });
 
-test('NAV-EXP-02: The class switch does not proceed to a half-switched state if the content fetch fails', { tag: '@negative' }, async ({ page }) => {
+test('NAV-EXP-02: The class switch does not proceed to a half-switched state if the content fetch fails', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   const beforeClass = (await nav.currentClassBtn.textContent()).trim();
 
@@ -245,7 +245,7 @@ test('NAV-EXP-02: The class switch does not proceed to a half-switched state if 
   expect(halfSwitched).toBe(false);
 });
 
-test('NAV-EXP-03: A Recent Classes entry for a since-revoked assignment is rejected server-side', { tag: '@negative' }, async ({ page }) => {
+test('NAV-EXP-03: A Recent Classes entry for a since-revoked assignment is rejected server-side', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs admin-side test-data control to revoke this teacher\'s assignment to a class already in their Recent Classes history — not available in this environment');
   expect(true).toBe(false);
 });
@@ -293,7 +293,7 @@ test('NAV-EXP-04: Rapidly clicking different Subjects settles on the LAST clicke
   expect(finalClass).toContain(lastSubjectText);
 });
 
-test('NAV-EXP-05: A Subject name with special characters (e.g. "&") renders and selects correctly', { tag: '@negative' }, async ({ page }) => {
+test('NAV-EXP-05: A Subject name with special characters (e.g. "&") renders and selects correctly', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.openClassPopup();
   await nav.allMyClassesTab.click();
@@ -319,7 +319,7 @@ test('NAV-EXP-05: A Subject name with special characters (e.g. "&") renders and 
   await expect(nav.currentClassBtn).toContainText(specialSubjectText);
 });
 
-test('NAV-EXP-06: Forging a class-switch API request for an unauthorized classId is rejected server-side', { tag: '@negative' }, async ({ page, request }) => {
+test('NAV-EXP-06: Forging a class-switch API request for an unauthorized classId is rejected server-side', { tag: ['@negative', '@bug'] }, async ({ page, request }) => {
   // Playwright CAN fire raw requests (the `request` fixture), but doing so
   // meaningfully needs the real class-switch endpoint's shape (URL, method,
   // payload/auth headers) reverse-engineered from a live capture, and a
@@ -357,7 +357,7 @@ test('NAV-EXP-07: Switching class while a Magnet-gated panel is open does not le
   await expect(nav.currentClassBtn).toBeVisible();
 });
 
-test('NAV-EXP-08: The Recent Classes list caps at a reasonable size rather than growing unbounded', { tag: '@negative' }, async ({ page }) => {
+test('NAV-EXP-08: The Recent Classes list caps at a reasonable size rather than growing unbounded', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const nav = new NavigationPage(page);
   let pageCrashed = false;
@@ -400,7 +400,7 @@ test('NAV-EXP-08: The Recent Classes list caps at a reasonable size rather than 
   expect(finalCount).toBeGreaterThan(0);
 });
 
-test('NAV-EXP-09: A Grade/Subject combo whose curriculum content was removed shows a clear message, not a blank canvas', { tag: '@negative' }, async ({ page }) => {
+test('NAV-EXP-09: A Grade/Subject combo whose curriculum content was removed shows a clear message, not a blank canvas', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs admin-side test-data control to remove curriculum content for a previously-valid combination — not available in this environment');
   expect(true).toBe(false);
 });

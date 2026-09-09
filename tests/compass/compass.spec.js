@@ -68,7 +68,7 @@ test('CMP-TRIG-02: AnalyseIt only renders if the teacher is assigned to the curr
   // as CMP-ADV-02 -- see that test.
 });
 
-test('CMP-TRIG-03: A "no homework" message renders gracefully when AnalyseIt has no assignment data', { tag: '@negative' }, async ({ page }) => {
+test('CMP-TRIG-03: A "no homework" message renders gracefully when AnalyseIt has no assignment data', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -79,7 +79,7 @@ test('CMP-TRIG-03: A "no homework" message renders gracefully when AnalyseIt has
   expect(noHomeworkVisible).toBe(true);
 });
 
-test('CMP-TRIG-04: AnalyseIt detail-view navigation controls work when real assignment data exists', { tag: '@positive' }, async ({ page }) => {
+test('CMP-TRIG-04: AnalyseIt detail-view navigation controls work when real assignment data exists', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -95,7 +95,7 @@ test('CMP-TRIG-04: AnalyseIt detail-view navigation controls work when real assi
   await cmp.listCancelBtn.click({ force: true }).catch(() => {});
 });
 
-test('CMP-TRIG-05: ExploreIt renders real widget tiles when the chapter has 1+ widgets', { tag: '@positive' }, async ({ page }) => {
+test('CMP-TRIG-05: ExploreIt renders real widget tiles when the chapter has 1+ widgets', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   const openWidgetsVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 5000 }).catch(() => false);
@@ -104,7 +104,7 @@ test('CMP-TRIG-05: ExploreIt renders real widget tiles when the chapter has 1+ w
   expect(openWidgetsVisible).toBe(true);
 });
 
-test('CMP-TRIG-05B: Zero-widget chapter rendering (ExploreIt) is checked on a chapter likely to have none', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-TRIG-05B: Zero-widget chapter rendering (ExploreIt) is checked on a chapter likely to have none', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   const cmp = new CompassPage(page);
   // Try a different, less-common chapter/topic to look for a zero-widget case.
@@ -119,7 +119,7 @@ test('CMP-TRIG-05B: Zero-widget chapter rendering (ExploreIt) is checked on a ch
   expect(true).toBe(true);
 });
 
-test('CMP-TRIG-06: Revision Tests entry is gated on enableStudentTest AND studentTests.length > 0', { tag: '@security' }, async ({ page }) => {
+test('CMP-TRIG-06: Revision Tests entry is gated on enableStudentTest AND studentTests.length > 0', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   const revisionVisible = await cmp.revisionTestsItem.isVisible({ timeout: 3000 }).catch(() => false);
@@ -130,7 +130,7 @@ test('CMP-TRIG-06: Revision Tests entry is gated on enableStudentTest AND studen
   expect(true).toBe(false);
 });
 
-test('CMP-TRIG-07: Assignment Questions pagination controls have no stable selectors (confirmed tech debt)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('CMP-TRIG-07: Assignment Questions pagination controls have no stable selectors (confirmed tech debt)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -178,7 +178,7 @@ test('CMP-ACCESS-01: Planning mode\'s Question Bank is reachable via the profile
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-QBANK-01: Question cards display with metadata (difficulty, category, source tag)', { tag: '@positive' }, async ({ page }) => {
+test('CMP-QBANK-01: Question cards display with metadata (difficulty, category, source tag)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.switchToPlanningMode();
   await cmp.questionBankNavItem.click({ force: true });
@@ -194,7 +194,7 @@ test('CMP-QBANK-01: Question cards display with metadata (difficulty, category, 
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-QBANK-02: Clicking a question card opens a preview/answer dialog', { tag: '@positive' }, async ({ page }) => {
+test('CMP-QBANK-02: Clicking a question card opens a preview/answer dialog', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.switchToPlanningMode();
   await cmp.questionBankNavItem.click({ force: true });
@@ -224,7 +224,7 @@ test('CMP-QBANK-02: Clicking a question card opens a preview/answer dialog', { t
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-QBANK-03: A question card\'s checkbox hit target is small/finicky (clicking near it opens the preview instead)', { tag: '@negative' }, async ({ page }) => {
+test('CMP-QBANK-03: A question card\'s checkbox hit target is small/finicky (clicking near it opens the preview instead)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.switchToPlanningMode();
   await cmp.questionBankNavItem.click({ force: true });
@@ -248,7 +248,7 @@ test('CMP-QBANK-03: A question card\'s checkbox hit target is small/finicky (cli
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-QUIZ-01: Create Quiz flow works end-to-end up to (not including) a real Add Quiz submit', { tag: '@positive' }, async ({ page }) => {
+test('CMP-QUIZ-01: Create Quiz flow works end-to-end up to (not including) a real Add Quiz submit', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.switchToPlanningMode();
   await cmp.questionBankNavItem.click({ force: true });
@@ -276,7 +276,7 @@ test('CMP-QUIZ-01: Create Quiz flow works end-to-end up to (not including) a rea
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-REVTEST-01: Create Revision Test shows a validation error for a non-STEM subject (Accountancy)', { tag: '@negative' }, async ({ page }) => {
+test('CMP-REVTEST-01: Create Revision Test shows a validation error for a non-STEM subject (Accountancy)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.switchToPlanningMode();
   await cmp.questionBankNavItem.click({ force: true });
@@ -303,7 +303,7 @@ test('CMP-REVTEST-01: Create Revision Test shows a validation error for a non-ST
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-EXP-03: Revision Test on a different non-STEM subject fails with the SAME error message (cross-feature consistency check)', { tag: '@negative' }, async ({ page }) => {
+test('CMP-EXP-03: Revision Test on a different non-STEM subject fails with the SAME error message (cross-feature consistency check)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // CONFIRMED LIVE: this test's chain (a full class switch away from the
   // file's usual fixture class, PLUS switchToPlanningMode()'s own
   // menu-open-retry/settle-wait/reload-fallback path, PLUS Question Bank
@@ -338,7 +338,7 @@ test('CMP-EXP-03: Revision Test on a different non-STEM subject fails with the S
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-ANALYSEIT-01: AnalyseIt is located and shown to render real content or a real empty state', { tag: '@positive' }, async ({ page }) => {
+test('CMP-ANALYSEIT-01: AnalyseIt is located and shown to render real content or a real empty state', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -369,7 +369,7 @@ test('CMP-EXPLOREIT-01: ExploreIt is located inside the Planning-mode workspace 
   expect(exploreItVisible).toBe(true);
 });
 
-test('CMP-EXPLOREIT-02: ExploreIt\'s "Open Widgets" link opens a broader, cross-discipline widget browser (not chapter-locked)', { tag: '@ui-state' }, async ({ page }) => {
+test('CMP-EXPLOREIT-02: ExploreIt\'s "Open Widgets" link opens a broader, cross-discipline widget browser (not chapter-locked)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   const openWidgetsVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 5000 }).catch(() => false);
@@ -386,7 +386,7 @@ test('CMP-EXPLOREIT-02: ExploreIt\'s "Open Widgets" link opens a broader, cross-
   expect(disciplineSelectVisible || widgetCount > 0).toBe(true);
 });
 
-test('CMP-ASSIGN-01: Assignment list shows created quizzes/revision tests', { tag: '@positive' }, async ({ page }) => {
+test('CMP-ASSIGN-01: Assignment list shows created quizzes/revision tests', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -406,12 +406,12 @@ test('CMP-ASSIGN-01: Assignment list shows created quizzes/revision tests', { ta
   expect(listBtnVisible).toBe(true);
 });
 
-test('CMP-ASSIGN-02: Assignment details view shows per-student results', { tag: '@positive' }, async ({ page }) => {
+test('CMP-ASSIGN-02: Assignment details view shows per-student results', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs an assignment already given to students with at least one response -- no such assignment exists in this account\'s reachable data this pass');
   expect(true).toBe(false);
 });
 
-test('CMP-CLASSMODE-01: Switching Teaching <-> Planning mode may change the active class unexpectedly', { tag: '@state-persistence' }, async ({ page }) => {
+test('CMP-CLASSMODE-01: Switching Teaching <-> Planning mode may change the active class unexpectedly', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   const nav = new NavigationPage(page);
   const beforeClass = (await page.locator('[data-qa-id="playlist-current-grade-subject-btn"]').textContent()).trim();
@@ -427,7 +427,7 @@ test('CMP-CLASSMODE-01: Switching Teaching <-> Planning mode may change the acti
   expect(afterClass).toBe(beforeClass);
 });
 
-test('CMP-ADV-01: Rapid double-click on AnalyseIt before data loads opens only one detail view', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-ADV-01: Rapid double-click on AnalyseIt before data loads opens only one detail view', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -439,7 +439,7 @@ test('CMP-ADV-01: Rapid double-click on AnalyseIt before data loads opens only o
   expect(openPanelCount).toBeLessThanOrEqual(1);
 });
 
-test('CMP-ADV-02: Compass trigger visibility for a class the teacher is not assigned to (cross-tenant)', { tag: '@security' }, async ({ page }) => {
+test('CMP-ADV-02: Compass trigger visibility for a class the teacher is not assigned to (cross-tenant)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Same blocker as NAV-SEC-03/GSD-GAP-01 elsewhere in this suite -- needs a
   // known limited-assignment teacher account to identify an unassigned
   // combination against. Only VALID_PIN (broad assignment) is available.
@@ -461,7 +461,7 @@ test('CMP-ADV-03: The Compass detail view survives a hard refresh cleanly', { ta
   expect(classLabel).toBe(true);
 });
 
-test('CMP-EXP-01: A network failure while AnalyseIt is loading shows a clear error, not indefinite blank state', { tag: '@negative' }, async ({ page }) => {
+test('CMP-EXP-01: A network failure while AnalyseIt is loading shows a clear error, not indefinite blank state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await page.route('**/homework**', (route) => route.abort('failed'));
   await page.route('**/assignment**', (route) => route.abort('failed'));
@@ -484,7 +484,7 @@ test('CMP-EXP-01: A network failure while AnalyseIt is loading shows a clear err
   expect(errorStateVisible).toBe(true);
 });
 
-test('CMP-EXP-02: A widget that fails to load in ExploreIt\'s browser shows a clear broken-widget state', { tag: '@negative' }, async ({ page }) => {
+test('CMP-EXP-02: A widget that fails to load in ExploreIt\'s browser shows a clear broken-widget state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await page.route('**/widget**', (route) => route.abort('failed'));
   await cmp.openTrigger();
@@ -500,12 +500,12 @@ test('CMP-EXP-02: A widget that fails to load in ExploreIt\'s browser shows a cl
   expect(widgetTiles).toBeGreaterThan(0);
 });
 
-test('CMP-EXP-04: AnalyseIt data is scoped strictly to the current class/subject, no cross-class bleed', { tag: '@security' }, async ({ page }) => {
+test('CMP-EXP-04: AnalyseIt data is scoped strictly to the current class/subject, no cross-class bleed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a class with real, completed, analyzable homework data to compare against a second class -- AI Homework\'s Ready to Send was deliberately never clicked elsewhere in this suite (destructive-action avoidance), so no such data exists yet');
   expect(true).toBe(false);
 });
 
-test('CMP-EXP-05: Rapidly clicking the "Homework?" create-link in AnalyseIt\'s empty state opens only one composer', { tag: '@negative' }, async ({ page }) => {
+test('CMP-EXP-05: Rapidly clicking the "Homework?" create-link in AnalyseIt\'s empty state opens only one composer', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   await cmp.analyseItItem.click({ force: true });
@@ -525,7 +525,7 @@ test('CMP-EXP-05: Rapidly clicking the "Homework?" create-link in AnalyseIt\'s e
   expect(composerCount).toBeLessThanOrEqual(1);
 });
 
-test('CMP-EXP-06: A chapter/topic with many ExploreIt widgets remains scrollable without layout breakage', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-EXP-06: A chapter/topic with many ExploreIt widgets remains scrollable without layout breakage', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await cmp.openTrigger();
   const openWidgetsVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 3000 }).catch(() => false);
@@ -554,7 +554,7 @@ test('CMP-EXP-06: A chapter/topic with many ExploreIt widgets remains scrollable
   expect(scrollableOrFits).toBe(true);
 });
 
-test('CMP-EXP-07: The floating compass-trigger-btn remains clickable at a mobile (375px) viewport width', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-EXP-07: The floating compass-trigger-btn remains clickable at a mobile (375px) viewport width', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   await page.setViewportSize({ width: 375, height: 812 });
   await page.waitForTimeout(1000);
   const cmp = new CompassPage(page);
@@ -569,7 +569,7 @@ test('CMP-EXP-07: The floating compass-trigger-btn remains clickable at a mobile
   expect(triggerVisible && analyseItReachable).toBe(true);
 });
 
-test('CMP-EXP-08: Revision Tests visibility with each gate flag (enableStudentTest, studentTests.length) tested independently', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-EXP-08: Revision Tests visibility with each gate flag (enableStudentTest, studentTests.length) tested independently', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a class/subject with exactly one of the two gate flags true and the other false -- no such isolated test data identified in this account\'s reachable classes this pass');
   expect(true).toBe(false);
 });

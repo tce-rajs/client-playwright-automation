@@ -49,7 +49,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   }
 });
 
-test('PLR-FLASH-01: A paginated Flashcard-style player exists, distinct from Quiz', { tag: '@positive' }, async ({ page }) => {
+test('PLR-FLASH-01: A paginated Flashcard-style player exists, distinct from Quiz', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const plr = new PlayerPage(page);
   const card = pl.resourceCards.filter({ hasText: /flashcard/i }).first();
@@ -65,7 +65,7 @@ test('PLR-FLASH-01: A paginated Flashcard-style player exists, distinct from Qui
   expect(closeVisible).toBe(true);
 });
 
-test('PLR-EXP-15: The Flashcard player independently confirmed to open and render real content (not just assumed distinct from Notes)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-15: The Flashcard player independently confirmed to open and render real content (not just assumed distinct from Notes)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const plr = new PlayerPage(page);
   const card = pl.resourceCards.filter({ hasText: /flashcard/i }).first();

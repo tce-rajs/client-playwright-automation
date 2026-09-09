@@ -72,7 +72,7 @@ test('AR-CYP-01: Chapter & Topic / Grade & Subject fields are dead-code-disabled
   await expect(ar.gradeSubjectInput).toBeDisabled();
 });
 
-test('AR-CYP-02: Resubmitting an identical Title + filename silently de-duplicates', { tag: '@boundary' }, async ({ page }) => {
+test('AR-CYP-02: Resubmitting an identical Title + filename silently de-duplicates', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // Deliberately not executed via a real double-submit -- would add
   // permanent (duplicate) assets to the shared QA account, same reasoning
   // as ADD-CRT-09. Verify only that the form allows re-entering identical
@@ -90,12 +90,12 @@ test('AR-CYP-02: Resubmitting an identical Title + filename silently de-duplicat
   expect(true).toBe(false);
 });
 
-test('AR-CYP-03: A newly created resource auto-opens its own preview immediately after Submit', { tag: '@ui-state' }, async ({ page }) => {
+test('AR-CYP-03: A newly created resource auto-opens its own preview immediately after Submit', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Verifying the post-submit auto-preview needs a real Submit, deliberately not executed on the shared QA account (same reasoning as ADD-CRT-09)');
   expect(true).toBe(false);
 });
 
-test('AR-CYP-04: Not every attached resource can be removed by the teacher through any UI path', { tag: '@negative' }, async ({ page }) => {
+test('AR-CYP-04: Not every attached resource can be removed by the teacher through any UI path', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   // Two distinct card types with two distinct remove paths (confirmed in
   // playlist.page.js): native curriculum "resource" cards use a direct
@@ -143,7 +143,7 @@ test('AR-CYP-05: Drop It\'s Close button can visually cover the Add Resource FAB
   expect(dropitBox).not.toBeNull();
 });
 
-test('AR-CYP-06: Oversized file is rejected with the exact confirmed error text', { tag: '@boundary' }, async ({ page }) => {
+test('AR-CYP-06: Oversized file is rejected with the exact confirmed error text', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -161,7 +161,7 @@ test('AR-CYP-06: Oversized file is rejected with the exact confirmed error text'
   expect(errorVisible).toBe(true);
 });
 
-test('AR-CYP-07: Whiteboard\'s Save to Playlist action is unreachable/non-functional; Download PDF is the only working save action', { tag: '@cross-cutting' }, async ({ page }) => {
+test('AR-CYP-07: Whiteboard\'s Save to Playlist action is unreachable/non-functional; Download PDF is the only working save action', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -184,7 +184,7 @@ test('AR-CYP-07: Whiteboard\'s Save to Playlist action is unreachable/non-functi
   expect(downloadPdfVisible).toBe(true);
 });
 
-test('AR-GAP-01: Overflow-menu responsiveness at 200+ accumulated assets', { tag: '@boundary' }, async ({ page }) => {
+test('AR-GAP-01: Overflow-menu responsiveness at 200+ accumulated assets', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const count = await pl.resourceCards.count();
   console.log('This account\'s current resource-card count (workbook needs 200+):', count);
@@ -192,7 +192,7 @@ test('AR-GAP-01: Overflow-menu responsiveness at 200+ accumulated assets', { tag
   expect(count).toBeGreaterThanOrEqual(200);
 });
 
-test('AR-GAP-02: Toggling "Replace File" ON reveals a hidden File input on Edit', { tag: '@negative' }, async ({ page }) => {
+test('AR-GAP-02: Toggling "Replace File" ON reveals a hidden File input on Edit', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const cards = pl.resourceCards;
   const count = await cards.count();
@@ -217,7 +217,7 @@ test('AR-GAP-02: Toggling "Replace File" ON reveals a hidden File input on Edit'
   expect(editOpened).toBe(true);
 });
 
-test('AR-CYP-08: The custom-asset endpoint rejects a tampered chapterId/topicId not matching the teacher\'s authorized context', { tag: '@security' }, async ({ page }) => {
+test('AR-CYP-08: The custom-asset endpoint rejects a tampered chapterId/topicId not matching the teacher\'s authorized context', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Same blocker as NAV-SEC-01/EXP-06 -- needs the create/upload request's
   // exact shape reverse-engineered plus a known foreign chapterId/topicId
   // to substitute, neither available without a second reference account or
@@ -226,7 +226,7 @@ test('AR-CYP-08: The custom-asset endpoint rejects a tampered chapterId/topicId 
   expect(true).toBe(false);
 });
 
-test('ADD-EXP-01: Submitting Create with a Title but no Chapter & Topic is blocked with a clear validation message', { tag: '@negative' }, async ({ page }) => {
+test('ADD-EXP-01: Submitting Create with a Title but no Chapter & Topic is blocked with a clear validation message', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -240,7 +240,7 @@ test('ADD-EXP-01: Submitting Create with a Title but no Chapter & Topic is block
   expect(chapterTopicValue.length).toBe(0);
 });
 
-test('ADD-EXP-02: Choosing a file then changing Grade & Subject does not orphan the already-selected file', { tag: '@negative' }, async ({ page }) => {
+test('ADD-EXP-02: Choosing a file then changing Grade & Subject does not orphan the already-selected file', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -257,7 +257,7 @@ test('ADD-EXP-02: Choosing a file then changing Grade & Subject does not orphan 
   expect(gradeSubjectDisabled).toBe(false);
 });
 
-test('ADD-EXP-03: A Library search that legitimately returns zero results shows a clear "no results" state', { tag: '@negative' }, async ({ page }) => {
+test('ADD-EXP-03: A Library search that legitimately returns zero results shows a clear "no results" state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -274,7 +274,7 @@ test('ADD-EXP-03: A Library search that legitimately returns zero results shows 
   expect(resultCount > 0 || noResultsMessage).toBe(true);
 });
 
-test('ADD-EXP-04: The 10MB file-size limit is enforced (client-side check confirmed; same as AR-CYP-06/ADD-CRT-10)', { tag: '@negative' }, async ({ page }) => {
+test('ADD-EXP-04: The 10MB file-size limit is enforced (client-side check confirmed; same as AR-CYP-06/ADD-CRT-10)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -294,7 +294,7 @@ test('ADD-EXP-04: The 10MB file-size limit is enforced (client-side check confir
   expect(submitDisabled || errorVisible).toBe(true);
 });
 
-test('ADD-EXP-05: A Library search of only whitespace is treated the same as an empty query', { tag: '@boundary' }, async ({ page }) => {
+test('ADD-EXP-05: A Library search of only whitespace is treated the same as an empty query', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -311,7 +311,7 @@ test('ADD-EXP-05: A Library search of only whitespace is treated the same as an 
   expect(searchDisabled || !treatedAsValidSearch).toBe(true);
 });
 
-test('ADD-EXP-06: The Create Title field has no maxlength, and a 200+ char title does not break the layout once created', { tag: '@boundary' }, async ({ page }) => {
+test('ADD-EXP-06: The Create Title field has no maxlength, and a 200+ char title does not break the layout once created', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);
@@ -328,7 +328,7 @@ test('ADD-EXP-06: The Create Title field has no maxlength, and a 200+ char title
   expect(true).toBe(false);
 });
 
-test('ADD-EXP-07: Rapidly clicking between source cards before any fully opens settles on exactly the last-clicked source', { tag: '@boundary' }, async ({ page }) => {
+test('ADD-EXP-07: Rapidly clicking between source cards before any fully opens settles on exactly the last-clicked source', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await page.waitForTimeout(500);

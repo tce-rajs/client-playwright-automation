@@ -17,12 +17,12 @@ test.beforeEach(async ({ page }) => {
   await pl.loginWithPin(process.env.VALID_PIN_2);
 });
 
-test('PLR-NOTE-01: A Notes-type resource opens a text/note viewer or editor (BLOCKED -- zero Notes resources confirmed to exist anywhere)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-NOTE-01: A Notes-type resource opens a text/note viewer or editor (BLOCKED -- zero Notes resources confirmed to exist anywhere)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.fail(true, 'CONFIRMED cross-repo: zero Notes-type resources exist anywhere in the curriculum on this account -- nothing to click to attempt this check');
   expect(true).toBe(false);
 });
 
-test('PLR-NOTE-02: The Notes player itself may be intentionally unfinished, per the dev team\'s own source-level note', { tag: '@negative' }, async ({ page }) => {
+test('PLR-NOTE-02: The Notes player itself may be intentionally unfinished, per the dev team\'s own source-level note', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'CONFIRMED cross-repo (source-read): the player component loads the resource\'s URL string directly into an iframe with no real content fetch and no editing UI at all -- worth a product conversation before investing further QA time seeding Notes content, since even with real content there may be no meaningful behavior to test');
   expect(true).toBe(false);
 });
@@ -36,7 +36,7 @@ test('PLR-NOTE-03: RECONCILIATION -- the Flashcard-type player is very unlikely 
   await expect(page.locator('[data-qa-id="toolbar-user-avatar"]')).toBeVisible({ timeout: 10000 });
 });
 
-test('PLR-EXP-14: If Notes is unfinished, clicking into it at minimum does not crash the whiteboard (BLOCKED -- no Notes resource reachable)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-14: If Notes is unfinished, clicking into it at minimum does not crash the whiteboard (BLOCKED -- no Notes resource reachable)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'No Notes-type resource is reachable anywhere on this account to click into and test this minimum-safety-bar check against');
   expect(true).toBe(false);
 });

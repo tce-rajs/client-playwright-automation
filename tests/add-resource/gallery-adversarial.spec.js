@@ -19,7 +19,7 @@ test.beforeEach(async ({ page }) => {
   await expect(ar.galleryImageCards.first()).toBeVisible({ timeout: 10000 });
 });
 
-test('GAL-BREAK-01: a 250-character search query does not crash the Gallery grid or hang the search request', { tag: '@boundary' }, async ({ page }) => {
+test('GAL-BREAK-01: a 250-character search query does not crash the Gallery grid or hang the search request', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.gallerySearchInput.fill('a'.repeat(250));
   await ar.gallerySearchBtn.click({ timeout: 5000 }).catch(() => {});
@@ -33,7 +33,7 @@ test('GAL-BREAK-01: a 250-character search query does not crash the Gallery grid
   expect(searchStillResponsive).toBe(true);
 });
 
-test('GAL-BREAK-02: an HTML/script-tag string in the Gallery search box is rendered as literal text, never executed', { tag: '@security' }, async ({ page }) => {
+test('GAL-BREAK-02: an HTML/script-tag string in the Gallery search box is rendered as literal text, never executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const payload = '<img src=x onerror="window.__galXss=true">';
   await ar.gallerySearchInput.fill(payload);
@@ -46,7 +46,7 @@ test('GAL-BREAK-02: an HTML/script-tag string in the Gallery search box is rende
   expect(xssRan).toBe(false);
 });
 
-test('GAL-BREAK-03: emoji/Unicode input in the Gallery search box produces a graceful empty state, not a crash', { tag: '@negative' }, async ({ page }) => {
+test('GAL-BREAK-03: emoji/Unicode input in the Gallery search box produces a graceful empty state, not a crash', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.gallerySearchInput.fill('🎨🖼️図画テスト');
   await ar.gallerySearchBtn.click({ timeout: 5000 }).catch(() => {});
@@ -59,7 +59,7 @@ test('GAL-BREAK-03: emoji/Unicode input in the Gallery search box produces a gra
   expect(searchStillResponsive).toBe(true);
 });
 
-test('GAL-BREAK-04: rapidly clicking Search 5 times in a row on the same query does not fire 5 overlapping requests that race and show inconsistent results', { tag: '@boundary' }, async ({ page }) => {
+test('GAL-BREAK-04: rapidly clicking Search 5 times in a row on the same query does not fire 5 overlapping requests that race and show inconsistent results', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.gallerySearchInput.fill('animal');
   for (let i = 0; i < 5; i++) {

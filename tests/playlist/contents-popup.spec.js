@@ -76,7 +76,7 @@ test('PL-TOC-04: Search Table of Contents matches by case-insensitive substring'
   }
 });
 
-test('PL-TOC-05: Search Table of Contents with no matches', { tag: '@negative' }, async ({ page }) => {
+test('PL-TOC-05: Search Table of Contents with no matches', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await pl.contentsSearchToggle.click();
   await pl.contentsSearchInput.fill('zzzxxxqqqnonexistent');
@@ -106,7 +106,7 @@ test('PL-TOC-06: Cancel restores the full Chapter/Topic list after a search', { 
   expect(restoredList).toEqual(fullChapterList);
 });
 
-test('PL-TOC-07: Search also matches Chapter titles, not only Topic titles', { tag: '@negative' }, async ({ page }) => {
+test('PL-TOC-07: Search also matches Chapter titles, not only Topic titles', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const chapterTexts = await pl.chapterItems.allTextContents();
   // Longest word across every chapter title -- guarantees a usable 3+

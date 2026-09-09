@@ -22,7 +22,7 @@ async function openDropit(page, ar) {
   return ar.dropitCloseBtn.isVisible({ timeout: 8000 }).catch(() => false);
 }
 
-test('DRP-BREAK-01: switching class immediately after opening Drop It tears down its panel and Firestore connection cleanly, not leaving a stuck overlay', { tag: '@ui-state' }, async ({ page }) => {
+test('DRP-BREAK-01: switching class immediately after opening Drop It tears down its panel and Firestore connection cleanly, not leaving a stuck overlay', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const ar = new AddResourcePage(page);
   const nav = new NavigationPage(page);
@@ -42,7 +42,7 @@ test('DRP-BREAK-01: switching class immediately after opening Drop It tears down
   expect(panelStillVisible || qrStillVisible).toBe(false);
 });
 
-test('DRP-BREAK-02: rapidly opening and closing Drop It 8 times does not accumulate an unbounded number of Firestore realtime connections', { tag: '@boundary' }, async ({ page }) => {
+test('DRP-BREAK-02: rapidly opening and closing Drop It 8 times does not accumulate an unbounded number of Firestore realtime connections', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const ar = new AddResourcePage(page);
   let firestoreRequestCount = 0;
@@ -71,7 +71,7 @@ test('DRP-BREAK-02: rapidly opening and closing Drop It 8 times does not accumul
   expect(firestoreRequestCount).toBeLessThanOrEqual(400);
 });
 
-test('DRP-BREAK-03: two browser tabs on the same account opening Drop It at the same time each get their own independent QR code, not a shared/corrupted one', { tag: '@security' }, async ({ page, context }) => {
+test('DRP-BREAK-03: two browser tabs on the same account opening Drop It at the same time each get their own independent QR code, not a shared/corrupted one', { tag: ['@security', '@bug'] }, async ({ page, context }) => {
   test.setTimeout(45000);
   const ar1 = new AddResourcePage(page);
   const opened1 = await openDropit(page, ar1);
@@ -104,7 +104,7 @@ test('DRP-BREAK-03: two browser tabs on the same account opening Drop It at the 
   await page2.close();
 });
 
-test('DRP-BREAK-04: an extremely small viewport (375px mobile width) does not break the Drop It panel layout', { tag: '@boundary' }, async ({ page }) => {
+test('DRP-BREAK-04: an extremely small viewport (375px mobile width) does not break the Drop It panel layout', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await page.setViewportSize({ width: 375, height: 667 });
   await page.waitForTimeout(500);

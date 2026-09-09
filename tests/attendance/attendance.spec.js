@@ -59,7 +59,7 @@ test('ATT-ENTRY-01: Attendance is reachable via the Magnet tool (corrects the ea
   await expect(att.container).toBeVisible();
 });
 
-test('ATT-ACCESS-01: Opening Attendance eventually shows real content, not an indefinite loading spinner', { tag: '@positive' }, async ({ page }) => {
+test('ATT-ACCESS-01: Opening Attendance eventually shows real content, not an indefinite loading spinner', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000); // the 15s content-wait itself needs headroom beyond the default 30s
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att, 15000);
@@ -70,7 +70,7 @@ test('ATT-ACCESS-01: Opening Attendance eventually shows real content, not an in
   expect(contentAppeared).toBe(true);
 });
 
-test('ATT-PLAN-01: Opening Attendance shows the class roster for marking', { tag: '@positive' }, async ({ page }) => {
+test('ATT-PLAN-01: Opening Attendance shows the class roster for marking', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   if (!contentAppeared) {
@@ -83,7 +83,7 @@ test('ATT-PLAN-01: Opening Attendance shows the class roster for marking', { tag
   await expect(att.gridCells.first()).toBeVisible();
 });
 
-test('ATT-PLAN-02: An empty class roster is handled gracefully', { tag: '@negative' }, async ({ page }) => {
+test('ATT-PLAN-02: An empty class roster is handled gracefully', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   if (!contentAppeared) {
@@ -99,7 +99,7 @@ test('ATT-PLAN-02: An empty class roster is handled gracefully', { tag: '@negati
   expect(cellCount > 0 || emptyStateShown).toBe(true);
 });
 
-test('ATT-PLAN-03: Refreshing before Submit does not silently lose marked attendance', { tag: '@state-persistence' }, async ({ page }) => {
+test('ATT-PLAN-03: Refreshing before Submit does not silently lose marked attendance', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   if (!contentAppeared) {
@@ -124,7 +124,7 @@ test('ATT-PLAN-03: Refreshing before Submit does not silently lose marked attend
   expect(classAfter === classBefore || warnedInstead).toBe(true);
 });
 
-test('ATT-PLAN-04: Navigating away (class switch) before Submit does not silently lose marked attendance', { tag: '@state-persistence' }, async ({ page }) => {
+test('ATT-PLAN-04: Navigating away (class switch) before Submit does not silently lose marked attendance', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const nav = new NavigationPage(page);
   const contentAppeared = await openAndWaitForContent(att);
@@ -150,7 +150,7 @@ test('ATT-PLAN-04: Navigating away (class switch) before Submit does not silentl
   expect(classAfter).toBe(classBefore);
 });
 
-test('ATT-PLAN-05: Closing Attendance with unsaved marks triggers a confirmation (or auto-saves)', { tag: '@ui-state' }, async ({ page }) => {
+test('ATT-PLAN-05: Closing Attendance with unsaved marks triggers a confirmation (or auto-saves)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const contentAppeared = await openAndWaitForContent(att);
   if (!contentAppeared) {
@@ -172,7 +172,7 @@ test('ATT-PLAN-05: Closing Attendance with unsaved marks triggers a confirmation
   if (confirmDialogShown) await att.closeDialogCancelBtn.click({ force: true }).catch(() => {});
 });
 
-test('ATT-PLAN-06: Submitting attendance persists correctly and is reflected on reopen', { tag: '@positive' }, async ({ page }) => {
+test('ATT-PLAN-06: Submitting attendance persists correctly and is reflected on reopen', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Not executed against a real Submit: per the reference project's own
   // documented account scoping, this shared VALID_PIN account is mark-only
   // and never permitted to Submit (a separate, dedicated Class 11A account
@@ -182,12 +182,12 @@ test('ATT-PLAN-06: Submitting attendance persists correctly and is reflected on 
   expect(true).toBe(false);
 });
 
-test('ATT-PLAN-07: Submitting attendance twice (double-click) does not create duplicate records', { tag: '@negative' }, async ({ page }) => {
+test('ATT-PLAN-07: Submitting attendance twice (double-click) does not create duplicate records', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same limitation as ATT-PLAN-06 -- this account cannot Submit attendance to test double-submission against');
   expect(true).toBe(false);
 });
 
-test('ATT-PLAN-08: Attendance data is scoped to the correct class and never leaks to/from another class', { tag: '@security' }, async ({ page }) => {
+test('ATT-PLAN-08: Attendance data is scoped to the correct class and never leaks to/from another class', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const att = new AttendancePage(page);
   const nav = new NavigationPage(page);
   const contentAppeared = await openAndWaitForContent(att);

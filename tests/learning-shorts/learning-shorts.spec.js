@@ -51,7 +51,7 @@ async function openComposerViaAltEntry(page, pl, ls) {
   return ls.titleInput.isVisible({ timeout: 8000 }).catch(() => false);
 }
 
-test('LS-ACCESS-01: Existing Learning-Shorts-type recordings are playable from the Playlist', { tag: '@positive' }, async ({ page }) => {
+test('LS-ACCESS-01: Existing Learning-Shorts-type recordings are playable from the Playlist', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   // The workbook's specific example card ("Nirmala Kumari 13-Jul-2026",
   // Class 8R Mathematics) belongs to a different account's data -- search
@@ -68,7 +68,7 @@ test('LS-ACCESS-01: Existing Learning-Shorts-type recordings are playable from t
   expect(found).toBe(true);
 });
 
-test('LS-ALT-ENTRY-01: An owned Video asset\'s overflow -> Send reaches the same composer as the gated Record flow', { tag: '@positive' }, async ({ page }) => {
+test('LS-ALT-ENTRY-01: An owned Video asset\'s overflow -> Send reaches the same composer as the gated Record flow', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -77,7 +77,7 @@ test('LS-ALT-ENTRY-01: An owned Video asset\'s overflow -> Send reaches the same
   expect(opened).toBe(true);
 });
 
-test('LS-REC-01: The Magnet -> Learning Shorts recording panel is reachable and renders correctly', { tag: '@positive' }, async ({ page }) => {
+test('LS-REC-01: The Magnet -> Learning Shorts recording panel is reachable and renders correctly', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ls = new LearningShortsPage(page);
   await ls.openMagnetSubmenu();
   const itemVisible = await ls.magnetLearningShortsItem.first().isVisible({ timeout: 5000 }).catch(() => false);
@@ -94,7 +94,7 @@ test('LS-REC-01: The Magnet -> Learning Shorts recording panel is reachable and 
   if (recordUiVisible) await ls.exitBtn.click({ force: true });
 });
 
-test('LS-EXIT-01: Exit without recording closes the panel cleanly', { tag: '@positive' }, async ({ page }) => {
+test('LS-EXIT-01: Exit without recording closes the panel cleanly', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ls = new LearningShortsPage(page);
   await ls.openMagnetSubmenu();
   const itemVisible = await ls.magnetLearningShortsItem.first().isVisible({ timeout: 5000 }).catch(() => false);
@@ -111,7 +111,7 @@ test('LS-EXIT-01: Exit without recording closes the panel cleanly', { tag: '@pos
   expect(stillOpen).toBe(false);
 });
 
-test('LS-TITLE-01: A Title is required before Save/Send, and once entered unblocks it', { tag: '@positive' }, async ({ page }) => {
+test('LS-TITLE-01: A Title is required before Save/Send, and once entered unblocks it', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -130,7 +130,7 @@ test('LS-TITLE-01: A Title is required before Save/Send, and once entered unbloc
   expect(sendDisabledEmpty === null ? true : (sendDisabledEmpty === true && sendDisabledAfterTitle === false)).toBe(true);
 });
 
-test('LS-ATT-01: An attachment can be removed and re-captured/re-attached', { tag: '@positive' }, async ({ page }) => {
+test('LS-ATT-01: An attachment can be removed and re-captured/re-attached', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -144,7 +144,7 @@ test('LS-ATT-01: An attachment can be removed and re-captured/re-attached', { ta
   expect(deleteVisible).toBe(true);
 });
 
-test('LS-SHARE-01: The class-selection list is reachable and shows checkable options', { tag: '@positive' }, async ({ page }) => {
+test('LS-SHARE-01: The class-selection list is reachable and shows checkable options', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -158,7 +158,7 @@ test('LS-SHARE-01: The class-selection list is reachable and shows checkable opt
   expect(classCount).toBeGreaterThan(0);
 });
 
-test('LS-SEC-01: The class-selection list is limited to this teacher\'s own assigned classes', { tag: '@security' }, async ({ page }) => {
+test('LS-SEC-01: The class-selection list is limited to this teacher\'s own assigned classes', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -179,7 +179,7 @@ test('LS-SEC-01: The class-selection list is limited to this teacher\'s own assi
   expect(classCount).toBeGreaterThan(0);
 });
 
-test('LS-SAVE-DISTINCT-01: The composer exposes two distinct save controls (Save to Playlist vs Save Revision)', { tag: '@ui-state' }, async ({ page }) => {
+test('LS-SAVE-DISTINCT-01: The composer exposes two distinct save controls (Save to Playlist vs Save Revision)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -194,7 +194,7 @@ test('LS-SAVE-DISTINCT-01: The composer exposes two distinct save controls (Save
   expect(saveToPlaylistVisible && saveRevisionVisible).toBe(true);
 });
 
-test('LS-SAVE-01: Save (to Playlist) is reachable up to the point of a real dispatch (not executed on the shared QA account)', { tag: '@positive' }, async ({ page }) => {
+test('LS-SAVE-01: Save (to Playlist) is reachable up to the point of a real dispatch (not executed on the shared QA account)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -208,7 +208,7 @@ test('LS-SAVE-01: Save (to Playlist) is reachable up to the point of a real disp
   expect(saveEnabled).toBe(true);
 });
 
-test('LS-SEND-01: Send is reachable up to the point of a real dispatch (not executed on the shared QA account)', { tag: '@positive' }, async ({ page }) => {
+test('LS-SEND-01: Send is reachable up to the point of a real dispatch (not executed on the shared QA account)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -223,7 +223,7 @@ test('LS-SEND-01: Send is reachable up to the point of a real dispatch (not exec
   expect(sendEnabled).toBe(true);
 });
 
-test('LS-FILTER-BUG-01: A non-Video owned card\'s overflow does not offer the same Send composer path', { tag: '@negative' }, async ({ page }) => {
+test('LS-FILTER-BUG-01: A non-Video owned card\'s overflow does not offer the same Send composer path', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const count = await pl.resourceCards.count();
@@ -249,7 +249,7 @@ test('LS-FILTER-BUG-01: A non-Video owned card\'s overflow does not offer the sa
   }
 });
 
-test('LS-STATE-01: Discarding or navigating away mid-composition may silently lose in-progress work with no warning', { tag: '@state-persistence' }, async ({ page }) => {
+test('LS-STATE-01: Discarding or navigating away mid-composition may silently lose in-progress work with no warning', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -274,7 +274,7 @@ test('LS-STATE-01: Discarding or navigating away mid-composition may silently lo
   expect(confirmDialogShown).toBe(true);
 });
 
-test('LS-BOUND-01: An extremely long or special-character Title does not break the composer\'s layout', { tag: '@boundary' }, async ({ page }) => {
+test('LS-BOUND-01: An extremely long or special-character Title does not break the composer\'s layout', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const ls = new LearningShortsPage(page);
   const opened = await openComposerViaAltEntry(page, pl, ls);
@@ -291,7 +291,7 @@ test('LS-BOUND-01: An extremely long or special-character Title does not break t
   expect(classListStillVisible).toBe(true);
 });
 
-test('LS-XCUT-01: Exit-without-recording is a clean, always-working baseline path (cross-check of LS-EXIT-01)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('LS-XCUT-01: Exit-without-recording is a clean, always-working baseline path (cross-check of LS-EXIT-01)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   // Same underlying behavior as LS-EXIT-01 above -- this row exists in the
   // workbook as a dedicated cross-cutting sanity baseline; re-verify
   // independently rather than skip, since it's cheap and the workbook
@@ -309,32 +309,32 @@ test('LS-XCUT-01: Exit-without-recording is a clean, always-working baseline pat
   expect(await ls.exitBtn.isVisible({ timeout: 2000 }).catch(() => false)).toBe(false);
 });
 
-test('LS-EXP-01: Camera/mic permission REJECTION is handled with a clear message, not a silent hang', { tag: '@negative' }, async ({ page }) => {
+test('LS-EXP-01: Camera/mic permission REJECTION is handled with a clear message, not a silent hang', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires reaching the real getUserMedia() permission prompt and denying it -- this browser-automation environment blocks camera/mic access outright before any prompt is reachable, confirmed live');
   expect(true).toBe(false);
 });
 
-test('LS-EXP-02: A camera/microphone hardware failure is handled gracefully', { tag: '@negative' }, async ({ page }) => {
+test('LS-EXP-02: A camera/microphone hardware failure is handled gracefully', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real device with a genuinely occupied/unavailable camera -- not reproducible via this browser-automation environment, which blocks all camera/mic access outright');
   expect(true).toBe(false);
 });
 
-test('LS-EXP-03: A network loss during an active recording upload is handled with a retry, not silent data loss', { tag: '@negative' }, async ({ page }) => {
+test('LS-EXP-03: A network loss during an active recording upload is handled with a retry, not silent data loss', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a completed real recording to be mid-upload when network is cut -- blocked upstream by this environment\'s camera/mic restriction, so there is no real upload in progress to interrupt');
   expect(true).toBe(false);
 });
 
-test('LS-EXP-04: Submitting a zero-duration/corrupted recording is rejected with a clear message', { tag: '@negative' }, async ({ page }) => {
+test('LS-EXP-04: Submitting a zero-duration/corrupted recording is rejected with a clear message', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real, genuinely zero-duration recording produced by actually starting and immediately stopping the camera -- blocked upstream by this environment\'s camera/mic restriction');
   expect(true).toBe(false);
 });
 
-test('LS-EXP-05: A recording at the maximum allowed duration boundary is handled correctly', { tag: '@boundary' }, async ({ page }) => {
+test('LS-EXP-05: A recording at the maximum allowed duration boundary is handled correctly', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real recording run to (or near) its maximum duration -- blocked upstream by this environment\'s camera/mic restriction');
   expect(true).toBe(false);
 });
 
-test('LS-EXP-06: Rapidly starting/stopping the recording does not corrupt state or leave the panel stuck', { tag: '@boundary' }, async ({ page }) => {
+test('LS-EXP-06: Rapidly starting/stopping the recording does not corrupt state or leave the panel stuck', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const ls = new LearningShortsPage(page);
   await ls.openMagnetSubmenu();
   const itemVisible = await ls.magnetLearningShortsItem.first().isVisible({ timeout: 5000 }).catch(() => false);
@@ -357,7 +357,7 @@ test('LS-EXP-06: Rapidly starting/stopping the recording does not corrupt state 
   expect(stuck).toBe(false);
 });
 
-test('LS-EXP-07: A saved Learning Short is scoped to the correct class, never visible from another class\'s Playlist', { tag: '@security' }, async ({ page }) => {
+test('LS-EXP-07: A saved Learning Short is scoped to the correct class, never visible from another class\'s Playlist', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires an actual saved recording (a real Send/Save dispatch) to compare across classes -- deliberately never dispatched against the shared QA account (see LS-SAVE-01/LS-SEND-01), so there is no real saved Short yet to check for cross-class leakage');
   expect(true).toBe(false);
 });

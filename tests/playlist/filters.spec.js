@@ -92,7 +92,7 @@ test('PL-FLT-03: Re-checking every resource-type checkbox restores all previousl
   expect(afterCount).toBe(beforeCount);
 });
 
-test('PL-FLT-04: Unchecking a single resource-type checkbox hides only that type', { tag: '@positive' }, async ({ page }) => {
+test('PL-FLT-04: Unchecking a single resource-type checkbox hides only that type', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const optionCount = await pl.filterOptions.count();
   if (optionCount < 2) {

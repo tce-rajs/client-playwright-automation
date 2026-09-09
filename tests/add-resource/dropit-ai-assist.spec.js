@@ -28,7 +28,7 @@ test('ADD-DRP-01: Dropit opens its own resource interface (a QR-code file-transf
   await expect(page.getByText('Drop It', { exact: true })).toBeHidden({ timeout: 5000 });
 });
 
-test('ADD-AIA-01: AI-Assist opens an AI-generated exercise interface', { tag: '@positive' }, async ({ page }) => {
+test('ADD-AIA-01: AI-Assist opens an AI-generated exercise interface', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.openPicker();
   await ar.actions.aiAssist.click();

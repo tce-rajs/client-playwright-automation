@@ -21,7 +21,7 @@ test.beforeEach(async ({ page }) => {
   await applyClassMap(nav, 'aiHomework').catch(() => {});
 });
 
-test('AIH-BREAK-01: switching Class while the AI Homework composer is open does not leave it stuck visible over the new class\'s whiteboard', { tag: '@ui-state' }, async ({ page }) => {
+test('AIH-BREAK-01: switching Class while the AI Homework composer is open does not leave it stuck visible over the new class\'s whiteboard', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const ah = new AiHomeworkPage(page);
   const nav = new NavigationPage(page);
@@ -46,7 +46,7 @@ test('AIH-BREAK-01: switching Class while the AI Homework composer is open does 
   expect(!classPopupOpened && composerStillVisible).toBe(false);
 });
 
-test('AIH-BREAK-02: rapidly opening and closing the composer 5 times in a row leaves exactly one clean instance', { tag: '@boundary' }, async ({ page }) => {
+test('AIH-BREAK-02: rapidly opening and closing the composer 5 times in a row leaves exactly one clean instance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const ah = new AiHomeworkPage(page);
   let lastOpened = false;
@@ -70,7 +70,7 @@ test('AIH-BREAK-02: rapidly opening and closing the composer 5 times in a row le
   expect(cardCount).toBeLessThanOrEqual(1);
 });
 
-test('AIH-BREAK-03: pressing the browser Back button while the composer is open does not leave a stuck overlay behind', { tag: '@ui-state' }, async ({ page }) => {
+test('AIH-BREAK-03: pressing the browser Back button while the composer is open does not leave a stuck overlay behind', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ah = new AiHomeworkPage(page);
   await ah.open();
   const composerOpened = await ah.homeworkTypeCard.isVisible({ timeout: 8000 }).catch(() => false);
@@ -87,7 +87,7 @@ test('AIH-BREAK-03: pressing the browser Back button while the composer is open 
   expect(pageUsable).toBe(true);
 });
 
-test('AIH-BREAK-04: rapidly alternating clicks between the objective counter\'s plus and minus buttons 20 times settles on a value matching the actual net clicks, not a desynced one', { tag: '@boundary' }, async ({ page }) => {
+test('AIH-BREAK-04: rapidly alternating clicks between the objective counter\'s plus and minus buttons 20 times settles on a value matching the actual net clicks, not a desynced one', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const ah = new AiHomeworkPage(page);
   await ah.open();

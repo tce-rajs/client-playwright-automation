@@ -38,7 +38,7 @@ test('ADD-GAL-02: Gallery\'s default category filter is independent of the curre
   // hard pass/fail bar on its own.
 });
 
-test('ADD-GAL-03: Searching a term with no matches shows a completely blank grid with no message', { tag: '@negative' }, async ({ page }) => {
+test('ADD-GAL-03: Searching a term with no matches shows a completely blank grid with no message', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.gallerySearchInput.fill('zzzxxxqqqnomatch');
   await ar.gallerySearchBtn.click();
@@ -50,7 +50,7 @@ test('ADD-GAL-03: Searching a term with no matches shows a completely blank grid
   expect(noResultsMsgVisible).toBe(true);
 });
 
-test('ADD-GAL-04: Certain Gallery thumbnails fail to load, showing a broken-image placeholder', { tag: '@negative' }, async ({ page }) => {
+test('ADD-GAL-04: Certain Gallery thumbnails fail to load, showing a broken-image placeholder', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   await ar.gallerySearchClearBtn.click();
   await page.waitForTimeout(1500);
@@ -63,7 +63,7 @@ test('ADD-GAL-04: Certain Gallery thumbnails fail to load, showing a broken-imag
   expect(brokenCount).toBe(0);
 });
 
-test('ADD-GAL-05: Changing the category filter dropdowns updates the displayed image grid', { tag: '@positive' }, async ({ page }) => {
+test('ADD-GAL-05: Changing the category filter dropdowns updates the displayed image grid', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const beforeFirstCard = await ar.galleryImageCards.first().getAttribute('data-qa-id');
 
@@ -84,7 +84,7 @@ test('ADD-GAL-05: Changing the category filter dropdowns updates the displayed i
   expect(afterFirstCard).not.toBe(beforeFirstCard);
 });
 
-test('ADD-GAL-06: Selecting a Gallery image attaches it to the current Topic\'s playlist', { tag: '@positive' }, async ({ page }) => {
+test('ADD-GAL-06: Selecting a Gallery image attaches it to the current Topic\'s playlist', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Deliberately not executed via a real click-to-attach -- would alter the
   // shared QA playlist, matching the workbook's own documented decision.
   const ar = new AddResourcePage(page);
@@ -94,7 +94,7 @@ test('ADD-GAL-06: Selecting a Gallery image attaches it to the current Topic\'s 
   expect(true).toBe(false);
 });
 
-test('ADD-GAL-07: Pagination controls navigate additional pages of images', { tag: '@positive' }, async ({ page }) => {
+test('ADD-GAL-07: Pagination controls navigate additional pages of images', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const paginationControls = page.locator('[class*="pagination" i], mat-paginator, .pagination');
   const hasPagination = await paginationControls.first().isVisible().catch(() => false);

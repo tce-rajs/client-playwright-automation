@@ -62,7 +62,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(String(defaultVal)).toContain('15');
   });
 
-  test('AIH-TYPE-02: A "lower grade" curriculum swaps the builder for an undocumented component (source-confirmed)', { tag: '@negative' }, async ({ page }) => {
+  test('AIH-TYPE-02: A "lower grade" curriculum swaps the builder for an undocumented component (source-confirmed)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
     // CONFIRMED cross-repo (source + reference-project note): this class of
     // curriculum swap targets a specific lower-grade template component
     // with NO instrumented data-qa-ids at all ("display-only, not
@@ -121,7 +121,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(Number(afterMinus)).toBe(Number(before));
   });
 
-  test('AIH-CNT-02: A fast double-click on the increment button registers as zero net increments (confirmed bug)', { tag: '@boundary' }, async ({ page }) => {
+  test('AIH-CNT-02: A fast double-click on the increment button registers as zero net increments (confirmed bug)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
     const ah = new AiHomeworkPage(page);
     await ah.open();
     await ah.homeworkTypeCard.click({ force: true, timeout: 8000 });
@@ -145,7 +145,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(netChange).toBe(2);
   });
 
-  test('AIH-DEAD-01: ai-homework-select-* and ai-homework-preview-* components are confirmed dead code', { tag: '@negative' }, async ({ page }) => {
+  test('AIH-DEAD-01: ai-homework-select-* and ai-homework-preview-* components are confirmed dead code', { tag: ['@negative', '@bug'] }, async ({ page }) => {
     // CONFIRMED cross-repo (source-read): both components have real, working
     // selectors but zero live callers -- structural finding, not
     // independently re-derivable by black-box UI clicking (there is no menu
@@ -160,7 +160,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(true).toBe(false);
   });
 
-  test('AIH-QUOTA-01: Generate surfaces a clear error when the AI-generation quota is exhausted', { tag: '@negative' }, async ({ page }) => {
+  test('AIH-QUOTA-01: Generate surfaces a clear error when the AI-generation quota is exhausted', { tag: ['@negative', '@bug'] }, async ({ page }) => {
     const ah = new AiHomeworkPage(page);
     await ah.open();
     await ah.homeworkTypeCard.click({ force: true, timeout: 8000 });
@@ -183,7 +183,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(errorTextVisible).toBe(true);
   });
 
-  test('AIH-VALID-01: Grade/subject validation is subject-specific, not account-wide', { tag: '@negative' }, async ({ page }) => {
+  test('AIH-VALID-01: Grade/subject validation is subject-specific, not account-wide', { tag: ['@negative', '@bug'] }, async ({ page }) => {
     const ah = new AiHomeworkPage(page);
     const nav = new NavigationPage(page);
     let pageCrashed = false;
@@ -219,7 +219,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(mathReachable).toBe(true);
   });
 
-  test('AIH-EXP-04: Cross-session content bleed under concurrent Generate calls (tooling limitation, needs 2 real sessions)', { tag: '@security' }, async ({ page }) => {
+  test('AIH-EXP-04: Cross-session content bleed under concurrent Generate calls (tooling limitation, needs 2 real sessions)', { tag: ['@security', '@bug'] }, async ({ page }) => {
     // A genuine test needs two independent teacher sessions generating on
     // the same Chapter/Topic at overlapping times -- this project has one
     // verified account (VALID_PIN_2) available to this suite, and using the
@@ -229,7 +229,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(true).toBe(false);
   });
 
-  test('AIH-EXP-05: The Generate request cannot be forged to target an unauthorized Grade/Subject/Chapter', { tag: '@security' }, async ({ page }) => {
+  test('AIH-EXP-05: The Generate request cannot be forged to target an unauthorized Grade/Subject/Chapter', { tag: ['@security', '@bug'] }, async ({ page }) => {
     // Same blocker class as NAV-SEC-01/EXP-06/ATT-EXP-05 elsewhere in this
     // suite: needs the real Generate request's exact shape plus a known
     // unauthorized Grade/Subject/Chapter id, neither available without a
@@ -238,7 +238,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(true).toBe(false);
   });
 
-  test('AIH-EXP-01: Setting the Objective counter to its absolute minimum still produces a valid Generate call and a correctly-sized result', { tag: '@boundary' }, async ({ page }) => {
+  test('AIH-EXP-01: Setting the Objective counter to its absolute minimum still produces a valid Generate call and a correctly-sized result', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
     test.setTimeout(90000); // real ~20-25s Generate call plus setup/counter-drag time
     const ah = new AiHomeworkPage(page);
     await ah.open();
@@ -284,7 +284,7 @@ test.describe('AI Homework -- independent checks', () => {
     expect(count).toBe(minValue);
   });
 
-  test('AIH-EXP-02: Setting the Objective counter to its absolute maximum produces a valid Generate call within a reasonable time, without timing out', { tag: '@boundary' }, async ({ page }) => {
+  test('AIH-EXP-02: Setting the Objective counter to its absolute maximum produces a valid Generate call within a reasonable time, without timing out', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
     test.setTimeout(120000); // max-count Generate may legitimately take longer than the ~20-25s default case
     const ah = new AiHomeworkPage(page);
     await ah.open();
@@ -383,7 +383,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     expect(count).toBeGreaterThan(0);
   });
 
-  test('AIH-QB-02: A question can be regenerated from the builder and the change is retained', { tag: '@positive' }, async ({}) => {
+  test('AIH-QB-02: A question can be regenerated from the builder and the change is retained', { tag: ['@positive', '@bug'] }, async ({}) => {
     test.setTimeout(60000);
     const firstQuestionTextBefore = await ah.builderQuestions.first().textContent();
     const kind = (await ah.builderQuestions.first().getAttribute('data-qa-id')) || '';
@@ -432,7 +432,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     expect(countAfter).toBe(count);
   });
 
-  test('AIH-QB-04: A rapid double-click on Regenerate does not fire two overlapping AI/RAG requests', { tag: '@negative' }, async ({}) => {
+  test('AIH-QB-04: A rapid double-click on Regenerate does not fire two overlapping AI/RAG requests', { tag: ['@negative', '@bug'] }, async ({}) => {
     test.setTimeout(60000);
     let ragRequestCount = 0;
     const onReq = (req) => { if (/rag\/worksheet|rag\/visual-worksheet/i.test(req.url())) ragRequestCount++; };
@@ -454,7 +454,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     await page.waitForTimeout(10000);
   });
 
-  test('AIH-FORM-01: The full Assignment form is reachable and pre-filled correctly after Generate', { tag: '@positive' }, async ({}) => {
+  test('AIH-FORM-01: The full Assignment form is reachable and pre-filled correctly after Generate', { tag: ['@positive', '@bug'] }, async ({}) => {
     test.setTimeout(45000);
     let pageCrashed = false;
     let titleVal = '';
@@ -489,7 +489,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     await expect(ah.assignClassOption(0)).toBeVisible({ timeout: 5000 });
   });
 
-  test('AIH-SEC-01: No exposed class checkbox targets a class this teacher is not assigned to teach', { tag: '@security' }, async ({}) => {
+  test('AIH-SEC-01: No exposed class checkbox targets a class this teacher is not assigned to teach', { tag: ['@security', '@bug'] }, async ({}) => {
     await ah.ensureAssignStep();
     const count = await page.locator('[data-qa-id^="ai-homework-assign-class-option-"]').count();
     const labels = [];
@@ -507,7 +507,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     expect(anyBlank).toBe(false);
   });
 
-  test('AIH-FORM-02: Send is disabled while a required field (Title) is empty (button state inspected, never clicked)', { tag: '@negative' }, async ({}) => {
+  test('AIH-FORM-02: Send is disabled while a required field (Title) is empty (button state inspected, never clicked)', { tag: ['@negative', '@bug'] }, async ({}) => {
     await ah.ensureAssignStep();
     const titleBefore = await ah.assignTitleInput.inputValue();
     await ah.assignTitleInput.fill('');
@@ -522,7 +522,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     expect(blocked).toBe(true);
   });
 
-  test('AIH-FORM-03: Send is disabled with zero classes selected (button state inspected, never clicked)', { tag: '@negative' }, async ({}) => {
+  test('AIH-FORM-03: Send is disabled with zero classes selected (button state inspected, never clicked)', { tag: ['@negative', '@bug'] }, async ({}) => {
     await ah.ensureAssignStep();
     const count = await page.locator('[data-qa-id^="ai-homework-assign-class-checkbox-"]').count();
     const wasChecked = [];
@@ -561,7 +561,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     expect(titleAfterForward).toBe(titleBeforeBack);
   });
 
-  test('AIH-EXP-03: Max "Due in" option alongside multi-class sharing produces a correctly-configured assignment before Discard', { tag: '@boundary' }, async ({}) => {
+  test('AIH-EXP-03: Max "Due in" option alongside multi-class sharing produces a correctly-configured assignment before Discard', { tag: ['@boundary', '@bug'] }, async ({}) => {
     await ah.ensureAssignStep();
     const dueOptionCount = await page.locator('[data-qa-id^="ai-homework-assign-due-option-"]').count();
     if (dueOptionCount === 0) {
@@ -588,7 +588,7 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     expect(allChecked).toBe(true);
   });
 
-  test('AIH-STATE-01: Refreshing mid-composer does not silently lose a fully-generated worksheet', { tag: '@state-persistence' }, async ({}) => {
+  test('AIH-STATE-01: Refreshing mid-composer does not silently lose a fully-generated worksheet', { tag: ['@state-persistence', '@bug'] }, async ({}) => {
     await page.reload();
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);

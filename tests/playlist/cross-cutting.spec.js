@@ -55,7 +55,7 @@ test('PL-STATE-02: Removing a resource requires confirmation before it disappear
   expect(afterCount).toBe(beforeCount);
 });
 
-test('PL-STATE-03: A failed remove-resource call leaves no inconsistent client state', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PL-STATE-03: A failed remove-resource call leaves no inconsistent client state', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const beforeCount = await pl.resourceCards.count();
 
@@ -85,7 +85,7 @@ test('PL-STATE-03: A failed remove-resource call leaves no inconsistent client s
   expect(silentlyRemovedWithNoError).toBe(false);
 });
 
-test('PL-NET-01: Resource-list fetch fails when switching to a Topic', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PL-NET-01: Resource-list fetch fails when switching to a Topic', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   await page.route('**/serve/tp?**', (route) => route.fulfill({ status: 500, body: '{}' }));
 
@@ -101,7 +101,7 @@ test('PL-NET-01: Resource-list fetch fails when switching to a Topic', { tag: '@
   expect(errorStateVisible).toBe(true);
 });
 
-test('PL-NET-02: A resource\'s thumbnail or asset fails to load', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PL-NET-02: A resource\'s thumbnail or asset fails to load', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   const brokenImageCount = await page.evaluate(() => {
     const imgs = Array.from(document.querySelectorAll('img'));
@@ -144,7 +144,7 @@ test('PL-RACE-01: Rapidly switching Topics before the previous Topic\'s resource
   expect(finalTopic).toContain(topicCText);
 });
 
-test('PL-SEC-01: Playlist content is always scoped to the currently authorized class', { tag: '@security' }, async ({ page }) => {
+test('PL-SEC-01: Playlist content is always scoped to the currently authorized class', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Needs a second known teacher/class account to cross-check resource
   // lists against -- not available in this environment.
   test.fail(true, 'No second reference account available to cross-check for cross-class/cross-teacher resource leakage');

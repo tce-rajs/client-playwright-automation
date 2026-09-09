@@ -61,7 +61,7 @@ test('PLR-VID-01: Clicking a Video resource card opens the video player frame', 
   expect(frameOpened).toBe(true);
 });
 
-test('PLR-VID-02: CRITICAL -- video fails to initialize; playback never starts (re-check of a previously confirmed crash)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-VID-02: CRITICAL -- video fails to initialize; playback never starts (re-check of a previously confirmed crash)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized, errors } = await openVideoTrackingCrash(page, plr);
   console.log('Crashed (targetContainer error):', crashed, '| player initialized:', playerInitialized, '| all pageerrors:', JSON.stringify(errors));
@@ -72,7 +72,7 @@ test('PLR-VID-02: CRITICAL -- video fails to initialize; playback never starts (
   expect(playerInitialized).toBe(true);
 });
 
-test('PLR-VID-03: The failure reproduces consistently across a fresh page reload, not a one-off glitch', { tag: '@negative' }, async ({ page }) => {
+test('PLR-VID-03: The failure reproduces consistently across a fresh page reload, not a one-off glitch', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const first = await openVideoTrackingCrash(page, plr);
   await page.reload();
@@ -99,7 +99,7 @@ test('PLR-VID-03: The failure reproduces consistently across a fresh page reload
   expect(bothFailedConsistently).toBe(false);
 });
 
-test('PLR-VID-04: Clicking the stuck loading icon directly has no effect', { tag: '@negative' }, async ({ page }) => {
+test('PLR-VID-04: Clicking the stuck loading icon directly has no effect', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed } = await openVideoTrackingCrash(page, plr);
   test.fail(!crashed, 'Video did not reproduce the confirmed crash this run -- cannot test the stuck-icon-click-does-nothing behavior against a genuinely stuck player');
@@ -113,7 +113,7 @@ test('PLR-VID-04: Clicking the stuck loading icon directly has no effect', { tag
   expect(stillNoPlayback).toBe(true);
 });
 
-test('PLR-VID-05 / PLR-VID-11: CONFIRMED SYSTEMIC -- the same crash affects this resource, matching the workbook\'s multi-resource confirmation', { tag: '@negative' }, async ({ page }) => {
+test('PLR-VID-05 / PLR-VID-11: CONFIRMED SYSTEMIC -- the same crash affects this resource, matching the workbook\'s multi-resource confirmation', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed } = await openVideoTrackingCrash(page, plr);
   console.log('This resource (Class 12A Computer Science, "14. Project Based Learning") reproduced the systemic crash:', crashed);
@@ -121,7 +121,7 @@ test('PLR-VID-05 / PLR-VID-11: CONFIRMED SYSTEMIC -- the same crash affects this
   expect(crashed).toBe(false);
 });
 
-test('PLR-VID-06: Standard playback controls function correctly once initialized (blocked if the crash reproduces)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-VID-06: Standard playback controls function correctly once initialized (blocked if the crash reproduces)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(crashed || !playerInitialized, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- player never initialized, so play/pause/seek/volume/fullscreen controls cannot be exercised');
@@ -131,21 +131,21 @@ test('PLR-VID-06: Standard playback controls function correctly once initialized
   await expect(plr.videoProgressBar).toBeVisible();
 });
 
-test('PLR-VID-07: Whiteboard/annotation tools work correctly over a playing video (blocked if the crash reproduces)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-VID-07: Whiteboard/annotation tools work correctly over a playing video (blocked if the crash reproduces)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(crashed || !playerInitialized, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no playing video surface exists to annotate over');
   expect(playerInitialized).toBe(true);
 });
 
-test('PLR-VID-08: Video resumes from (or restarts from) the last watched position on reopen (blocked if the crash reproduces)', { tag: '@state-persistence' }, async ({ page }) => {
+test('PLR-VID-08: Video resumes from (or restarts from) the last watched position on reopen (blocked if the crash reproduces)', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(crashed || !playerInitialized, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- cannot watch partway and reopen to check resume behavior');
   expect(playerInitialized).toBe(true);
 });
 
-test('PLR-VID-09: Switching away from a playing video stops playback cleanly (blocked if the crash reproduces)', { tag: '@state-persistence' }, async ({ page }) => {
+test('PLR-VID-09: Switching away from a playing video stops playback cleanly (blocked if the crash reproduces)', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const nav = new NavigationPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
@@ -160,7 +160,7 @@ test('PLR-VID-09: Switching away from a playing video stops playback cleanly (bl
   expect(videoStillPresent).toBe(false);
 });
 
-test('PLR-VID-10: Video playback under a throttled/interrupted network shows a buffering/error state, never a silent freeze', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-VID-10: Video playback under a throttled/interrupted network shows a buffering/error state, never a silent freeze', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(crashed || !playerInitialized, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no working playback exists to throttle/interrupt');
@@ -202,7 +202,7 @@ test('PLR-VID-13: "tcevideo" vs "video" are separate underlying resource types (
   expect(urls.length).toBeGreaterThanOrEqual(0);
 });
 
-test('PLR-VID-14: RECONCILIATION -- is the crash scoped to tcevideo-type resources, or does it affect this confirmed resource too?', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-VID-14: RECONCILIATION -- is the crash scoped to tcevideo-type resources, or does it affect this confirmed resource too?', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed } = await openVideoTrackingCrash(page, plr);
   console.log('Class 12A Computer Science "14. Project Based Learning" Video resource crashed:', crashed);
@@ -210,7 +210,7 @@ test('PLR-VID-14: RECONCILIATION -- is the crash scoped to tcevideo-type resourc
   expect(crashed).toBe(false);
 });
 
-test('PLR-VID-15: Opening a second video resource REPLACES the first instead of stacking', { tag: '@negative' }, async ({ page }) => {
+test('PLR-VID-15: Opening a second video resource REPLACES the first instead of stacking', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await expect(plr.videoCards.first()).toBeAttached({ timeout: 10000 });
   await plr.openResourceCard(plr.videoCards);
@@ -227,14 +227,14 @@ test('PLR-VID-15: Opening a second video resource REPLACES the first instead of 
   expect(closeIconCountAfterSecond).toBeLessThanOrEqual(closeIconCountAfterFirst + 1);
 });
 
-test('PLR-VID-16: A video\'s chrome can show a misleading NaN duration during the loading-metadata window (blocked if the crash reproduces)', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-VID-16: A video\'s chrome can show a misleading NaN duration during the loading-metadata window (blocked if the crash reproduces)', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(crashed || !playerInitialized, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no metadata-loading window to observe on a player that never initializes');
   expect(playerInitialized).toBe(true);
 });
 
-test('PLR-VID-17: No "Close All Resources" control exists anywhere in the Video player chrome or surrounding UI', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-VID-17: No "Close All Resources" control exists anywhere in the Video player chrome or surrounding UI', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await expect(plr.videoCards.first()).toBeAttached({ timeout: 10000 });
   await plr.openResourceCard(plr.videoCards);
@@ -245,7 +245,7 @@ test('PLR-VID-17: No "Close All Resources" control exists anywhere in the Video 
   expect(closeAllVisible).toBe(false);
 });
 
-test('PLR-VID-18: Rapid double-click on a Video resource card does not open duplicate stacked instances', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-VID-18: Rapid double-click on a Video resource card does not open duplicate stacked instances', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await expect(plr.videoCards.first()).toBeAttached({ timeout: 10000 });
   await plr.videoCards.first().evaluate((el) => { el.click(); el.click(); });
@@ -256,12 +256,12 @@ test('PLR-VID-18: Rapid double-click on a Video resource card does not open dupl
   expect(closeIconCount).toBeLessThanOrEqual(1);
 });
 
-test('PLR-EXP-SEC-01: A video\'s underlying media stream URL cannot be tampered with to access unauthorized content', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-01: A video\'s underlying media stream URL cannot be tampered with to access unauthorized content', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs real request-crafting/replay tooling against the video media stream/manifest URL -- not available in this Playwright-only browser-automation environment this pass. The confirmed hybrid-player crash (PLR-VID-02) also means no real media URL is even reachable on this account\'s available resources to inspect.');
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-02 (Video variant): a video source returning a server error (5xx) shows a clear playback-error state, not an infinite spinner', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-02 (Video variant): a video source returning a server error (5xx) shows a clear playback-error state, not an infinite spinner', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await page.route(/\.(mp4|m3u8|webm)(\?|$)/i, (route) => route.fulfill({ status: 503, body: 'forced 5xx' }));
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
@@ -274,14 +274,14 @@ test('PLR-EXP-02 (Video variant): a video source returning a server error (5xx) 
   expect(errorMessageVisible).toBe(true);
 });
 
-test('PLR-EXP-03 (Video variant): pausing (not closing) then closing and reopening the same video is checked against PLR-VID-08\'s resume question', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-03 (Video variant): pausing (not closing) then closing and reopening the same video is checked against PLR-VID-08\'s resume question', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(crashed || !playerInitialized, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- cannot pause a video that never starts playing');
   expect(playerInitialized).toBe(true);
 });
 
-test('PLR-EXP-20: A very short video does not break the seek bar or control layout (boundary, no short-video resource confirmed to exist)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-20: A very short video does not break the seek bar or control layout (boundary, no short-video resource confirmed to exist)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, playerInitialized } = await openVideoTrackingCrash(page, plr);
   test.fail(true, crashed || !playerInitialized

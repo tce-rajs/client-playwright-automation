@@ -83,7 +83,7 @@ test('TB-CTX-01: Right-click on a text object opens a rich inline panel', { tag:
   expect(panelVisible).toBe(true);
 });
 
-test('TB-CYP-01: A single tap only selects a tool; a double tap is required to open its panel', { tag: '@ui-state' }, async ({ page }) => {
+test('TB-CYP-01: A single tap only selects a tool; a double tap is required to open its panel', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.tool('gtZoom').click({ force: true });
   await page.waitForTimeout(800);
@@ -98,7 +98,7 @@ test('TB-CYP-01: A single tap only selects a tool; a double tap is required to o
   expect(panelAfterDoubleTap).toBe(true);
 });
 
-test('TB-CYP-02: Clear Whiteboard control is reachable but its clearing effect is unconfirmed', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-02: Clear Whiteboard control is reachable but its clearing effect is unconfirmed', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.penStroke(at(100, 100), at(200, 150));
   const beforeCount = await tb.pathCount();
@@ -119,7 +119,7 @@ test('TB-CYP-02: Clear Whiteboard control is reachable but its clearing effect i
   expect(true).toBe(false);
 });
 
-test('TB-CYP-03: Eraser cannot reliably remove a Pen stroke once it exceeds roughly 700px', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-03: Eraser cannot reliably remove a Pen stroke once it exceeds roughly 700px', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const longStrokeStart = at(50, 400);
   const longStrokeEnd = at(800, 400); // ~750px
@@ -143,7 +143,7 @@ test('TB-CYP-03: Eraser cannot reliably remove a Pen stroke once it exceeds roug
   expect(countAfterErase).toBeLessThan(countAfterDraw);
 });
 
-test('TB-CYP-04: Erasing one word of connected cursive handwriting deletes an adjacent word too', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-04: Erasing one word of connected cursive handwriting deletes an adjacent word too', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const wordOnePoint = at(100, 500);
   const wordTwoPoint = at(400, 500);
@@ -178,7 +178,7 @@ test('TB-CYP-05: Opening a tool panel deactivates the previous tool; dismissing 
   expect(penActive).toBe(false);
 });
 
-test('TB-CYP-06: Clicking a tool\'s icon again while its own panel is open closes the panel', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-06: Clicking a tool\'s icon again while its own panel is open closes the panel', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtZoom');
   await expect(tb.panel).toBeVisible();
@@ -201,7 +201,7 @@ test('TB-CYP-06: Clicking a tool\'s icon again while its own panel is open close
   await tb.closePanelByTappingOutside();
 });
 
-test('TB-CYP-07: Undo skips a Move entirely and undoes the next-older tracked action instead', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-07: Undo skips a Move entirely and undoes the next-older tracked action instead', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(150, 600);
   await tb.penStroke(point, { x: point.x + 100, y: point.y + 50 });
@@ -228,7 +228,7 @@ test('TB-CYP-07: Undo skips a Move entirely and undoes the next-older tracked ac
   expect(countAfterUndo).toBe(countAfterDrawTwo);
 });
 
-test('TB-CYP-08: No gesture reopens the editor on already-committed text', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-08: No gesture reopens the editor on already-committed text', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(250, 700);
   await placeText(tb, page, point, 'committed text check');
@@ -243,7 +243,7 @@ test('TB-CYP-08: No gesture reopens the editor on already-committed text', { tag
   expect(editorReopened).toBe(false);
 });
 
-test('TB-CYP-09: Bold produces no actual computed font-weight change', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-09: Bold produces no actual computed font-weight change', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(350, 800);
   await placeText(tb, page, point, 'bold weight check');
@@ -288,7 +288,7 @@ test('TB-CYP-09: Bold produces no actual computed font-weight change', { tag: '@
   expect(weightAfter).not.toBe(weightBefore);
 });
 
-test('TB-CYP-10: No drag-to-resize handles exist on a selected object', { tag: '@negative' }, async ({ page }) => {
+test('TB-CYP-10: No drag-to-resize handles exist on a selected object', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(450, 300);
   await tb.penStroke(point, { x: point.x + 100, y: point.y + 60 });
@@ -303,7 +303,7 @@ test('TB-CYP-10: No drag-to-resize handles exist on a selected object', { tag: '
   expect(resizeHandleCount).toBe(0);
 });
 
-test('TB-GAP-01: Long-press gestures cannot be triggered by synthetic browser automation (confirmed tooling limit)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('TB-GAP-01: Long-press gestures cannot be triggered by synthetic browser automation (confirmed tooling limit)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Confirmed hard automation-tooling limit: Playwright has discrete click/drag primitives with no press-and-hold gesture, so any feature gated specifically behind a long-press duration cannot be exercised here -- not an un-attempted case, would need a real physical device/manual test to close');
   expect(true).toBe(false);
 });
@@ -371,7 +371,7 @@ test('TB-MAGNET-01: Magnet is the real, gated trigger for Notice/Learning Shorts
   expect(noticeVisible && shortsVisible && homeworkVisible).toBe(true);
 });
 
-test('TB-SHAPE-01: The Shapes tool inserts a selectable geometric shape onto the canvas', { tag: '@positive' }, async ({ page }) => {
+test('TB-SHAPE-01: The Shapes tool inserts a selectable geometric shape onto the canvas', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(600, 600);
   await tb.openToolPanel('gtShapes');
@@ -396,7 +396,7 @@ test('TB-SHAPE-01: The Shapes tool inserts a selectable geometric shape onto the
   expect(afterCount).toBeGreaterThan(beforeCount);
 });
 
-test('TB-STATE-02: Rapid consecutive edits immediately followed by a refresh can lose the most recent unsaved changes', { tag: '@negative' }, async ({ page }) => {
+test('TB-STATE-02: Rapid consecutive edits immediately followed by a refresh can lose the most recent unsaved changes', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   // Unique text per run (mirrors text.spec.js's own OFFSET pattern) so a
   // stale leftover from a prior run of this same test can't be mistaken
@@ -432,7 +432,7 @@ test('TB-EXP-01: Clicking Redo with nothing to redo does nothing harmful', { tag
   expect(bodyText.length).toBeGreaterThan(0);
 });
 
-test('TB-EXP-02: A failed autosave shows a visible failure indicator, not a false-success toast', { tag: '@negative' }, async ({ page }) => {
+test('TB-EXP-02: A failed autosave shows a visible failure indicator, not a false-success toast', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await page.route('**/autosave**', (route) => route.abort('failed'));
   await page.route('**/*save*whiteboard*', (route) => route.abort('failed'));
@@ -446,7 +446,7 @@ test('TB-EXP-02: A failed autosave shows a visible failure indicator, not a fals
   expect(!savedToastShown || failureIndicatorShown).toBe(true);
 });
 
-test('TB-EXP-03: A zero-size Shape drag (click without dragging) does not insert a degenerate object', { tag: '@negative' }, async ({ page }) => {
+test('TB-EXP-03: A zero-size Shape drag (click without dragging) does not insert a degenerate object', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(650, 350);
   await tb.openToolPanel('gtShapes');
@@ -469,7 +469,7 @@ test('TB-EXP-03: A zero-size Shape drag (click without dragging) does not insert
   expect(afterCount).toBe(beforeCount);
 });
 
-test('TB-EXP-04: Creating a Text object and clicking away without typing leaves no empty object behind', { tag: '@negative' }, async ({ page }) => {
+test('TB-EXP-04: Creating a Text object and clicking away without typing leaves no empty object behind', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(750, 450);
   // CONFIRMED LIVE: text objects are .text-input-container elements, not
@@ -490,7 +490,7 @@ test('TB-EXP-04: Creating a Text object and clicking away without typing leaves 
   expect(afterCount).toBe(beforeCount);
 });
 
-test('TB-EXP-05: The Pen size slider at its maximum ("Strong") draws a correct, non-corrupted stroke', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-05: The Pen size slider at its maximum ("Strong") draws a correct, non-corrupted stroke', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtPen');
   const strongOption = page.getByText('Strong', { exact: false }).first();
@@ -511,7 +511,7 @@ test('TB-EXP-05: The Pen size slider at its maximum ("Strong") draws a correct, 
   expect(afterCount).toBeGreaterThan(beforeCount);
 });
 
-test('TB-EXP-06: The Eraser Size slider at maximum erases without over-erasing beyond its visible radius', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-06: The Eraser Size slider at maximum erases without over-erasing beyond its visible radius', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const point = at(900, 300);
   await tb.penStroke(point, { x: point.x + 200, y: point.y });
@@ -556,7 +556,7 @@ test('TB-EXP-07: Zooming to the minimum level keeps toolbar controls and the con
   await tb.zoomResetBtn.click({ force: true }).catch(() => {});
 });
 
-test('TB-EXP-08: Rapidly toggling the dock 10+ times settles cleanly with no broken intermediate state', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-08: Rapidly toggling the dock 10+ times settles cleanly with no broken intermediate state', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const toggleBtn = page.locator('.leftRightBtn.left button, .leftRightBtn.right button').first();
   for (let i = 0; i < 12; i++) {
     await toggleBtn.click({ force: true }).catch(() => {});
@@ -570,7 +570,7 @@ test('TB-EXP-08: Rapidly toggling the dock 10+ times settles cleanly with no bro
   expect(leftDocked !== rightDocked).toBe(true);
 });
 
-test('TB-EXP-09: The Widgets browser stays functional when its Discipline filter is switched rapidly', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-09: The Widgets browser stays functional when its Discipline filter is switched rapidly', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtWidgets');
   const dropdownVisible = await tb.widgetDisciplineSelect.isVisible({ timeout: 5000 }).catch(() => false);
@@ -589,7 +589,7 @@ test('TB-EXP-09: The Widgets browser stays functional when its Discipline filter
   expect(stillResponsive).toBe(true);
 });
 
-test('TB-EXP-10: Inserting 50+ Shape objects does not degrade canvas selection/drag performance', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-10: Inserting 50+ Shape objects does not degrade canvas selection/drag performance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(180000);
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtShapes');
@@ -658,7 +658,7 @@ test('TB-EXP-11: The zoom percentage indicator matches actual rendered scale aft
   expect(displayedPercent).not.toBeNull();
 });
 
-test('TB-EXP-12: The Undo stack has reasonable depth -- 20+ sequential actions do not run out prematurely', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-12: The Undo stack has reasonable depth -- 20+ sequential actions do not run out prematurely', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const tb = new ToolbarPage(page);
   const basePoint = at(50, 850);
@@ -681,7 +681,7 @@ test('TB-EXP-12: The Undo stack has reasonable depth -- 20+ sequential actions d
   expect(successfulUndos).toBeGreaterThanOrEqual(15);
 });
 
-test('TB-EXP-13: A widget dragged from the browser lands at the drop location, not a fixed default position', { tag: '@boundary' }, async ({ page }) => {
+test('TB-EXP-13: A widget dragged from the browser lands at the drop location, not a fixed default position', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtWidgets');
@@ -731,7 +731,7 @@ test('TB-EXP-13: A widget dragged from the browser lands at the drop location, n
   expect(droppedNearTarget).not.toBeNull();
 });
 
-test('TB-EXP-14: CRITICAL -- Whiteboard History leaks content across classes/chapters (global per-account, not per-class)', { tag: '@security' }, async ({ page }) => {
+test('TB-EXP-14: CRITICAL -- Whiteboard History leaks content across classes/chapters (global per-account, not per-class)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   const nav = new NavigationPage(page);
   const point = at(1000, 100);
@@ -759,12 +759,12 @@ test('TB-EXP-14: CRITICAL -- Whiteboard History leaks content across classes/cha
   expect(historyEntries).toBe(0);
 });
 
-test('TB-EXP-15: A forged autosave payload targeting an unauthorized class/topic ID is rejected (blocked -- no forging tooling)', { tag: '@security' }, async ({ page }) => {
+test('TB-EXP-15: A forged autosave payload targeting an unauthorized class/topic ID is rejected (blocked -- no forging tooling)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same blocker class as NAV-SEC-01/EXP-06 elsewhere in this suite -- needs the autosave request\'s exact shape plus a known unauthorized class/topic ID, neither available without a second reference account');
   expect(true).toBe(false);
 });
 
-test('TB-EXP-16: Pen/Eraser tool-preference panels do not leak another account\'s saved preferences', { tag: '@security' }, async ({ page }) => {
+test('TB-EXP-16: Pen/Eraser tool-preference panels do not leak another account\'s saved preferences', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const tb = new ToolbarPage(page);
   await tb.openToolPanel('gtPen');
   const selectedColor = await tb.penColorSelected.count();
@@ -773,7 +773,7 @@ test('TB-EXP-16: Pen/Eraser tool-preference panels do not leak another account\'
   expect(true).toBe(false);
 });
 
-test('TB-EXP-17: A forged Clear Whiteboard request cannot target a different class than the active one (blocked -- no forging tooling)', { tag: '@security' }, async ({ page }) => {
+test('TB-EXP-17: A forged Clear Whiteboard request cannot target a different class than the active one (blocked -- no forging tooling)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Same blocker as TB-EXP-15 -- needs the Clear Whiteboard request\'s exact shape plus a target ID for a different, known class, neither available without a second reference account');
   expect(true).toBe(false);
 });

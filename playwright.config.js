@@ -33,6 +33,25 @@ module.exports = defineConfig({
     // Every test can call page.goto('/login') instead of the full URL.
     baseURL: process.env.BASE_URL || 'https://ce-qa-school.devstudi.com/teach/',
 
+    // Run with a real, visible browser window by default. UI mode has no
+    // "show browser" toggle in this Playwright version -- this config
+    // setting is the only way to make UI mode (which can't be given a
+    // --headed CLI flag of its own) show the browser while it runs. Set
+    // back to true (or delete this line, true is the default) if you ever
+    // need faster/invisible runs, e.g. on a headless CI machine.
+    headless: false,
+
+    // The real app runs on large classroom displays (interactive flat
+    // panels) -- 1920x1080 is this project's confirmed standard size. Most
+    // spec files already set this themselves via their own test.use(), but
+    // ~30 files never did, silently falling back to Playwright's small
+    // 1280x720 default -- which, in headed mode on a real monitor, visibly
+    // renders the app into only part of the screen (confirmed live: at
+    // 1280x720 the canvas genuinely only fills that smaller area; at
+    // 1920x1080 it correctly fills the whole window). Setting it here
+    // makes every file consistent regardless of whether it overrides it.
+    viewport: { width: 1920, height: 1080 },
+
     // Capture a trace only when a test fails, so we can debug it visually.
     trace: 'on-first-retry',
 

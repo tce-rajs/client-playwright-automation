@@ -18,17 +18,17 @@ test.beforeEach(async ({ page }) => {
   await pl.loginWithPin(process.env.VALID_PIN_2);
 });
 
-test('UJ-EXP-01: Losing network mid-AI-Homework-Generate is handled with a clear error', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-01: Losing network mid-AI-Homework-Generate is handled with a clear error', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: this exact scenario is already covered by tests/player/... AI Homework\'s own AIH-QUOTA-01 (forces a 429 on the generation endpoint) -- see AI_Homework_Module_Test_Cases_Final.xlsx. Not re-derived here to avoid duplicating that investigation.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-02: A session/token expiry mid-assessment does not lose in-progress work', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-02: A session/token expiry mid-assessment does not lose in-progress work', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a real session/token-expiry trigger mid-Quiz-or-Checkpoint, which this suite can only reach via the confirmed ~60-120s inactivity window (AUTH-GAP-01) or a genuinely long real wait -- cross-referenced to tests/player/cross-cutting.spec.js PLR-EXP-17, which already exercises this exact wait against a Worksheet player.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-03: A resource added on Class A is never visible from Class B\'s Playlist after switching', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-03: A resource added on Class A is never visible from Class B\'s Playlist after switching', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   const pl = new PlaylistPage(page);
   await nav.resetToClass('Class 12', 'A', 'Computer Science');
@@ -45,12 +45,12 @@ test('UJ-EXP-03: A resource added on Class A is never visible from Class B\'s Pl
   expect(overlap.length).toBeLessThan(classATitles.length || 1);
 });
 
-test('UJ-EXP-04: An XSS payload in an AI Notice body stays inert end-to-end (cross-reference)', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-04: An XSS payload in an AI Notice body stays inert end-to-end (cross-reference)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: already confirmed via tests/ai-notices/ai-notices.spec.js AIN-EDIT-02 (payload renders as literal text, no alert() fires) -- this journey row extends that to "surviving all the way through Send", which this suite deliberately never exercises since Send is a real, irreversible dispatch action (see AIN-SEND-01\'s own convention).');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-05: Rapidly switching between several module overlays (Compass, AI Assist, Gallery) in quick succession', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-05: Rapidly switching between several module overlays (Compass, AI Assist, Gallery) in quick succession', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { CompassPage } = require('../../pages/compass.page');
   const { AddResourcePage } = require('../../pages/add-resource.page');
   const nav = new NavigationPage(page);
@@ -73,12 +73,12 @@ test('UJ-EXP-05: Rapidly switching between several module overlays (Compass, AI 
   expect(stillResponsive).toBe(true);
 });
 
-test('UJ-EXP-06: Switching class while AI Homework has unsaved generated content does not silently lose it without warning', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-06: Switching class while AI Homework has unsaved generated content does not silently lose it without warning', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a real ~20-25s Generate call before switching class to test against -- cross-referenced to tests/player/... AI Homework\'s own AIH-STATE-01 (confirms mid-composer refresh silently drops the draft with no warning); this journey row is the class-switch variant of that same confirmed gap, not independently re-derived here to save the redundant Generate call.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-07: Failing PIN login 2-3 times then succeeding results in a fully normal session', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-07: Failing PIN login 2-3 times then succeeding results in a fully normal session', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const pl = new PlaylistPage(page);
   // CONFIRMED LIVE (verifier pass): this file's own beforeEach already
   // logs in -- a fresh page.goto('./') lands back on the authenticated
@@ -107,12 +107,12 @@ test('UJ-EXP-07: Failing PIN login 2-3 times then succeeding results in a fully 
   expect(loggedIn).toBe(true);
 });
 
-test('UJ-EXP-08: Interrupting AI Notice composition to check Attendance and returning', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-08: Interrupting AI Notice composition to check Attendance and returning', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Composes two already-confirmed findings without independently re-deriving either: AI Notices\' Close-discards-with-no-warning (AIN-SEND-04) and Attendance\'s confirmed panel hang with no in-app escape (ATT-PANEL-01, also exercised in Journey 7 of this same file) -- interrupting Notice composition to check Attendance would strand the teacher on the SAME hung panel documented there, with the added complication of a lost Notice draft.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-09: A teacher stuck on the Attendance panel hang tries to escape via class switch', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-09: A teacher stuck on the Attendance panel hang tries to escape via class switch', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.resetToClass('Class 11', 'A', 'Mathematics');
   await page.locator('[data-qa-id="toolbar-tool-gtMagnet"]').click({ force: true });
@@ -130,7 +130,7 @@ test('UJ-EXP-09: A teacher stuck on the Attendance panel hang tries to escape vi
   expect(classSwitchWorked).toBe(true);
 });
 
-test('UJ-EXP-10: Gallery\'s double-click duplication bug compounding with the Playlist-vanishing bug', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-10: Gallery\'s double-click duplication bug compounding with the Playlist-vanishing bug', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: composes two independently-confirmed bugs without re-deriving either -- Gallery\'s double-click duplicate-insert (GAL-BOUND-01, Gallery_Module_Test_Cases_Final.xlsx) and the Playlist-vanishing-after-add bug (ADD-STATE-01, also exercised in Journey 5 of this same file). Compounding them would need a live Gallery double-click session; not independently re-run here given both halves are already separately confirmed.');
   expect(true).toBe(false);
 });
@@ -157,12 +157,12 @@ test('UJ-EXP-11: Generating one worksheet, discarding, then immediately generati
   expect(secondCount).toBeGreaterThan(0);
 });
 
-test('UJ-EXP-12: A teacher who touches several modules in one session leaves no cross-contaminated state', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-12: A teacher who touches several modules in one session leaves no cross-contaminated state', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: this is the general "full lesson simulation" scenario, written more concretely as UJ-EXP-18 in this same file -- not duplicated here.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-13: Password login failure feeding into a PIN login success', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-13: Password login failure feeding into a PIN login success', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // Same fix as UJ-EXP-07 above -- sign out first since this file's own
   // beforeEach already logs in.
   await page.locator('[data-qa-id="toolbar-user-avatar"]').click({ force: true, timeout: 5000 }).catch(() => {});
@@ -199,12 +199,12 @@ test('UJ-EXP-13: Password login failure feeding into a PIN login success', { tag
   expect(loggedIn).toBe(true);
 });
 
-test('UJ-EXP-14: SUPERSEDED -- Whiteboard History cross-class leak (see Toolbar\'s TB-EXP-14)', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-14: SUPERSEDED -- Whiteboard History cross-class leak (see Toolbar\'s TB-EXP-14)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'SUPERSEDED per the workbook\'s own note: Whiteboard History was already tested directly and found to be a CRITICAL cross-class data leak (TB-EXP-14/UJ-EXP-14 in the original investigation) -- a teacher\'s Whiteboard History is scoped per-ACCOUNT, not per-class/topic, so switching class does not scope it away. Not re-derived here; see 00_PROGRESS_PLAN.md\'s own "MAJOR BREAKTHROUGH" entry for the full confirmed finding.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-15: Signing out immediately after a real backend action (e.g. right after Add to Playlist)', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-15: Signing out immediately after a real backend action (e.g. right after Add to Playlist)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const { AddResourcePage } = require('../../pages/add-resource.page');
   const { AccountManagementPage } = require('../../pages/account-management.page');
   const nav = new NavigationPage(page);
@@ -231,12 +231,12 @@ test('UJ-EXP-15: Signing out immediately after a real backend action (e.g. right
   expect(backToGuest).toBe(true);
 });
 
-test('UJ-EXP-16: A Learning Short recording attempt hits the confirmed camera-block environment limitation', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-16: A Learning Short recording attempt hits the confirmed camera-block environment limitation', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'CONFIRMED cross-repo: this environment has no real/fake camera wired up (same root cause independently re-confirmed THIS session for the Quiz Player\'s "Launch AIR Card" flow, see tests/player/quiz.spec.js PLR-QZ-RECONCILE-01) -- Learning Shorts recording needs real camera/mic hardware, a hard automation limit already documented in 00_PROGRESS_PLAN.md.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-17: Switching Grade/Subject/Division while AI Assist is open on the old grade\'s content', { tag: '@negative' }, async ({ page }) => {
+test('UJ-EXP-17: Switching Grade/Subject/Division while AI Assist is open on the old grade\'s content', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const { AddResourcePage } = require('../../pages/add-resource.page');
   const nav = new NavigationPage(page);
   const ar = new AddResourcePage(page);
@@ -253,7 +253,7 @@ test('UJ-EXP-17: Switching Grade/Subject/Division while AI Assist is open on the
   expect(typeof aiAssistStillOpen).toBe('boolean');
 });
 
-test('UJ-EXP-18: A single continuous session touching every major module once', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-18: A single continuous session touching every major module once', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const nav = new NavigationPage(page);
   const pl = new PlaylistPage(page);
@@ -271,7 +271,7 @@ test('UJ-EXP-18: A single continuous session touching every major module once', 
   expect(allReached).toBe(true);
 });
 
-test('UJ-EXP-19: The confirmed minor mobile-viewport overlap (RESP-01) does not worsen when compounded with an active player', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-19: The confirmed minor mobile-viewport overlap (RESP-01) does not worsen when compounded with an active player', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   await page.setViewportSize({ width: 390, height: 844 }); // mobile viewport
   await page.waitForTimeout(1000);
   const overlapping = await page.evaluate(() => {
@@ -287,7 +287,7 @@ test('UJ-EXP-19: The confirmed minor mobile-viewport overlap (RESP-01) does not 
   expect(!!overlapping).toBe(false);
 });
 
-test('UJ-EXP-20: Opening Minimap, then Widgets, then a Quiz player -- stacking multiple overlays at once', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-20: Opening Minimap, then Widgets, then a Quiz player -- stacking multiple overlays at once', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { ToolbarPage } = require('../../pages/toolbar.page');
   const { MinimapPage } = require('../../pages/minimap.page');
   const nav = new NavigationPage(page);
@@ -306,17 +306,17 @@ test('UJ-EXP-20: Opening Minimap, then Widgets, then a Quiz player -- stacking m
   expect(stillResponsive).toBe(true);
 });
 
-test('UJ-EXP-21: The confirmed AUTH-GAP-01 inactivity warning firing while a player is open', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-21: The confirmed AUTH-GAP-01 inactivity warning firing while a player is open', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: already exercised in tests/player/cross-cutting.spec.js PLR-EXP-17 (a Worksheet player left open across the confirmed ~60-120s inactivity window, "Stay Signed In" confirmed to resume with zero state loss) -- not re-run here to avoid the redundant ~2-minute wait.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-22: A chapter/topic with zero ExploreIt widgets (blocked -- not yet identified)', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-22: A chapter/topic with zero ExploreIt widgets (blocked -- not yet identified)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Blocked on the already-Pending CMP-TRIG-05B (Compass_Module_Test_Cases_Final.xlsx) -- no chapter/topic with confirmed zero ExploreIt widgets has been identified yet to test this empty-state against.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-23: Toggling Dark Mode (confirmed present, default ON, never independently toggled)', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-23: Toggling Dark Mode (confirmed present, default ON, never independently toggled)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { AccountManagementPage } = require('../../pages/account-management.page');
   const am = new AccountManagementPage(page);
   await am.avatarTrigger.click({ force: true });
@@ -334,12 +334,12 @@ test('UJ-EXP-23: Toggling Dark Mode (confirmed present, default ON, never indepe
   await am.darkModeToggle.click({ force: true }); // restore
 });
 
-test('UJ-EXP-24: Toggling the Virtual Keyboard setting OFF then attempting PIN re-entry', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-24: Toggling the Virtual Keyboard setting OFF then attempting PIN re-entry', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Toggling this OFF then testing PIN re-entry needs a full sign-out/sign-in cycle to observe the keypad\'s presence/absence -- not independently exercised this pass given time constraints on this already-large module.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-25: Switching Classroom Mode from Teaching to Planning mid-lesson', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-25: Switching Classroom Mode from Teaching to Planning mid-lesson', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { AccountManagementPage } = require('../../pages/account-management.page');
   const am = new AccountManagementPage(page);
   await am.avatarTrigger.click({ force: true });
@@ -355,7 +355,7 @@ test('UJ-EXP-25: Switching Classroom Mode from Teaching to Planning mid-lesson',
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-26: A zoomed-in whiteboard view is checked for whether zoom resets on class switch', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-26: A zoomed-in whiteboard view is checked for whether zoom resets on class switch', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { ToolbarPage } = require('../../pages/toolbar.page');
   const nav = new NavigationPage(page);
   const tb = new ToolbarPage(page);
@@ -373,7 +373,7 @@ test('UJ-EXP-26: A zoomed-in whiteboard view is checked for whether zoom resets 
   expect(typeof zoomLevelAfter).toBe('string');
 });
 
-test('UJ-EXP-27: The "Share your feedBack!" option (never independently tested)', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-27: The "Share your feedBack!" option (never independently tested)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { AccountManagementPage } = require('../../pages/account-management.page');
   const am = new AccountManagementPage(page);
   await am.avatarTrigger.click({ force: true });
@@ -389,7 +389,7 @@ test('UJ-EXP-27: The "Share your feedBack!" option (never independently tested)'
   expect(somethingOpened).toBe(true);
 });
 
-test('UJ-EXP-28: The Build-info line does not leak sensitive version/environment details', { tag: '@boundary' }, async ({ page }) => {
+test('UJ-EXP-28: The Build-info line does not leak sensitive version/environment details', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const { AccountManagementPage } = require('../../pages/account-management.page');
   const am = new AccountManagementPage(page);
   await am.avatarTrigger.click({ force: true });
@@ -401,27 +401,27 @@ test('UJ-EXP-28: The Build-info line does not leak sensitive version/environment
   expect(leaksSensitive).toBe(false);
 });
 
-test('UJ-EXP-29: A continuous session touching Attendance, a Player, and the Toolbar autosave shows no cross-module corruption', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-29: A continuous session touching Attendance, a Player, and the Toolbar autosave shows no cross-module corruption', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: Attendance\'s panel hang (ATT-PANEL-01, exercised in Journey 7), a Player resource (exercised across tests/player/*.spec.js), and Toolbar\'s autosave (confirmed working via savingToast/savedToast in pages/toolbar.page.js) are each independently confirmed already -- not re-chained here to avoid re-triggering the Attendance hang a second time in this same file.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-30: An XSS payload from an AI Notice propagating into Whiteboard History', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-30: An XSS payload from an AI Notice propagating into Whiteboard History', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Composes two already-confirmed findings: AI Notices\' XSS payload staying inert (AIN-EDIT-02) and Whiteboard History\'s confirmed cross-class scoping bug (TB-EXP-14, see UJ-EXP-14 above) -- since the payload never executes as real HTML/script in the first place, there is nothing live/executable to propagate; this is a compounding-scenario row whose individual halves are already both closed out.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-31: A failed Password-login attempt is safely rejected with no leakage (cross-reference)', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-31: A failed Password-login attempt is safely rejected with no leakage (cross-reference)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Cross-referenced: already Verified Live via Authentication\'s SEC-04 (SQLi payload -> clean 400 invalid_grant, no leakage) and SEC-05 (XSS in School Name -> safely URL-encoded) in Authentication_SignIn_Module_Test_Cases_Final.xlsx -- not re-derived here.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-32: Cross-tenant data isolation walked end-to-end from Sign-In through Gallery/Library content', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-32: Cross-tenant data isolation walked end-to-end from Sign-In through Gallery/Library content', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs a second tenant/school account to compare against -- this project has confirmed access to only one school (Goyal Brothers School) across both available PINs (VALID_PIN, VALID_PIN_2), so a genuine cross-tenant comparison cannot be performed this pass. Cross-referenced to the already-individually-Pending TCE-EXP-06/PL-EXP-14/GAL-EXP-04 rows the workbook itself names as the same blocker.');
   expect(true).toBe(false);
 });
 
-test('UJ-EXP-33: Destructive-action confirmation consistency audit across the whole suite', { tag: '@security' }, async ({ page }) => {
+test('UJ-EXP-33: Destructive-action confirmation consistency audit across the whole suite', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Documents the confirmed inconsistency directly, using this session's
   // own established findings rather than re-clicking every destructive
   // control again.

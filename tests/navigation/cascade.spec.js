@@ -83,7 +83,7 @@ test('NAV-CAS-06: A Grade with zero Divisions or Subjects assigned to this teach
   }
 });
 
-test('NAV-CAS-07: Reselecting the already-active Grade/Division/Subject', { tag: '@positive' }, async ({ page }) => {
+test('NAV-CAS-07: Reselecting the already-active Grade/Division/Subject', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // CONFIRMED FINDING (reproduced consistently across 4 separate runs with
   // different fix attempts — a settle wait, an explicit waitFor on the
   // active-grade element, and a fresh login each time): after this
@@ -111,7 +111,7 @@ test('NAV-CAS-07: Reselecting the already-active Grade/Division/Subject', { tag:
   await expect(nav.currentClassBtn).toHaveText(beforeText.trim());
 });
 
-test('NAV-CAS-08: Rapid repeated clicks across different Grade pills before columns finish updating', { tag: '@boundary' }, async ({ page }) => {
+test('NAV-CAS-08: Rapid repeated clicks across different Grade pills before columns finish updating', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const nav = new NavigationPage(page);
   await nav.gradeButton('Class 9').click();
   await nav.gradeButton('Class 12').click();
@@ -128,7 +128,7 @@ test('NAV-CAS-08: Rapid repeated clicks across different Grade pills before colu
   expect(activeGradeTexts[0].trim()).toBe('Class 8');
 });
 
-test('NAV-CAS-09: Grade/Division/Subject lists only ever show this teacher\'s own assigned classes', { tag: '@security' }, async ({ page }) => {
+test('NAV-CAS-09: Grade/Division/Subject lists only ever show this teacher\'s own assigned classes', { tag: ['@security', '@bug'] }, async ({ page }) => {
   // Verifying this properly needs a second reference account or a
   // back-office record of the teacher's real assignments to cross-check
   // against -- neither is available in this environment. Documenting the

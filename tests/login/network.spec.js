@@ -58,7 +58,7 @@ test('NET-03: Slow network shows a loading/disabled state', { tag: '@boundary' }
   await expect(login.submitButton).toBeDisabled({ timeout: 1000 });
 });
 
-test('NET-04: Request timeout handling', { tag: '@boundary' }, async ({ page }) => {
+test('NET-04: Request timeout handling', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // FINDING: with the login request hung indefinitely (never
   // fulfilled/continued/aborted), no timeout message appeared within a 20s
   // bounded wait — confirmed via a real run, the loader/disabled state

@@ -113,7 +113,7 @@ test('PIN-11: Switch to "Sign in with Password"', { tag: '@positive' }, async ({
   await expect(login.passwordForm).toBeVisible();
 });
 
-test('PIN-12: "Sign in with Password" link is focusable', { tag: '@ui-state' }, async ({ page }) => {
+test('PIN-12: "Sign in with Password" link is focusable', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // BUG FOUND: the link is a plain <a> with no href and no tabindex
   // (confirmed via its attributes), so it is NOT keyboard-focusable in a
   // real browser -- a keyboard-only user tabbing through the modal cannot
@@ -136,7 +136,7 @@ test('PIN-13: Virtual keyboard opens on box click', { tag: '@positive' }, async 
   }
 });
 
-test('PIN-14: Virtual keyboard digit keys fill the boxes correctly', { tag: '@positive' }, async ({ page }) => {
+test('PIN-14: Virtual keyboard digit keys fill the boxes correctly', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // CONFIRMED UNRELIABLE under browser automation — tried three different
   // fixes (force-click, position-settle polling, outcome-verified retry
   // with up to 4 attempts per key) across many repeated runs; none made
@@ -161,7 +161,7 @@ test('PIN-14: Virtual keyboard digit keys fill the boxes correctly', { tag: '@po
   }
 });
 
-test('PIN-15: Virtual keyboard Backspace/Enter keys function', { tag: '@positive' }, async ({ page }) => {
+test('PIN-15: Virtual keyboard Backspace/Enter keys function', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Same confirmed automation unreliability as PIN-14 — see that test's
   // comment. Backspace/Enter are keys in the same keypad.
   test.fail(true, 'Same confirmed unreliable virtual-key clicking as PIN-14');
@@ -202,7 +202,7 @@ test('PIN-16: "Disable Virtual Keyboard" hides the keypad', { tag: '@ui-state' }
   await expect(login.numericKeypad).toBeHidden();
 });
 
-test('PIN-17: Minimize (down-arrow) keyboard control works', { tag: '@ui-state' }, async ({ page }) => {
+test('PIN-17: Minimize (down-arrow) keyboard control works', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   // FINDING: unlike the digit key rows (PIN-14/15), this control's icon
   // (a <div class="close"> wrapping the down-arrow SVG) sits within the
   // viewport bounds (verified via its real bounding box), but Playwright's
@@ -266,7 +266,7 @@ test('PIN-21: Same PIN entered via physical keyboard vs virtual keypad', { tag: 
   await expect(login.welcomeBackTitle).toBeVisible({ timeout: 15000 });
 });
 
-test('PIN-22: Paste a 5-digit value into the PIN box', { tag: '@boundary' }, async ({ page, context }) => {
+test('PIN-22: Paste a 5-digit value into the PIN box', { tag: ['@boundary', '@bug'] }, async ({ page, context }) => {
   // BUG FOUND: pasting a full 5-digit value into box 1 does not distribute
   // it across the 5 boxes, and it isn't rejected with any message either —
   // only the FIRST character of the pasted text lands in box 1, and boxes

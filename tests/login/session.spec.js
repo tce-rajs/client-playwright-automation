@@ -90,7 +90,7 @@ test('SESS-04: Session/token expiry mid-session', { tag: '@boundary' }, async ({
   await expect(login.guestModeText).toBeVisible({ timeout: 10000 });
 });
 
-test('SESS-05: Sign-out clears session fully', { tag: '@positive' }, async ({ page }) => {
+test('SESS-05: Sign-out clears session fully', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const login = new LoginPage(page);
   await page.goto('./');
   await login.openSignIn();
@@ -111,7 +111,7 @@ test('SESS-05: Sign-out clears session fully', { tag: '@positive' }, async ({ pa
   expect(bodyTextLength).toBeGreaterThan(0);
 });
 
-test('SESS-06: Browser back button after successful login', { tag: '@boundary' }, async ({ page }) => {
+test('SESS-06: Browser back button after successful login', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // BUG FOUND (same class of bug as ENT-07 and SESS-05): pressing Back
   // right after a successful login also lands on a permanent blank page.
   test.fail(true, 'Browser Back after login lands on a blank page — same class of bug as ENT-07/SESS-05');

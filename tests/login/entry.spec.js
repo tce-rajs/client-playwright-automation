@@ -64,7 +64,7 @@ test('ENT-06: Guest Mode content unaffected after opening/closing modal', { tag:
   await expect(login.guestModeText).toBeVisible();
 });
 
-test('ENT-07: Direct URL access to an authenticated route while logged out', { tag: '@security' }, async ({ page, baseURL }) => {
+test('ENT-07: Direct URL access to an authenticated route while logged out', { tag: ['@security', '@bug'] }, async ({ page, baseURL }) => {
   // BUG FOUND: navigating straight to an unmatched/protected-looking route
   // (there's no confirmed real "post-login" route name, so we probe a
   // plausible one) throws an uncaught Angular Router error (NG04002 "no

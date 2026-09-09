@@ -65,7 +65,7 @@ test('PLR-EBK-02: Launching the ebook opens the reader with real page content', 
   expect(bodyText).toMatch(/chapter fourteen|semiconductor/i);
 });
 
-test('PLR-EBK-03: The chapter drawer opens to allow switching chapters', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-EBK-03: The chapter drawer opens to allow switching chapters', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const result = await tryOpenDrawer(page, plr.ebookChapterDrawerToggle);
@@ -75,7 +75,7 @@ test('PLR-EBK-03: The chapter drawer opens to allow switching chapters', { tag: 
   expect(result.changed).toBe(true);
 });
 
-test('PLR-EBK-04: The chapter drawer can be toggled open and closed', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EBK-04: The chapter drawer can be toggled open and closed', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const result = await tryOpenDrawer(page, plr.ebookChapterDrawerToggle);
@@ -83,7 +83,7 @@ test('PLR-EBK-04: The chapter drawer can be toggled open and closed', { tag: '@n
   expect(result.changed).toBe(true);
 });
 
-test('PLR-EBK-05: The resource drawer shows resources linked to the current chapter, or an explicit empty state', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-EBK-05: The resource drawer shows resources linked to the current chapter, or an explicit empty state', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const result = await tryOpenDrawer(page, plr.ebookResourceDrawerToggle);
@@ -126,7 +126,7 @@ test('PLR-EBK-03: Confirmed Ebook entry flow -- gated PER-CHAPTER, a genuinely d
   // the confirmed per-chapter reach mechanism the workbook describes.
 });
 
-test('PLR-EBK-04: CONFIRMED BUG (re-check) -- the chapter-panel collapse/re-expand toggle does not reliably work on the second click', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EBK-04: CONFIRMED BUG (re-check) -- the chapter-panel collapse/re-expand toggle does not reliably work on the second click', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const result1 = await tryOpenDrawer(page, plr.ebookChapterDrawerToggle);
@@ -155,7 +155,7 @@ test('PLR-EBK-05: The chapter list loads one item at a time (sequential), not in
   expect(counts.every((c) => c >= 0)).toBe(true);
 });
 
-test('PLR-EBK-06: Opening a resource from WITHIN the Ebook\'s own resource list (nested player)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EBK-06: Opening a resource from WITHIN the Ebook\'s own resource list (nested player)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const resourceCardCount = await plr.ebookResourceCards.count();
@@ -169,7 +169,7 @@ test('PLR-EBK-06: Opening a resource from WITHIN the Ebook\'s own resource list 
   expect(closeIconCount).toBeGreaterThan(0);
 });
 
-test('PLR-EBK-07: Only one confirmed Ebook-linked resource exists -- multi-type-mix coverage is blocked', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EBK-07: Only one confirmed Ebook-linked resource exists -- multi-type-mix coverage is blocked', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const count = await plr.ebookResourceCards.count();
@@ -178,7 +178,7 @@ test('PLR-EBK-07: Only one confirmed Ebook-linked resource exists -- multi-type-
   expect(count).toBeLessThan(3);
 });
 
-test('PLR-EXP-SEC-08: Direct manipulation of the Ebook reader\'s page-number parameter cannot access out-of-range pages', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-08: Direct manipulation of the Ebook reader\'s page-number parameter cannot access out-of-range pages', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const goToPageInput = page.locator('input[placeholder*="page" i], input[type="number"]').first();
@@ -195,7 +195,7 @@ test('PLR-EXP-SEC-08: Direct manipulation of the Ebook reader\'s page-number par
   expect(crashed).toBe(false);
 });
 
-test('PLR-EXP-22: Navigating to page 1 and clicking Prev again does not wrap to the last page', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-22: Navigating to page 1 and clicking Prev again does not wrap to the last page', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openEbook(page, plr);
   const goToPageInput = page.locator('input[placeholder*="page" i], input[type="number"]').first();

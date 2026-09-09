@@ -51,7 +51,7 @@ test('PLR-IMG-01: Clicking an Image resource opens the image viewer frame', { ta
   expect(frameOpened).toBe(true);
 });
 
-test('PLR-IMG-02: CRITICAL -- Image fails with the same hybrid-player crash confirmed on Video (re-check)', { tag: '@negative' }, async ({ page }) => {
+test('PLR-IMG-02: CRITICAL -- Image fails with the same hybrid-player crash confirmed on Video (re-check)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded, errors } = await openImageTrackingCrash(page, plr);
   console.log('Crashed (targetContainer error):', crashed, '| image loaded:', imageLoaded, '| pageerrors:', JSON.stringify(errors));
@@ -62,21 +62,21 @@ test('PLR-IMG-02: CRITICAL -- Image fails with the same hybrid-player crash conf
   expect(imageLoaded).toBe(true);
 });
 
-test('PLR-IMG-03: Zoom/pan controls work on a loaded image (blocked if the crash reproduces)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-IMG-03: Zoom/pan controls work on a loaded image (blocked if the crash reproduces)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
   test.fail(crashed || !imageLoaded, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no loaded image exists to zoom/pan');
   expect(imageLoaded).toBe(true);
 });
 
-test('PLR-IMG-04: Annotation tools work over a loaded image (blocked if the crash reproduces)', { tag: '@positive' }, async ({ page }) => {
+test('PLR-IMG-04: Annotation tools work over a loaded image (blocked if the crash reproduces)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
   test.fail(crashed || !imageLoaded, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no loaded image exists to annotate over');
   expect(imageLoaded).toBe(true);
 });
 
-test('PLR-IMG-05: Confirmed Image DOM -- third-party gallery element with no data-qa-id inside (blocked if the crash reproduces)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-IMG-05: Confirmed Image DOM -- third-party gallery element with no data-qa-id inside (blocked if the crash reproduces)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
   test.fail(crashed || !imageLoaded, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no rendered .image-gallery element exists to inspect');
@@ -86,14 +86,14 @@ test('PLR-IMG-05: Confirmed Image DOM -- third-party gallery element with no dat
   expect(qaIdInside).toBe(0);
 });
 
-test('PLR-IMG-06: The image annotation overlay is real SVG with genuine path elements (blocked if the crash reproduces)', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-IMG-06: The image annotation overlay is real SVG with genuine path elements (blocked if the crash reproduces)', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
   test.fail(crashed || !imageLoaded, 'Blocked because the player never initialized this run (crashed flag: see the console.log above -- may be the confirmed targetContainer crash, or a different/unconfirmed non-init failure) -- no loaded image exists to draw an annotation over');
   expect(imageLoaded).toBe(true);
 });
 
-test('PLR-IMG-07: Only one confirmed Image resource exists -- size/orientation variety and multi-image-open are blocked', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-IMG-07: Only one confirmed Image resource exists -- size/orientation variety and multi-image-open are blocked', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const count = await plr.imageCards.count();
   console.log('Distinct Image resources found on this topic:', count);
@@ -101,7 +101,7 @@ test('PLR-IMG-07: Only one confirmed Image resource exists -- size/orientation v
   expect(count).toBeGreaterThanOrEqual(2);
 });
 
-test('PLR-IMG-08: RECONCILIATION -- is the crash universal to all Image resources, or scoped like Video\'s split?', { tag: '@cross-cutting' }, async ({ page }) => {
+test('PLR-IMG-08: RECONCILIATION -- is the crash universal to all Image resources, or scoped like Video\'s split?', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed } = await openImageTrackingCrash(page, plr);
   console.log('This resource (the only confirmed Image resource on this account) crashed:', crashed);
@@ -109,12 +109,12 @@ test('PLR-IMG-08: RECONCILIATION -- is the crash universal to all Image resource
   expect(crashed).toBe(false);
 });
 
-test('PLR-EXP-SEC-09: An Image resource\'s underlying asset URL cannot be manipulated to load an unauthorized asset', { tag: '@security' }, async ({ page }) => {
+test('PLR-EXP-SEC-09: An Image resource\'s underlying asset URL cannot be manipulated to load an unauthorized asset', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Needs real request-crafting tooling against the image asset URL, not available in this Playwright-only environment this pass. The confirmed hybrid-player crash (PLR-IMG-02) also means no genuinely loaded image asset URL is reachable to inspect on this account\'s available resources.');
   expect(true).toBe(false);
 });
 
-test('PLR-EXP-06: An Image resource that fails to load shows a clear broken-image state within the player chrome', { tag: '@negative' }, async ({ page }) => {
+test('PLR-EXP-06: An Image resource that fails to load shows a clear broken-image state within the player chrome', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
   console.log('Crashed:', crashed, '| loaded:', imageLoaded);
@@ -124,7 +124,7 @@ test('PLR-EXP-06: An Image resource that fails to load shows a clear broken-imag
   expect(closeStillWorks).toBe(true);
 });
 
-test('PLR-EXP-24: A very high-resolution image loads and displays without breaking zoom/pan (boundary, blocked -- no such resource confirmed, and the crash blocks the only one that exists)', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-EXP-24: A very high-resolution image loads and displays without breaking zoom/pan (boundary, blocked -- no such resource confirmed, and the crash blocks the only one that exists)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
   test.fail(true, crashed || !imageLoaded

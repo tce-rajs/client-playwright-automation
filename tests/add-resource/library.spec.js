@@ -68,7 +68,7 @@ test('ADD-LIB-05: Search is inactive while the search box is empty', { tag: '@ui
   await expect(ar.librarySearchBtn).toBeDisabled();
 });
 
-test('ADD-LIB-06: Selecting a Library search result attaches it to the current Topic\'s playlist', { tag: '@positive' }, async ({ page }) => {
+test('ADD-LIB-06: Selecting a Library search result attaches it to the current Topic\'s playlist', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Deliberately not executed via a real click-to-attach -- would alter the
   // shared QA playlist, matching the workbook's own documented decision.
   const ar = new AddResourcePage(page);

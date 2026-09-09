@@ -18,7 +18,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await applyClassMap(nav, 'compassBaseline', { chapterNav: false });
 });
 
-test('CMP-BREAK-01: rapidly clicking the Compass trigger 6 times in quick succession never stacks more than one open popover', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-BREAK-01: rapidly clicking the Compass trigger 6 times in quick succession never stacks more than one open popover', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await expect(cmp.triggerBtn).toBeVisible({ timeout: 10000 });
   for (let i = 0; i < 6; i++) {
@@ -33,7 +33,7 @@ test('CMP-BREAK-01: rapidly clicking the Compass trigger 6 times in quick succes
   expect(openMenuCount).toBeLessThanOrEqual(1);
 });
 
-test('CMP-BREAK-02: pressing the browser Back button while the Compass popover is open does not leave a stuck overlay behind', { tag: '@ui-state' }, async ({ page }) => {
+test('CMP-BREAK-02: pressing the browser Back button while the Compass popover is open does not leave a stuck overlay behind', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const cmp = new CompassPage(page);
   await expect(cmp.triggerBtn).toBeVisible({ timeout: 10000 });
   const { opened } = await cmp.openTrigger();
@@ -59,7 +59,7 @@ test('CMP-BREAK-02: pressing the browser Back button while the Compass popover i
   expect(pageUsable).toBe(true);
 });
 
-test('CMP-BREAK-03: an extreme 250-character Quiz title in Planning mode\'s Create Quiz form does not break the form layout', { tag: '@boundary' }, async ({ page }) => {
+test('CMP-BREAK-03: an extreme 250-character Quiz title in Planning mode\'s Create Quiz form does not break the form layout', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const cmp = new CompassPage(page);
   const { switched } = await cmp.switchToPlanningMode();
@@ -94,7 +94,7 @@ test('CMP-BREAK-03: an extreme 250-character Quiz title in Planning mode\'s Crea
   await cmp.switchToTeachingMode();
 });
 
-test('CMP-BREAK-04: two full rapid Teaching<->Planning mode switch cycles back to back do not compound into a broken state', { tag: '@state-persistence' }, async ({ page }) => {
+test('CMP-BREAK-04: two full rapid Teaching<->Planning mode switch cycles back to back do not compound into a broken state', { tag: ['@state-persistence', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const cmp = new CompassPage(page);
   const results = [];
@@ -112,7 +112,7 @@ test('CMP-BREAK-04: two full rapid Teaching<->Planning mode switch cycles back t
   expect(finalTriggerReachable).toBe(true);
 });
 
-test('CMP-BREAK-05: an HTML/script-tag string in the Create Quiz title field is treated as literal text, never executed', { tag: '@security' }, async ({ page }) => {
+test('CMP-BREAK-05: an HTML/script-tag string in the Create Quiz title field is treated as literal text, never executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const cmp = new CompassPage(page);
   const { switched } = await cmp.switchToPlanningMode();

@@ -23,7 +23,7 @@ test.beforeEach(async ({ page }) => {
   await pl.ensureDrawerVisible();
 });
 
-test('PLR-BREAK-01: rapidly cycling through 3 different player types (Worksheet -> Weblink -> Image) with no settle wait leaves each one genuinely functional, not a corrupted/blank stack', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-BREAK-01: rapidly cycling through 3 different player types (Worksheet -> Weblink -> Image) with no settle wait leaves each one genuinely functional, not a corrupted/blank stack', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   // NOTE: the existing PLR-XCUT-02 already confirms (as accepted, INTENDED
   // behavior, not a bug) that opening a second different player type
   // leaves the first one open side-by-side rather than force-closing it --
@@ -51,7 +51,7 @@ test('PLR-BREAK-01: rapidly cycling through 3 different player types (Worksheet 
   await plr.closePlayer().catch(() => {});
 });
 
-test('PLR-BREAK-02: closing a player the instant it opens (before its own content/loading spinner settles) does not leave the Playlist strip broken for the next open', { tag: '@negative' }, async ({ page }) => {
+test('PLR-BREAK-02: closing a player the instant it opens (before its own content/loading spinner settles) does not leave the Playlist strip broken for the next open', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const plr = new PlayerPage(page);
 
@@ -75,7 +75,7 @@ test('PLR-BREAK-02: closing a player the instant it opens (before its own conten
   await plr.closePlayer().catch(() => {});
 });
 
-test('PLR-BREAK-03: switching Class while a player is open closes/hides it cleanly, not leaving it stuck over the new class\'s whiteboard', { tag: '@ui-state' }, async ({ page }) => {
+test('PLR-BREAK-03: switching Class while a player is open closes/hides it cleanly, not leaving it stuck over the new class\'s whiteboard', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const plr = new PlayerPage(page);
   const nav = new NavigationPage(page);
@@ -92,7 +92,7 @@ test('PLR-BREAK-03: switching Class while a player is open closes/hides it clean
   expect(playerStillVisible).toBe(false);
 });
 
-test('PLR-BREAK-04: opening the SAME resource card 6 times in immediate succession (beyond the existing double-click check) never accumulates more than one player instance', { tag: '@boundary' }, async ({ page }) => {
+test('PLR-BREAK-04: opening the SAME resource card 6 times in immediate succession (beyond the existing double-click check) never accumulates more than one player instance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.setTimeout(45000);
   const plr = new PlayerPage(page);
 

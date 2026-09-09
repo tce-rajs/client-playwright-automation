@@ -15,7 +15,7 @@ test.beforeEach(async ({ page }) => {
   await pl.loginWithPin(process.env.VALID_PIN);
 });
 
-test('USR-BREAK-01: rapidly clicking the avatar 6 times in quick succession never stacks more than one profile popover', { tag: '@boundary' }, async ({ page }) => {
+test('USR-BREAK-01: rapidly clicking the avatar 6 times in quick succession never stacks more than one profile popover', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   for (let i = 0; i < 6; i++) {
     await acc.avatarTrigger.click({ force: true, timeout: 3000 }).catch(() => {});
@@ -32,7 +32,7 @@ test('USR-BREAK-01: rapidly clicking the avatar 6 times in quick succession neve
   expect(signOutCount).toBeLessThanOrEqual(1);
 });
 
-test('USR-BREAK-02: pressing the browser Back button while the User Profile modal is open does not leave a stuck overlay behind', { tag: '@ui-state' }, async ({ page }) => {
+test('USR-BREAK-02: pressing the browser Back button while the User Profile modal is open does not leave a stuck overlay behind', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   const modalOpenedBefore = await acc.accountTab.isVisible({ timeout: 5000 }).catch(() => false);
@@ -50,7 +50,7 @@ test('USR-BREAK-02: pressing the browser Back button while the User Profile moda
   expect(pageUsable).toBe(true);
 });
 
-test('USR-BREAK-03: rapidly toggling Dark Mode 10 times in a row settles on a consistent final state, not a flickering/desynced one', { tag: '@boundary' }, async ({ page }) => {
+test('USR-BREAK-03: rapidly toggling Dark Mode 10 times in a row settles on a consistent final state, not a flickering/desynced one', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openProfileMenu();
   const toggleVisible = await acc.darkModeToggle.isVisible({ timeout: 5000 }).catch(() => false);
@@ -76,7 +76,7 @@ test('USR-BREAK-03: rapidly toggling Dark Mode 10 times in a row settles on a co
   expect(finalChecked).toBe(initialChecked);
 });
 
-test('USR-BREAK-04: opening Change Password then rapidly Cancel+reopen 5 times in a row leaves exactly one clean form instance', { tag: '@boundary' }, async ({ page }) => {
+test('USR-BREAK-04: opening Change Password then rapidly Cancel+reopen 5 times in a row leaves exactly one clean form instance', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();
   await acc.profileTab.click({ force: true, timeout: 5000 }).catch(() => {});
@@ -101,7 +101,7 @@ test('USR-BREAK-04: opening Change Password then rapidly Cancel+reopen 5 times i
   expect(formCount).toBeLessThanOrEqual(1);
 });
 
-test('USR-BREAK-05: signing out while the Add Subjects picker is open (mid-action interruption) leaves the app in a clean, re-loginable state', { tag: '@cross-cutting' }, async ({ page }) => {
+test('USR-BREAK-05: signing out while the Add Subjects picker is open (mid-action interruption) leaves the app in a clean, re-loginable state', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(75000); // this project's environment has documented general slowness (LIVE_FINDINGS.md) -- generous budget so a real assertion fires cleanly, not a wrapper timeout
   const acc = new AccountManagementPage(page);
   await acc.openAccountTab();

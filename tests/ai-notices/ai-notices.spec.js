@@ -35,7 +35,7 @@ test.beforeEach(async ({ page }, testInfo) => {
   await applyClassMap(nav, 'aiNotices').catch(() => {});
 });
 
-test('AIN-ACCESS-01: The Magnet -> Notice selection mode is reachable; drag-select produces a selection rectangle with Approve/Discard controls', { tag: '@positive' }, async ({ page }) => {
+test('AIN-ACCESS-01: The Magnet -> Notice selection mode is reachable; drag-select produces a selection rectangle with Approve/Discard controls', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openNoticeCapture();
@@ -60,7 +60,7 @@ test('AIN-ACCESS-01: The Magnet -> Notice selection mode is reachable; drag-sele
   expect(toolbarGoneAfterDiscard).toBe(true);
 });
 
-test('AIN-TITLE-01: A notice Title is required before Send; entering one unblocks it', { tag: '@positive' }, async ({ page }) => {
+test('AIN-TITLE-01: A notice Title is required before Send; entering one unblocks it', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const titleVisible = await an.openComposeDialogWithRealText(tb);
@@ -74,7 +74,7 @@ test('AIN-TITLE-01: A notice Title is required before Send; entering one unblock
   expect(sendDisabledEmpty).not.toBe(sendDisabledFilled);
 });
 
-test('AIN-TITLE-02: An extremely long Title (200+ chars) does not break the compose layout and has no client-side max-length', { tag: '@boundary' }, async ({ page }) => {
+test('AIN-TITLE-02: An extremely long Title (200+ chars) does not break the compose layout and has no client-side max-length', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const titleVisible = await an.openComposeDialogWithRealText(tb);
@@ -89,7 +89,7 @@ test('AIN-TITLE-02: An extremely long Title (200+ chars) does not break the comp
   expect(value.length).toBe(201);
 });
 
-test('AIN-EDIT-01: The notice body Editor is a real Quill.js rich-text editor -- Bold formatting works', { tag: '@positive' }, async ({ page }) => {
+test('AIN-EDIT-01: The notice body Editor is a real Quill.js rich-text editor -- Bold formatting works', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openComposeDialogWithRealText(tb);
@@ -106,7 +106,7 @@ test('AIN-EDIT-01: The notice body Editor is a real Quill.js rich-text editor --
   expect(boldActive).toBe(true);
 });
 
-test('AIN-EDIT-02: An XSS-style payload typed into the body editor is sanitized, not executed', { tag: '@security' }, async ({ page }) => {
+test('AIN-EDIT-02: An XSS-style payload typed into the body editor is sanitized, not executed', { tag: ['@security', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openComposeDialogWithRealText(tb);
@@ -123,7 +123,7 @@ test('AIN-EDIT-02: An XSS-style payload typed into the body editor is sanitized,
   expect(dialogFired).toBe(false);
 });
 
-test('AIN-REPHRASE-01: Rephrase button is confirmed dead code -- clicking it produces no real AI rephrase', { tag: '@negative' }, async ({ page }) => {
+test('AIN-REPHRASE-01: Rephrase button is confirmed dead code -- clicking it produces no real AI rephrase', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   await an.openComposeDialogWithRealText(tb);
@@ -133,7 +133,7 @@ test('AIN-REPHRASE-01: Rephrase button is confirmed dead code -- clicking it pro
   expect(true).toBe(false);
 });
 
-test('AIN-TRANS-01: Translate button is confirmed dead code -- same root cause as Rephrase', { tag: '@negative' }, async ({ page }) => {
+test('AIN-TRANS-01: Translate button is confirmed dead code -- same root cause as Rephrase', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   await an.openComposeDialogWithRealText(tb);
@@ -143,7 +143,7 @@ test('AIN-TRANS-01: Translate button is confirmed dead code -- same root cause a
   expect(true).toBe(false);
 });
 
-test('AIN-GRAM-01: Grammar check button is confirmed dead code -- same root cause as Rephrase/Translate', { tag: '@negative' }, async ({ page }) => {
+test('AIN-GRAM-01: Grammar check button is confirmed dead code -- same root cause as Rephrase/Translate', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   await an.openComposeDialogWithRealText(tb);
@@ -153,14 +153,14 @@ test('AIN-GRAM-01: Grammar check button is confirmed dead code -- same root caus
   expect(true).toBe(false);
 });
 
-test('AIN-DEADCODE-SUMMARY-01: Rephrase/Translate/Grammar share one root cause -- a single fix, not three', { tag: '@negative' }, async ({ page }) => {
+test('AIN-DEADCODE-SUMMARY-01: Rephrase/Translate/Grammar share one root cause -- a single fix, not three', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // Summary/consolidation row per the workbook -- documents the combined
   // finding rather than re-testing each button again.
   test.fail(true, 'CRITICAL combined finding: all three AI-assist buttons (Rephrase, Translate, Grammar) on the Notice compose form have their HTTP calls commented out in notice-form-dialog.component.ts -- an entire row of visible "AI-assist" buttons is decorative and actively misleading. Recommend one combined dev ticket, not three separate ones.');
   expect(true).toBe(false);
 });
 
-test('AIN-SHARE-01: A notice can be targeted to a specific class via a checkbox in Share with...', { tag: '@positive' }, async ({ page }) => {
+test('AIN-SHARE-01: A notice can be targeted to a specific class via a checkbox in Share with...', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openComposeDialogWithRealText(tb);
@@ -172,12 +172,12 @@ test('AIN-SHARE-01: A notice can be targeted to a specific class via a checkbox 
   expect(checkboxCount).toBeGreaterThan(0);
 });
 
-test('AIN-SHARE-02: Only classes the signed-in teacher actually teaches appear in the Share with Classes list (blocked -- needs a multi-class account)', { tag: '@security' }, async ({ page }) => {
+test('AIN-SHARE-02: Only classes the signed-in teacher actually teaches appear in the Share with Classes list (blocked -- needs a multi-class account)', { tag: ['@security', '@bug'] }, async ({ page }) => {
   test.fail(true, 'This account/session only has one class-teacher assignment (Class 11A) reachable -- confirming a teacher with 2+ assigned classes sees exactly their own set needs a second account, not available in this project');
   expect(true).toBe(false);
 });
 
-test('AIN-SEND-01: Send is reachable up to the point of a real dispatch (not executed -- irreversible, student/parent-facing)', { tag: '@positive' }, async ({ page }) => {
+test('AIN-SEND-01: Send is reachable up to the point of a real dispatch (not executed -- irreversible, student/parent-facing)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openComposeDialogWithRealText(tb);
@@ -191,7 +191,7 @@ test('AIN-SEND-01: Send is reachable up to the point of a real dispatch (not exe
   expect(sendVisible).toBe(true);
 });
 
-test('AIN-SEND-02: Send is blocked with no class selected', { tag: '@negative' }, async ({ page }) => {
+test('AIN-SEND-02: Send is blocked with no class selected', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openComposeDialogWithRealText(tb);
@@ -206,12 +206,12 @@ test('AIN-SEND-02: Send is blocked with no class selected', { tag: '@negative' }
   await an.anyClassCheckbox.first().check({ force: true }).catch(() => {});
 });
 
-test('AIN-SEND-03: Rapid double-click on Send does not dispatch the notice twice (reachability only -- not executed for real)', { tag: '@negative' }, async ({ page }) => {
+test('AIN-SEND-03: Rapid double-click on Send does not dispatch the notice twice (reachability only -- not executed for real)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires a real Send dispatch to observe double-submit behavior -- deliberately not executed against real students/parents, same reasoning as AIN-SEND-01');
   expect(true).toBe(false);
 });
 
-test('AIN-SEND-04: Closing the composer with unsent, edited content does NOT warn before discarding (confirmed UX gap)', { tag: '@negative' }, async ({ page }) => {
+test('AIN-SEND-04: Closing the composer with unsent, edited content does NOT warn before discarding (confirmed UX gap)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const titleVisible = await an.openComposeDialogWithRealText(tb);
@@ -226,7 +226,7 @@ test('AIN-SEND-04: Closing the composer with unsent, edited content does NOT war
   expect(stillOpen).toBe(true);
 });
 
-test('AIN-RECAP-01: Recapture does NOT preserve already-typed/edited Title or body -- it fully replaces both with fresh OCR (confirmed, contradicts original premise)', { tag: '@negative' }, async ({ page }) => {
+test('AIN-RECAP-01: Recapture does NOT preserve already-typed/edited Title or body -- it fully replaces both with fresh OCR (confirmed, contradicts original premise)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   // Two real OCR round-trips can happen here (the initial open + a possible
   // re-capture) -- each confirmed to take up to ~15-20s live. The file's
   // default 60s beforeEach timeout isn't enough headroom.
@@ -252,7 +252,7 @@ test('AIN-RECAP-01: Recapture does NOT preserve already-typed/edited Title or bo
   expect(titleAfter).not.toBe('manually edited title should be lost');
 });
 
-test('AIN-OCR-01: A failed OCR call (empty selection) shows a clear error toast, not a silent hang', { tag: '@negative' }, async ({ page }) => {
+test('AIN-OCR-01: A failed OCR call (empty selection) shows a clear error toast, not a silent hang', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openNoticeCapture();
@@ -268,7 +268,7 @@ test('AIN-OCR-01: A failed OCR call (empty selection) shows a clear error toast,
   expect(errorVisible).toBe(true);
 });
 
-test('AIN-OCR-02: The OCR success path works end-to-end -- real text is captured and opens a pre-filled compose dialog', { tag: '@positive' }, async ({ page }) => {
+test('AIN-OCR-02: The OCR success path works end-to-end -- real text is captured and opens a pre-filled compose dialog', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   // Uses the shared helper (see pages/ai-notices.page.js) which reproduces
@@ -281,7 +281,7 @@ test('AIN-OCR-02: The OCR success path works end-to-end -- real text is captured
   expect(titleVisible).toBe(true);
 });
 
-test('AIN-TITLE-BUG-01: BUG -- the Notice Title field\'s Backspace and Delete keys do nothing', { tag: '@negative' }, async ({ page }) => {
+test('AIN-TITLE-BUG-01: BUG -- the Notice Title field\'s Backspace and Delete keys do nothing', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const titleVisible = await an.openComposeDialogWithRealText(tb);
@@ -303,17 +303,17 @@ test('AIN-TITLE-BUG-01: BUG -- the Notice Title field\'s Backspace and Delete ke
   expect(backspaceDidNothing).toBe(false);
 });
 
-test('AIN-EXP-01: Drag-selecting a region with both real text and a real image produces a sensible OCR result, not a crash', { tag: '@boundary' }, async ({ page }) => {
+test('AIN-EXP-01: Drag-selecting a region with both real text and a real image produces a sensible OCR result, not a crash', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires placing both a text object and an image object close together then confirming OCR handles the mix sensibly -- not independently exercised this pass given time constraints on this module');
   expect(true).toBe(false);
 });
 
-test('AIN-EXP-02: An extremely large drag-selected region does not crash or hang the OCR call ungracefully', { tag: '@boundary' }, async ({ page }) => {
+test('AIN-EXP-02: An extremely large drag-selected region does not crash or hang the OCR call ungracefully', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   test.fail(true, 'Requires zooming out and selecting the largest possible region to test this OCR boundary -- not independently exercised this pass given time constraints on this module');
   expect(true).toBe(false);
 });
 
-test('AIN-EXP-03: Pasting a large rich-formatted text block into the Notice body does not corrupt the Quill.js editor state', { tag: '@boundary' }, async ({ page }) => {
+test('AIN-EXP-03: Pasting a large rich-formatted text block into the Notice body does not corrupt the Quill.js editor state', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
   const an = new AiNoticesPage(page);
   const tb = new ToolbarPage(page);
   const opened = await an.openComposeDialogWithRealText(tb);

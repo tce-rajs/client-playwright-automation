@@ -102,7 +102,7 @@ test('Journey 2: Sign-In -> Magnet -> Generate AI Homework -> Discard Before Sen
   expect(freshTypePickerVisible).toBe(true);
 });
 
-test('Journey 3: Sign-In -> Compose an AI Notice from Real Whiteboard Text -> Stop Before Sending', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 3: Sign-In -> Compose an AI Notice from Real Whiteboard Text -> Stop Before Sending', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(90000);
   const nav = new NavigationPage(page);
   const tb = new ToolbarPage(page);
@@ -132,7 +132,7 @@ test('Journey 3: Sign-In -> Compose an AI Notice from Real Whiteboard Text -> St
   console.log('UJ3-07: closed the composer via Close, never clicked Send/Ready-to-Send (real, data-dispatching action deliberately avoided).');
 });
 
-test('Journey 4: Sign-In -> Check Compass AnalyseIt/ExploreIt for the Active Chapter -> Refresh Recovery', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 4: Sign-In -> Check Compass AnalyseIt/ExploreIt for the Active Chapter -> Refresh Recovery', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const nav = new NavigationPage(page);
   const cmp = new CompassPage(page);
@@ -168,7 +168,7 @@ test('Journey 4: Sign-In -> Check Compass AnalyseIt/ExploreIt for the Active Cha
   expect(recovered).toBe(true);
 });
 
-test('Journey 5: Sign-In -> Add a Resource via Library -> Observe the Playlist-Vanishing Bug -> Refresh to Recover', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 5: Sign-In -> Add a Resource via Library -> Observe the Playlist-Vanishing Bug -> Refresh to Recover', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const pl = new PlaylistPage(page);
   const nav = new NavigationPage(page);
@@ -269,7 +269,7 @@ test('Journey 6: Sign-In -> Customize Pen via Double-Click -> Draw -> Clear Whit
   expect(pathsAfterReload).toBe(0);
 });
 
-test('Journey 7: Sign-In -> Attempt Attendance via Magnet -> Panel Hang with No Escape -> Reload to Recover', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 7: Sign-In -> Attempt Attendance via Magnet -> Panel Hang with No Escape -> Reload to Recover', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const nav = new NavigationPage(page);
 
@@ -306,7 +306,7 @@ test('Journey 7: Sign-In -> Attempt Attendance via Magnet -> Panel Hang with No 
   expect(recovered).toBe(true);
 });
 
-test('Journey 8: Sign-In -> Generate an AI Assist Exercise -> Add to Playlist -> Close', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 8: Sign-In -> Generate an AI Assist Exercise -> Add to Playlist -> Close', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const nav = new NavigationPage(page);
   const ar = new AddResourcePage(page);
@@ -354,7 +354,7 @@ test('Journey 8: Sign-In -> Generate an AI Assist Exercise -> Add to Playlist ->
   expect(closed).toBe(true);
 });
 
-test('Journey 9: Sign-In -> Review Account Settings -> Validate Change Password -> Sign Out', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 9: Sign-In -> Review Account Settings -> Validate Change Password -> Sign Out', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const am = new AccountManagementPage(page);
 
@@ -407,7 +407,7 @@ test('Journey 9: Sign-In -> Review Account Settings -> Validate Change Password 
   expect(backToGuest).toBe(true);
 });
 
-test('Journey 10: Sign-In -> Pick a Class -> Navigate Contents -> Play a Quiz Resource', { tag: '@cross-cutting' }, async ({ page }) => {
+test('Journey 10: Sign-In -> Pick a Class -> Navigate Contents -> Play a Quiz Resource', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
   test.setTimeout(60000);
   const pl = new PlaylistPage(page);
   const nav = new NavigationPage(page);
