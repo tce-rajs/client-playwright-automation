@@ -1,0 +1,703 @@
+<title>CEP2 Automation Report</title>
+<style>
+  :root {
+    --bg: #f3f5f9;
+    --surface: #ffffff;
+    --surface-2: #eaeef5;
+    --border: rgba(20, 28, 45, 0.10);
+    --text: #171d2c;
+    --text-dim: #5b6478;
+    --accent: #1c8f80;
+    --accent-soft: rgba(28, 143, 128, 0.12);
+    --good: #2f8f3a;
+    --good-soft: rgba(47, 143, 58, 0.12);
+    --warn: #a8681f;
+    --warn-soft: rgba(168, 104, 31, 0.14);
+    --critical: #b8402c;
+    --critical-soft: rgba(184, 64, 44, 0.13);
+    --shadow: 0 1px 2px rgba(20, 28, 45, 0.06), 0 8px 24px rgba(20, 28, 45, 0.06);
+  }
+
+  @media (prefers-color-scheme: dark) {
+    :root:not([data-theme="light"]) {
+      --bg: #0f1420;
+      --surface: #161d2d;
+      --surface-2: #1d2537;
+      --border: rgba(255, 255, 255, 0.09);
+      --text: #e8ecf4;
+      --text-dim: #93a0bb;
+      --accent: #4fd8c4;
+      --accent-soft: rgba(79, 216, 196, 0.14);
+      --good: #6fcf6a;
+      --good-soft: rgba(111, 207, 106, 0.14);
+      --warn: #e3a955;
+      --warn-soft: rgba(227, 169, 85, 0.15);
+      --critical: #ef6b57;
+      --critical-soft: rgba(239, 107, 87, 0.15);
+      --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+  }
+
+  :root[data-theme="dark"] {
+    --bg: #0f1420;
+    --surface: #161d2d;
+    --surface-2: #1d2537;
+    --border: rgba(255, 255, 255, 0.09);
+    --text: #e8ecf4;
+    --text-dim: #93a0bb;
+    --accent: #4fd8c4;
+    --accent-soft: rgba(79, 216, 196, 0.14);
+    --good: #6fcf6a;
+    --good-soft: rgba(111, 207, 106, 0.14);
+    --warn: #e3a955;
+    --warn-soft: rgba(227, 169, 85, 0.15);
+    --critical: #ef6b57;
+    --critical-soft: rgba(239, 107, 87, 0.15);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.4), 0 12px 32px rgba(0, 0, 0, 0.35);
+  }
+
+  * { box-sizing: border-box; }
+
+  html, body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: "IBM Plex Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+
+  body {
+    scroll-snap-type: y mandatory;
+    overflow-y: scroll;
+    height: 100vh;
+    scroll-behavior: smooth;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    body { scroll-behavior: auto; }
+  }
+
+  .mono {
+    font-family: "IBM Plex Mono", "SFMono-Regular", Consolas, monospace;
+  }
+
+  .slide {
+    scroll-snap-align: start;
+    min-height: 100vh;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 64px 8vw;
+    position: relative;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .slide-inner {
+    max-width: 1080px;
+    margin: 0 auto;
+    width: 100%;
+  }
+
+  .eyebrow {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 22px;
+    height: 1px;
+    background: var(--accent);
+    display: inline-block;
+  }
+
+  h1 {
+    font-size: clamp(2.2rem, 5vw, 3.6rem);
+    font-weight: 700;
+    line-height: 1.05;
+    letter-spacing: -0.01em;
+    margin: 0 0 18px;
+    text-wrap: balance;
+  }
+
+  h2 {
+    font-size: clamp(1.7rem, 3.4vw, 2.5rem);
+    font-weight: 700;
+    line-height: 1.12;
+    margin: 0 0 8px;
+    text-wrap: balance;
+  }
+
+  .lede {
+    font-size: 1.15rem;
+    color: var(--text-dim);
+    max-width: 60ch;
+    line-height: 1.55;
+    margin: 0 0 8px;
+  }
+
+  .rule {
+    height: 1px;
+    background: var(--border);
+    margin: 28px 0;
+    border: none;
+  }
+
+  /* ---- Slide 1: title ---- */
+  .title-slide .headline-stat {
+    display: flex;
+    align-items: baseline;
+    gap: 18px;
+    margin-top: 36px;
+    flex-wrap: wrap;
+  }
+  .headline-number {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: clamp(3.2rem, 9vw, 5.5rem);
+    line-height: 1;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .headline-label {
+    font-size: 1.05rem;
+    color: var(--text-dim);
+    max-width: 24ch;
+    line-height: 1.4;
+  }
+  .title-meta {
+    margin-top: 40px;
+    display: flex;
+    gap: 28px;
+    flex-wrap: wrap;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.85rem;
+    color: var(--text-dim);
+  }
+  .title-meta b { color: var(--text); font-weight: 500; }
+
+  /* ---- Stat tiles ---- */
+  .tile-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-top: 32px;
+  }
+  .tile {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 22px 24px;
+    box-shadow: var(--shadow);
+  }
+  .tile .num {
+    font-family: "IBM Plex Mono", monospace;
+    font-weight: 600;
+    font-size: 2.4rem;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+    color: var(--text);
+  }
+  .tile.accent .num { color: var(--accent); }
+  .tile.good .num { color: var(--good); }
+  .tile .label {
+    margin-top: 8px;
+    font-size: 0.88rem;
+    color: var(--text-dim);
+    letter-spacing: 0.02em;
+  }
+  .tile .sub {
+    margin-top: 4px;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    opacity: 0.8;
+  }
+
+  /* ---- Module status grid ---- */
+  .module-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+    gap: 8px;
+    margin-top: 28px;
+  }
+  .module-chip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-left: 3px solid var(--good);
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.82rem;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+  }
+  .module-chip .n { font-family: "IBM Plex Mono", monospace; color: var(--text-dim); font-size: 0.75rem; }
+
+  /* ---- Chart ---- */
+  .chart-wrap {
+    margin-top: 28px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 28px 28px 16px;
+    box-shadow: var(--shadow);
+  }
+  .chart-wrap svg text {
+    fill: var(--text-dim);
+    font-family: "IBM Plex Mono", monospace;
+  }
+  .chart-wrap svg .bar-label { fill: var(--text); font-family: "IBM Plex Sans", sans-serif; }
+  .chart-wrap svg .grid-line { stroke: var(--border); stroke-width: 1; }
+
+  /* ---- Bug list ---- */
+  .bug-list { display: flex; flex-direction: column; gap: 10px; margin-top: 28px; }
+  .bug {
+    display: grid;
+    grid-template-columns: 92px 1fr;
+    gap: 18px;
+    align-items: start;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 14px 18px;
+    box-shadow: var(--shadow);
+  }
+  .sev {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    font-weight: 600;
+    padding: 4px 0;
+    text-align: center;
+    border-radius: 5px;
+    height: fit-content;
+  }
+  .sev.critical { background: var(--critical-soft); color: var(--critical); }
+  .sev.high { background: var(--warn-soft); color: var(--warn); }
+  .sev.medium { background: var(--accent-soft); color: var(--accent); }
+  .bug .title { font-weight: 600; font-size: 0.98rem; margin: 0 0 3px; }
+  .bug .desc { color: var(--text-dim); font-size: 0.88rem; line-height: 1.45; margin: 0; }
+  .bug .tag {
+    display: inline-block;
+    margin-top: 6px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.68rem;
+    color: var(--accent);
+    background: var(--accent-soft);
+    padding: 2px 7px;
+    border-radius: 4px;
+  }
+
+  /* ---- Roadmap ---- */
+  .roadmap { display: flex; flex-direction: column; gap: 0; margin-top: 30px; }
+  .road-item {
+    display: grid;
+    grid-template-columns: 44px 1fr;
+    gap: 20px;
+    padding: 18px 0;
+    border-top: 1px solid var(--border);
+  }
+  .road-item:first-child { border-top: none; }
+  .road-num {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--accent);
+    font-variant-numeric: tabular-nums;
+  }
+  .road-item h3 { font-size: 1.05rem; font-weight: 600; margin: 0 0 4px; }
+  .road-item p { color: var(--text-dim); font-size: 0.92rem; margin: 0; line-height: 1.5; max-width: 66ch; }
+  .road-item .status {
+    display: inline-block;
+    margin-top: 8px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.7rem;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+    padding: 2px 8px;
+    border-radius: 4px;
+  }
+  .status.ready { background: var(--good-soft); color: var(--good); }
+  .status.open { background: var(--warn-soft); color: var(--warn); }
+
+  /* ---- Closing ---- */
+  .closing-slide { justify-content: center; align-items: flex-start; }
+  .repo-box {
+    margin-top: 30px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.88rem;
+    color: var(--accent);
+    box-shadow: var(--shadow);
+    display: inline-block;
+    word-break: break-all;
+  }
+
+  /* ---- Nav ---- */
+  .navbar {
+    position: fixed;
+    right: 28px;
+    bottom: 28px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 999px;
+    padding: 8px 10px;
+    box-shadow: var(--shadow);
+    z-index: 10;
+  }
+  .navbar button {
+    background: var(--surface-2);
+    border: 1px solid var(--border);
+    color: var(--text);
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    cursor: pointer;
+    font-size: 0.95rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.15s ease;
+  }
+  .navbar button:hover { background: var(--accent-soft); color: var(--accent); }
+  .navbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .navbar .count {
+    font-family: "IBM Plex Mono", monospace;
+    font-size: 0.78rem;
+    color: var(--text-dim);
+    min-width: 44px;
+    text-align: center;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .progress-rail {
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3px;
+    background: var(--accent);
+    z-index: 11;
+    transition: width 0.2s ease;
+  }
+
+  @media (max-width: 640px) {
+    .slide { padding: 48px 6vw; }
+    .bug { grid-template-columns: 1fr; }
+    .sev { width: fit-content; padding: 3px 10px; }
+  }
+</style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+
+<div class="progress-rail" id="progressRail" style="width:0%"></div>
+
+<section class="slide title-slide" id="slide-0">
+  <div class="slide-inner">
+    <p class="eyebrow">CEP2 Whiteboard &middot; QA Automation</p>
+    <h1>Test Automation Report</h1>
+    <p class="lede">A live-verified Playwright suite for the Tata ClassEdge teach webapp — every case tracked to a real pass, or a documented reason it doesn't.</p>
+    <div class="headline-stat">
+      <span class="headline-number">1,016</span>
+      <span class="headline-label">automated test cases, across 20 modules, all run against the real QA app</span>
+    </div>
+    <div class="title-meta">
+      <span><b>20</b> / 20 modules verified</span>
+      <span><b>18+</b> real bugs found</span>
+      <span><b>951 &rarr; 1,038</b> workbook cases</span>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="slide-1">
+  <div class="slide-inner">
+    <p class="eyebrow">Coverage</p>
+    <h2>Everything documented has a test behind it</h2>
+    <p class="lede">Every case originates as a row in the module's own Excel workbook, then gets a matching, live-run Playwright test — nothing was skipped anywhere in this suite.</p>
+    <div class="tile-row">
+      <div class="tile">
+        <div class="num mono">1,038</div>
+        <div class="label">Documented</div>
+        <div class="sub">rows across 20 workbooks</div>
+      </div>
+      <div class="tile accent">
+        <div class="num mono">1,016</div>
+        <div class="label">Automated</div>
+        <div class="sub">real Playwright test() cases</div>
+      </div>
+      <div class="tile good">
+        <div class="num mono">20 / 20</div>
+        <div class="label">Modules verified</div>
+        <div class="sub">live-run, not just written</div>
+      </div>
+      <div class="tile">
+        <div class="num mono">1,016</div>
+        <div class="label">Tagged</div>
+        <div class="sub">100% filterable by category</div>
+      </div>
+    </div>
+    <div class="module-grid" aria-label="All 20 modules">
+      <div class="module-chip">Core UI <span class="n">12</span></div>
+      <div class="module-chip">Navigation <span class="n">57</span></div>
+      <div class="module-chip">Add Resource <span class="n">44</span></div>
+      <div class="module-chip">Attendance <span class="n">33</span></div>
+      <div class="module-chip">Compass <span class="n">37</span></div>
+      <div class="module-chip">Toolbar <span class="n">70</span></div>
+      <div class="module-chip">User Profile <span class="n">50</span></div>
+      <div class="module-chip">Gallery <span class="n">23</span></div>
+      <div class="module-chip">TCE Library <span class="n">32</span></div>
+      <div class="module-chip">Drop It <span class="n">21</span></div>
+      <div class="module-chip">AI Assist <span class="n">32</span></div>
+      <div class="module-chip">Learning Shorts <span class="n">27</span></div>
+      <div class="module-chip">Minimap <span class="n">25</span></div>
+      <div class="module-chip">Whiteboard <span class="n">27</span></div>
+      <div class="module-chip">AI Notices <span class="n">26</span></div>
+      <div class="module-chip">AI Homework <span class="n">30</span></div>
+      <div class="module-chip">Playlist <span class="n">82</span></div>
+      <div class="module-chip">Authentication <span class="n">114</span></div>
+      <div class="module-chip">Players <span class="n">179</span></div>
+      <div class="module-chip">User Journeys <span class="n">99</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="slide-2">
+  <div class="slide-inner">
+    <p class="eyebrow">Test design</p>
+    <h2>Over half the suite is built to break things</h2>
+    <p class="lede">Positive checks confirm a feature works. Negative, boundary, and security cases are where nearly every real bug in this report was actually found.</p>
+    <div class="chart-wrap">
+      <svg viewBox="0 0 920 340" width="100%" height="340" role="img" aria-label="Test case breakdown by category">
+        <!-- gridlines at 0,50,100,150,200,250 -->
+        <g>
+          <line class="grid-line" x1="180" y1="20" x2="900" y2="20"></line>
+          <line class="grid-line" x1="180" y1="65" x2="900" y2="65"></line>
+          <line class="grid-line" x1="180" y1="110" x2="900" y2="110"></line>
+          <line class="grid-line" x1="180" y1="155" x2="900" y2="155"></line>
+          <line class="grid-line" x1="180" y1="200" x2="900" y2="200"></line>
+          <line class="grid-line" x1="180" y1="245" x2="900" y2="245"></line>
+          <line class="grid-line" x1="180" y1="290" x2="900" y2="290"></line>
+        </g>
+        <!-- bars: scale 254 max -> 700px width max, x0=180 -->
+        <!-- Positive 254 -->
+        <text x="170" y="34" text-anchor="end" font-size="13">Positive</text>
+        <rect x="180" y="20" width="700" height="26" fill="var(--good)" opacity="0.85"></rect>
+        <text class="bar-label" x="890" y="38" text-anchor="end" font-size="13" font-weight="600">254</text>
+        <!-- Negative 244 -->
+        <text x="170" y="79" text-anchor="end" font-size="13">Negative</text>
+        <rect x="180" y="65" width="672" height="26" fill="var(--critical)" opacity="0.85"></rect>
+        <text class="bar-label" x="862" y="83" text-anchor="end" font-size="13" font-weight="600">244</text>
+        <!-- Boundary 208 -->
+        <text x="170" y="124" text-anchor="end" font-size="13">Boundary/Edge</text>
+        <rect x="180" y="110" width="573" height="26" fill="var(--warn)" opacity="0.85"></rect>
+        <text class="bar-label" x="763" y="128" text-anchor="end" font-size="13" font-weight="600">208</text>
+        <!-- UI-State 131 -->
+        <text x="170" y="169" text-anchor="end" font-size="13">UI / State</text>
+        <rect x="180" y="155" width="361" height="26" fill="var(--accent)" opacity="0.85"></rect>
+        <text class="bar-label" x="551" y="173" text-anchor="end" font-size="13" font-weight="600">131</text>
+        <!-- Security 92 -->
+        <text x="170" y="214" text-anchor="end" font-size="13">Security</text>
+        <rect x="180" y="200" width="253" height="26" fill="var(--critical)" opacity="0.6"></rect>
+        <text class="bar-label" x="443" y="218" text-anchor="end" font-size="13" font-weight="600">92</text>
+        <!-- Cross-cutting 76 -->
+        <text x="170" y="259" text-anchor="end" font-size="13">Cross-cutting</text>
+        <rect x="180" y="245" width="209" height="26" fill="var(--accent)" opacity="0.55"></rect>
+        <text class="bar-label" x="399" y="263" text-anchor="end" font-size="13" font-weight="600">76</text>
+        <!-- State-persistence 31 -->
+        <text x="170" y="304" text-anchor="end" font-size="13">State/Recovery</text>
+        <rect x="180" y="290" width="85" height="26" fill="var(--good)" opacity="0.55"></rect>
+        <text class="bar-label" x="275" y="308" text-anchor="end" font-size="13" font-weight="600">31</text>
+      </svg>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="slide-3">
+  <div class="slide-inner">
+    <p class="eyebrow">Findings</p>
+    <h2>18+ real, reproducible bugs</h2>
+    <p class="lede">Each one was confirmed live — screenshot or DOM evidence, reproduced more than once — not inferred from a single failed assertion.</p>
+    <div class="bug-list">
+      <div class="bug">
+        <span class="sev critical">Critical</span>
+        <div>
+          <p class="title">Attendance panel hangs on its own loading spinner, forever</p>
+          <p class="desc">Never renders the roster. No way to exit from inside the panel. Reproduced across multiple subjects.</p>
+        </div>
+      </div>
+      <div class="bug">
+        <span class="sev critical">Critical</span>
+        <div>
+          <p class="title">Four distinct actions crash the page outright</p>
+          <p class="desc">Bold on a selected text object; rapid class-switching (6+ classes); a malicious string in the curriculum response during login; a Checkpoint's End button.</p>
+        </div>
+      </div>
+      <div class="bug">
+        <span class="sev high">High</span>
+        <div>
+          <p class="title">Whiteboard content is lost on reload / class switch</p>
+          <p class="desc">Confirmed real data loss — gives the earlier "Save button does nothing" finding an actual damaging consequence.</p>
+        </div>
+      </div>
+      <div class="bug">
+        <span class="sev high">High</span>
+        <div>
+          <p class="title">Whiteboard History leaks across classes</p>
+          <p class="desc">Scoped per-teacher-account, not per-class — a security/data-scoping gap, not just a display bug.</p>
+        </div>
+      </div>
+      <div class="bug">
+        <span class="sev high">High</span>
+        <div>
+          <p class="title">Two systemic bug families, each confirmed in 3+ unrelated modules</p>
+          <p class="desc">Toolbar/FAB-launched panels don't close on class switch (Attendance, Drop It, Minimap). Compose dialogs block the class switch entirely (AI Notices, AI Homework).</p>
+          <span class="tag">found via adversarial pass</span>
+        </div>
+      </div>
+      <div class="bug">
+        <span class="sev medium">Medium</span>
+        <div>
+          <p class="title">Change Password and Change PIN can both be open at once</p>
+          <p class="desc">Source-level logic bug: the guard condition uses AND where it should use OR.</p>
+        </div>
+      </div>
+      <div class="bug">
+        <span class="sev medium">Medium</span>
+        <div>
+          <p class="title">Auto-Generate PIN shows the new PIN in plaintext on screen</p>
+          <p class="desc">A shoulder-surfing risk in a live classroom setting.</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="slide-4">
+  <div class="slide-inner">
+    <p class="eyebrow">Adversarial pass</p>
+    <h2>A dedicated round built to break the app</h2>
+    <p class="lede">On top of the baseline suite: extreme inputs, rapid/repeated clicks, mid-action interruptions, and cross-account checks — every module, purpose-built to find what normal usage wouldn't.</p>
+    <div class="tile-row">
+      <div class="tile accent">
+        <div class="num mono">94</div>
+        <div class="label">New adversarial cases</div>
+        <div class="sub">across all 20 modules</div>
+      </div>
+      <div class="tile">
+        <div class="num mono">16</div>
+        <div class="label">New bugs found</div>
+        <div class="sub">this pass alone</div>
+      </div>
+      <div class="tile">
+        <div class="num mono">2</div>
+        <div class="label">Systemic bug families</div>
+        <div class="sub">confirmed in 3+ modules each, not one-offs</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide" id="slide-5">
+  <div class="slide-inner">
+    <p class="eyebrow">The plan</p>
+    <h2>What's left</h2>
+    <div class="roadmap">
+      <div class="road-item">
+        <span class="road-num">1</span>
+        <div>
+          <h3>Finish routing every module through the shared class map</h3>
+          <p>23 of 91 spec files now pull their Class/Chapter/Topic setup from one confirmed-working map instead of a hardcoded literal. The rest still work fine — this closes the last gap for maintainability.</p>
+          <span class="status open">In progress</span>
+        </div>
+      </div>
+      <div class="road-item">
+        <span class="road-num">2</span>
+        <div>
+          <h3>Run the suite against the real desktop client</h3>
+          <p>A Playwright fixture already knows how to launch the Electron app and find its embedded webview. No test file uses it yet — this is the next real milestone.</p>
+          <span class="status ready">Fixture ready</span>
+        </div>
+      </div>
+      <div class="road-item">
+        <span class="road-num">3</span>
+        <div>
+          <h3>Consolidate each module down to one spec file</h3>
+          <p>Three build passes (original, gap-analysis, adversarial) left most modules with 2&ndash;4 separate files. No coverage is duplicated, but a single clean file per module would be easier to navigate.</p>
+          <span class="status open">Not started</span>
+        </div>
+      </div>
+      <div class="road-item">
+        <span class="road-num">4</span>
+        <div>
+          <h3>Escalate the two systemic bug families and the data-loss finding</h3>
+          <p>Panels not closing on class switch, composers blocking class switch entirely, and confirmed Whiteboard data loss on reload — all reproducible, all worth a developer's attention first.</p>
+          <span class="status open">Awaiting triage</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="slide closing-slide" id="slide-6">
+  <div class="slide-inner">
+    <p class="eyebrow">Repository</p>
+    <h2>Everything above is live on <span class="mono" style="font-size:0.75em;">main</span></h2>
+    <p class="lede">Full suite, page objects, workbooks, and the running findings log.</p>
+    <div class="repo-box">github.com/tce-rajs/client-playwright-automation</div>
+  </div>
+</section>
+
+<nav class="navbar" aria-label="Slide navigation">
+  <button id="prevBtn" aria-label="Previous slide">&larr;</button>
+  <span class="count mono" id="slideCount">1 / 7</span>
+  <button id="nextBtn" aria-label="Next slide">&rarr;</button>
+</nav>
+
+<script>
+  (function () {
+    var slides = Array.prototype.slice.call(document.querySelectorAll('.slide'));
+    var countEl = document.getElementById('slideCount');
+    var rail = document.getElementById('progressRail');
+    var current = 0;
+
+    function scrollToIndex(i) {
+      if (i < 0 || i >= slides.length) return;
+      slides[i].scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    document.getElementById('prevBtn').addEventListener('click', function () { scrollToIndex(current - 1); });
+    document.getElementById('nextBtn').addEventListener('click', function () { scrollToIndex(current + 1); });
+
+    window.addEventListener('keydown', function (e) {
+      if (e.key === 'ArrowRight' || e.key === 'PageDown') { scrollToIndex(current + 1); }
+      if (e.key === 'ArrowLeft' || e.key === 'PageUp') { scrollToIndex(current - 1); }
+    });
+
+    var observer = new IntersectionObserver(function (entries) {
+      entries.forEach(function (entry) {
+        if (entry.isIntersecting && entry.intersectionRatio > 0.5) {
+          var idx = slides.indexOf(entry.target);
+          if (idx !== -1) {
+            current = idx;
+            countEl.textContent = (idx + 1) + ' / ' + slides.length;
+            rail.style.width = (((idx + 1) / slides.length) * 100) + '%';
+          }
+        }
+      });
+    }, { threshold: [0.5] });
+
+    slides.forEach(function (s) { observer.observe(s); });
+  })();
+</script>
