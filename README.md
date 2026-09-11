@@ -20,8 +20,8 @@ cp .env.example .env   # then fill in real values (see below)
 ## Running tests
 
 ```
-npm test                                  # headless, runs everything in tests/
-npm run test:headed                       # watch the browser while it runs
+npm test                                  # runs everything in tests/
+npm run test:headed                       # same as above (see note below)
 npm run test:ui                           # Playwright's interactive UI mode
 npm run report                            # open the last HTML report
 
@@ -33,6 +33,18 @@ npx playwright test --grep "@negative"
 npx playwright test --grep "@security"
 npx playwright test --grep-invert "@positive"   # everything except positive
 ```
+
+**Every run opens a real, visible browser window at 1920x1080** — both
+`headless: false` and `viewport: { width: 1920, height: 1080 }` are set as
+defaults in `playwright.config.js`, not just passed as CLI flags. That's
+also why `npm test` and `npm run test:headed` behave the same now: there's
+no headless mode to opt out of by adding `--headed`. The 1920x1080 size
+matches the real classroom displays this app targets — at the smaller
+1280x720 Playwright default, the whiteboard canvas only renders into part
+of the window instead of filling it. Set `headless: true` in
+`playwright.config.js` (there's no CLI flag to override a `headless: false`
+config back to headless) if you ever need a faster, invisible run, e.g. on
+a headless CI machine.
 
 **Always keep `--workers=1`** (already the config default) when running
 against the live app — every test shares real, mutable account state
