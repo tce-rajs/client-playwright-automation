@@ -7,6 +7,8 @@
 // (playlist-contents-selector) turned out not to be the real click target —
 // playlist-chapter-topic-btn is the actual CONTENTS tile trigger.
 
+const { loginWithPin } = require('./auth.helper');
+
 class PlaylistPage {
   constructor(page) {
     this.page = page;
@@ -74,15 +76,10 @@ class PlaylistPage {
     };
   }
 
-  /** Log in with a PIN from Guest Mode — the starting point for every Playlist test. */
+  /** Log in with a PIN from Guest Mode — the starting point for every Playlist test.
+   * Retries once on the transient post-login-race timeout (see auth.helper.js). */
   async loginWithPin(pin) {
-    await this.page.goto('./');
-    await this.page.waitForTimeout(2000);
-    await this.page.locator('[data-qa-id="login-auth-toggle-button"]').click();
-    for (let i = 0; i < 5; i++) {
-      await this.page.locator(`[data-qa-id="login-pin-digit-input-${i}"]`).fill(String(pin)[i]);
-    }
-    await this.page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
+    await loginWithPin(this.page, pin);
   }
 
   /** The Options/Filter menu is a plain toggle with NO backdrop and NO

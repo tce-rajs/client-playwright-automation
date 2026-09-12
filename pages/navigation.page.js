@@ -8,6 +8,8 @@
 // tabs with no data-qa-id), so those use Playwright's role-based locators
 // instead.
 
+const { loginWithPin } = require('./auth.helper');
+
 class NavigationPage {
   constructor(page) {
     this.page = page;
@@ -38,18 +40,10 @@ class NavigationPage {
     this.userAvatar = page.locator('[data-qa-id="toolbar-user-avatar"]');
   }
 
-  /** Log in with a PIN from Guest Mode — the starting point for every Navigation test. */
+  /** Log in with a PIN from Guest Mode — the starting point for every Navigation test.
+   * Retries once on the transient post-login-race timeout (see auth.helper.js). */
   async loginWithPin(pin, { toggleTimeout = 30000 } = {}) {
-    await this.page.goto('./');
-    // A freshly-created page/tab needs a moment to settle before its
-    // elements are reliably interactive (seen consistently on multi-tab
-    // tests).
-    await this.page.waitForTimeout(2000);
-    await this.page.locator('[data-qa-id="login-auth-toggle-button"]').click({ timeout: toggleTimeout });
-    for (let i = 0; i < 5; i++) {
-      await this.page.locator(`[data-qa-id="login-pin-digit-input-${i}"]`).fill(String(pin)[i]);
-    }
-    await this.userAvatar.waitFor({ state: 'visible', timeout: 15000 });
+    await loginWithPin(this.page, pin, { toggleTimeout });
   }
 
   async openClassPopup() {

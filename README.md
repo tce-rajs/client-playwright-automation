@@ -54,7 +54,20 @@ over it and produce false failures.
 ## Project layout
 
 ```
-tests/              test spec files (*.spec.js), one folder per module
+tests/              test spec files (*.spec.js), one folder per module,
+                     matching the 20 modules named below. Inside each
+                     folder: feature-area files (e.g. quiz.spec.js,
+                     pin-login.spec.js) plus, where relevant, exactly three
+                     consistently-named category files — adversarial.spec.js
+                     (break-the-app cases), cross-cutting.spec.js (state/
+                     network/race/security concerns spanning the module),
+                     and extended-coverage.spec.js (additional cases from a
+                     later gap-analysis pass). No module has ad-hoc,
+                     one-off file names beyond that set.
+pages/auth.helper.js  shared PIN sign-in used by every page object that logs
+                     in — retries once on a confirmed transient timing race
+                     (see the note in the file) rather than each test
+                     re-implementing its own login/retry logic
 pages/               page objects, one file per screen/module (e.g. login.page.js)
 config/moduleClassMap.js   confirmed-working Class/Division/Subject/Chapter/Topic
                      combo per module, for both QA accounts (see below)
@@ -102,3 +115,24 @@ Verification -- <specific reason>`).
   aren't yet routed through the shared map.
 - `fixtures/electron-app.js` can drive the real desktop client, but no spec
   file uses it yet — the suite currently runs against the browser only.
+- Players (15 files), Authentication (12), Toolbar (11), and Playlist (8)
+  still have the most files of any module. Every file in them is a real,
+  distinct feature area (e.g. Players' quiz/worksheet/video split, Toolbar's
+  drawing/text/undo-redo split) rather than ad-hoc sprawl, but Toolbar in
+  particular has several very short files (canvas-controls.spec.js,
+  drawing.spec.js, object.spec.js are all under 70 lines) that could be
+  grouped into fewer, more substantial files if that's still wanted.
+
+## Running everything at once
+
+Every test logs into the same one real, shared QA account fresh (no session
+reuse) — running the FULL suite back-to-back for the hours that takes can
+hit a confirmed, transient backend timing race where a login right after a
+prior test's class-switch/sign-out times out waiting for the post-login
+avatar (`pages/auth.helper.js` now retries once automatically, which fixes
+this in practice). If Playwright's **UI mode** still shows widespread
+failures on "run all" specifically (as opposed to `npm test` from the CLI),
+check the workers count in its own toolbar — UI mode has a worker-count
+control independent of this project's `playwright.config.js` `workers: 1`
+setting, and running more than 1 worker means multiple tests fight over the
+same live account's state at once.
