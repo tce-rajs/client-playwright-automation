@@ -1,7 +1,7 @@
 // Recent Classes.
 // Source: CEP_TestCases/Navigation_Module_Test_Cases_Final.xlsx, cases NAV-REC-01..07.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { NavigationPage } = require('../../pages/navigation.page');
 
 test.beforeEach(async ({ page }) => {

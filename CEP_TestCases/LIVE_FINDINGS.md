@@ -7,6 +7,141 @@ file).
 
 ---
 
+## RESOLVED (2026-09-12): the "ERROR #404" startup race -- root cause found, fixed, verified
+
+Final state of a long same-day investigation (superseding all the back-and-
+forth in the entry below this one -- read this one first, that one only for
+history). `fixtures/electron-app.js` now handles this correctly.
+
+**Root cause, confirmed with a clean A/B test:** the client shell's "E R R O
+R # 404 -- Unable to connect ClassEdge server" overlay is caused by
+Playwright's OWN required `--inspect`/`--remote-debugging-port` launch flags
+racing with this app's `<webview>` guest-view creation at startup. Captured
+directly from the client's main-process log on a Playwright-launched
+instance:
+
+```
+Error occurred in handler for 'GUEST_VIEW_MANAGER_CALL': Error: ERR_FAILED (-2)
+loading 'https://ce-qa-school.devstudi.com/teach/?...'
+```
+
+Proven NOT resource exhaustion, NOT the QA server/network, and NOT specific
+to this machine's state: a full machine restart did not change the failure
+rate at all (still reproduced on every attempt right after reboot). What
+DID isolate it: launching the exact same client manually (no Playwright)
+immediately before and after a failing Playwright-launched attempt, back to
+back, same moment -- manual always works, Playwright-launched always hits
+the race. A real teacher launching the app normally will never hit this.
+
+**Also confirmed: cheaply recoverable, not a lasting break.** Once the race
+has happened, a plain Playwright-level `page.goto()` on the SAME window
+(bypassing the app's own broken internal retry entirely) reliably loads real
+content within a few seconds. The shell's overlay itself stays stuck on
+screen either way -- nothing in the app ever resets that flag short of a
+full relaunch -- but the actual webview content the tests drive recovers
+fine, confirmed by checking `document.body.innerText` before (empty) and
+after (real "You are currently in Guest Mode..." content) the retry.
+
+**Final fixture behavior**, per explicit user decision after being shown this
+evidence: on suspicion (overlay visible), retry navigation on the same
+window first (cheap, ~5-10s) rather than jumping straight to a full app
+relaunch. Only fall back to relaunching (up to 2 fresh instances) if that
+retry doesn't produce real content, and only throw the hard `BLOCKER` error
+if content is STILL missing after that. This recovers the common case fast
+while still failing loudly on a genuinely broken page, matching the user's
+original instruction without treating a known, understood tooling artifact
+(one a real user never encounters) as a fake app-level failure. Verified
+live: 3/3 fresh launches passed cleanly after this change.
+
+**Note for future work on this fixture:** `MAX_LAUNCH_ATTEMPTS` is 2, and the
+cheap same-window retry happens on EVERY attempt when the overlay is seen,
+not just the last one. If this starts failing again, check `hasRealContent()`
+and `isConnectionErrorShowing()` first before assuming a new issue -- the
+overlay showing is expected and not itself a problem anymore.
+
+---
+
+## Desktop client mode (2026-09-12): fixture race-condition fix + two new findings from the first pilot run
+
+Switched the whole suite from browser-only to driving the real **Tata
+ClassEdge School** desktop client via `fixtures/electron-app.js` (see
+README's new "Desktop client mode" section). Two things found getting the
+first real spec (`tests/authentication/pin-login.spec.js`) running end to
+end against it:
+
+**1. Fixed a real race condition in the fixture itself (not an app bug).**
+The client's `<webview>` window is created at `about:blank` and only
+client-side navigates to the real teach URL a moment later -- the SAME
+window object, no second `'window'` event. The fixture's original
+`app.waitForEvent('window', { predicate: isTeachWindow })` evaluates the
+predicate once, at creation time, against `about:blank` -- so if the
+window hadn't already been caught by the immediate `app.windows().find()`
+check, it would hang the full 30s timeout waiting for an event that already
+fired and won't fire again. Confirmed via a standalone probe script: 2 of
+3 raw-launch attempts hit this exact hang. Fixed by polling every known
+window (existing + newly created via a persistent listener) every 250ms
+until one's *current* URL matches, instead of a one-shot event+predicate.
+
+Also patched `page.goto()` inside the fixture to resolve relative URLs
+(`'./'`, `'./whiteboard'`, etc. -- used throughout ~18 spec files) against
+`BASE_URL` before navigating, since Electron windows have no `baseURL`
+context option the way Playwright's own browser-launched pages do; an
+unpatched relative goto throws "Cannot navigate to invalid URL" immediately.
+
+**2. CORRECTED (2026-09-12, later same day) -- the shell's "ERROR #404"
+overlay is COSMETIC, not a real blocker; a "hardware box" theory here was
+wrong.** The client's shell window shows its own "E R R O R # 404 --
+Unable to connect ClassEdge server" overlay (`.uiverse` in the shell's own
+DOM) whenever ITS teach `<webview>` element's `did-fail-load` handler
+retries once after 2s and that retry also fails too -- confirmed by
+extracting and reading the client's own bundled source
+(`app.asar/www/js/controllers.js` + `templates/tabs.html`) via `npx asar`.
+An earlier pass here read this as a "no local hardware box paired" issue
+and, worse, a later fixture change made the fixture detect this overlay
+and relaunch the whole app on sight of it. **That relaunch logic was
+wrong and was reverted the same day**: live-verified that the actual teach
+`<webview>` Playwright drives is a completely separate CDP target, totally
+unaffected by the shell's overlay -- confirmed `teachWindow.isClosed()` is
+false, its URL correctly progresses (e.g. to `/whiteboard`), and its real
+DOM content is present and correct, even while the overlay sits on screen
+in the sibling shell window. The relaunch-on-sight-of-it logic was
+actively harmful once the overlay started appearing on every fresh launch
+in one session: it discarded perfectly good app instances and turned a
+non-issue into hard failures on every single test. Current fixture
+(`fixtures/electron-app.js`) no longer checks for this overlay at all.
+
+Separately, `PIN-06`/`PIN-20`'s original "Target page, context or browser
+has been closed" failures (and one more hit live in
+`tests/add-resource/entry.spec.js`'s `AR-GAP-01`, 2026-09-12) are a real,
+still-not-root-caused, low-frequency (roughly 1 in 50 fresh launches in
+observed runs) failure distinct from the cosmetic overlay above. Confirmed
+this one has a genuine, fixable contributing cause: `pages/auth.helper.js`
+only wrapped the final avatar-visibility wait in its retry `try/catch`, not
+the `page.goto('./')`/toggle-click/PIN-fill steps before it -- so when
+"Target closed" happened at the `goto` call itself, it escaped the retry
+entirely on attempt 0 despite the file's own header comment promising to
+retry "the whole login attempt". Fixed by widening the `try/catch` to cover
+the whole per-attempt body. Confirmed live: re-running 3 tests that failed
+this way in a clean `tests/add-resource/` run (`AR-CYP-07`, `AR-GAP-01`,
+`AR-CYP-08`) all passed after this fix, no other changes. The underlying
+"Target closed" event itself can still happen and isn't explained yet --
+this fix just makes the existing retry machinery actually retry through it
+like it was always meant to.
+
+**3. Behavioral difference needing re-verification, not yet classified as
+a bug:** `PIN-09`/`PIN-10` assert Angular's `mat-form-field-invalid` class
+appears on a PIN digit box's `mat-form-field` ancestor after backspacing a
+filled digit (the "red border" state). In the same pilot run, inside the
+desktop client's webview, this class never appeared across 5s of retries
+on 2 separate test runs -- the field stayed in its normal
+`ng-valid mat-focused` state. Both tests pass reliably in browser mode per
+the existing suite history, so this reads as a real webview-vs-browser
+difference (different focus/blur event delivery inside an embedded
+`<webview>`, maybe) rather than flakiness, but that's not confirmed yet --
+needs a side-by-side re-check, not just re-asserted as browser-mode was.
+
+---
+
 ## Add Resources picker: `pointer-events: none` across the whole popup subtree (confirmed real bug)
 
 **Module(s) affected:** Drop It, AI Assist, and potentially any other spec

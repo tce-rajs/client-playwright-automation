@@ -4,7 +4,7 @@
 // session.spec.js. New ID prefix AUTH-BREAK-*
 // (CEP_TestCases/Authentication_SignIn_Module_Test_Cases_Final.xlsx).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { LoginPage } = require('../../pages/login.page');
 
 test.beforeEach(async ({ page }) => {

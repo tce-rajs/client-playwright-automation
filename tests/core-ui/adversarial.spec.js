@@ -5,7 +5,7 @@
 // already covered by the existing file (extreme viewports, reload-spam,
 // DST transition gap, RTL/foreign locale, and true tab concurrency).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 
 test.beforeEach(async ({ page }) => {
   await page.goto('./');

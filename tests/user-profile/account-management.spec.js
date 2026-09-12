@@ -19,7 +19,7 @@
 // shared QA account) -- only menu/form-presence behavior was going to be
 // verified.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AccountManagementPage } = require('../../pages/account-management.page');
 

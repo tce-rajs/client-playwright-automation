@@ -1,7 +1,7 @@
 // Canvas Controls (Zoom, toolbar-position toggle).
 // Source: CEP_TestCases/Toolbar_Module_Test_Cases_Final.xlsx, cases TB-ZOOM-01, TB-TOGGLE-01.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 

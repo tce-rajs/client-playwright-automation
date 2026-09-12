@@ -3,7 +3,7 @@
 // (CEP_TestCases/AI_Notices_Module_Test_Cases_Final.xlsx). Matches this
 // file's own established convention (VALID_PIN, Class 11A Mathematics).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');

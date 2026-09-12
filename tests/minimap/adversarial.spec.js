@@ -5,7 +5,7 @@
 // this session already confirmed as a REAL bug independently in TWO other
 // modules this pass (Attendance's ATT-BREAK-02, Drop It's DRP-BREAK-01).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { MinimapPage } = require('../../pages/minimap.page');
 const { NavigationPage } = require('../../pages/navigation.page');

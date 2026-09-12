@@ -1,7 +1,7 @@
 // Sign in with Password.
 // Source: CEP_TestCases/Login_Module_Test_Cases_Final.xlsx, cases PWD-01..20.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { LoginPage } = require('../../pages/login.page');
 
 test.beforeEach(async ({ page }) => {

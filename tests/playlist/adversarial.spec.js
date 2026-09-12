@@ -3,7 +3,7 @@
 // cross-cutting/ebooks/filters/gap-analysis.spec.js. New ID prefix
 // PL-BREAK-* (CEP_TestCases/Playlist_Module_Test_Cases_Final.xlsx).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.use({ viewport: { width: 1920, height: 1080 } });

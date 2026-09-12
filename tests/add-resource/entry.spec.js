@@ -3,7 +3,7 @@
 // plus an "Extended coverage" section (formerly gap-analysis.spec.js) for
 // ADD-WB-01, ADD-XREF-01, AR-CYP-01..08, AR-GAP-01..02, ADD-EXP-01..08.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

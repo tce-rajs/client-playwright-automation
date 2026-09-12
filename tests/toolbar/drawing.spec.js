@@ -1,7 +1,7 @@
 // Drawing Tools (Pencil/Pen, Eraser).
 // Source: CEP_TestCases/Toolbar_Module_Test_Cases_Final.xlsx, cases TB-DRAW-01..04.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 

@@ -6,7 +6,7 @@
 // confirmed multi-type fixture location as cross-cutting.spec.js (Class
 // 12A Computer Science, chapter 13, topic 0).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

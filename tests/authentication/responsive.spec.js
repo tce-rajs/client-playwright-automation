@@ -1,7 +1,7 @@
 // Responsive & Cross-Browser.
 // Source: CEP_TestCases/Login_Module_Test_Cases_Final.xlsx, cases RESP-01..05.
 
-const { test, expect, devices } = require('@playwright/test');
+const { test, expect, devices } = require('../../fixtures/electron-app');
 const { LoginPage } = require('../../pages/login.page');
 
 test('RESP-01: Layout on mobile viewport (~375px width)', { tag: '@ui-state' }, async ({ page }) => {

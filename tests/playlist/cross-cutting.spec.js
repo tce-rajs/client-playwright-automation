@@ -2,7 +2,7 @@
 // Source: CEP_TestCases/Playlist_Module_Test_Cases_Final.xlsx,
 // cases PL-STATE-01..03, PL-NET-01..02, PL-RACE-01, PL-SEC-01, PL-DUP-01.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.beforeEach(async ({ page }) => {

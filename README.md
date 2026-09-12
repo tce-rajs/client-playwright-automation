@@ -13,9 +13,16 @@ this suite.
 
 ```
 npm install
-npx playwright install chromium
 cp .env.example .env   # then fill in real values (see below)
 ```
+
+Every spec drives the real **Tata ClassEdge School** Windows desktop client
+(Electron), not a browser — see "Desktop client mode" below. The client must
+already be installed locally, logged out (Guest Mode is fine), and set to
+talk to the QA backend. `npx playwright install chromium` is no longer
+required for the default run (nothing here launches Playwright's own
+downloaded browsers); only install it if you still need the legacy
+browser-mode fallback described below.
 
 ## Running tests
 
@@ -40,22 +47,70 @@ gets an untouched, timestamped copy saved to
 `playwright-report-archive/report_<date>_<time>/`, so older reports are
 never lost just because you ran the suite again.
 
-**Every run opens a real, visible browser window at 1920x1080** — both
-`headless: false` and `viewport: { width: 1920, height: 1080 }` are set as
-defaults in `playwright.config.js`, not just passed as CLI flags. That's
-also why `npm test` and `npm run test:headed` behave the same now: there's
-no headless mode to opt out of by adding `--headed`. The 1920x1080 size
-matches the real classroom displays this app targets — at the smaller
-1280x720 Playwright default, the whiteboard canvas only renders into part
-of the window instead of filling it. Set `headless: true` in
-`playwright.config.js` (there's no CLI flag to override a `headless: false`
-config back to headless) if you ever need a faster, invisible run, e.g. on
-a headless CI machine.
-
 **Always keep `--workers=1`** (already the config default) when running
 against the live app — every test shares real, mutable account state
 (current class, session), so parallel workers on the same login will fight
 over it and produce false failures.
+
+## Desktop client mode (current default)
+
+Every spec file imports `test`/`expect` from `fixtures/electron-app.js`
+instead of `@playwright/test` directly. That fixture launches the real
+`Tata ClassEdge School.exe` desktop client (via Playwright's
+`_electron.launch()`) for every test, finds the `<webview>` window that
+actually hosts the teach webapp (the client's own top-level window is just
+a chrome/shell around it), and hands that window back as `page` — so
+existing page objects and specs need no changes beyond the import line.
+
+- **Client path**: defaults to
+  `C:\Users\v_crystalQA3\AppData\Local\Programs\tceclient\Tata ClassEdge School.exe`;
+  override with the `CLASSEDGE_CLIENT_EXE` env var on another machine.
+- **`playwright.config.js`'s `headless`/`viewport`/`projects` settings no
+  longer apply** to the default run — the fixture ignores them entirely
+  and drives the client's own real window at whatever size the client
+  itself opens (there is no headless mode for the real client). Those
+  config options only still matter if a spec is temporarily pointed back
+  at plain `@playwright/test` (see Legacy browser mode below).
+- Relative `page.goto('./...')` calls (used throughout the suite) are
+  patched inside the fixture to resolve against `BASE_URL`, since Electron
+  windows have no `baseURL` context option the way browser pages do.
+- **The client shell can show its own "ERROR #404 — Unable to connect
+  ClassEdge server" overlay — this is handled automatically now, no action
+  needed.** Root cause confirmed: it's caused by Playwright's own required
+  launch flags racing with the app's `<webview>` startup (a real teacher
+  launching the app normally never triggers it — confirmed via repeated
+  manual-vs-Playwright A/B tests). The fixture detects it and retries
+  navigation on the same window, which reliably restores real content
+  within a few seconds; the overlay itself may stay visible on screen (it
+  never self-clears) but doesn't affect the actual page the tests drive
+  once recovered. Only if that recovery genuinely fails does the test fail,
+  with a clear `BLOCKER` error. See `CEP_TestCases/LIVE_FINDINGS.md`'s
+  "RESOLVED" entry for the full investigation.
+- **Known intermittent issue, low frequency (~1 in 50 fresh launches
+  observed), not fully root-caused**: occasionally a fresh launch's
+  `page.goto('./')` throws "Target page, context or browser has been
+  closed" — unrelated to the cosmetic overlay above. `pages/auth.helper.js`
+  now retries the whole login attempt (not just the final avatar wait)
+  when this happens, which resolved every occurrence hit in testing so
+  far, but the underlying cause of the occasional "Target closed" itself
+  is still unknown.
+- **Known behavioral difference, needs re-verification**: PIN-09/PIN-10 in
+  `tests/authentication/pin-login.spec.js` assert Angular's
+  `mat-form-field-invalid` red-border class appears after backspacing a
+  filled PIN digit — this did not reproduce inside the desktop client's
+  webview in the same pilot run (the class stayed absent). Not yet
+  determined whether this is a genuine webview-vs-browser rendering/event
+  difference or a timing issue specific to this run.
+
+### Legacy browser mode
+
+To run a spec against a plain browser instead (e.g. to compare behavior,
+or on a machine without the client installed), change that file's import
+back to `require('@playwright/test')` and run
+`npx playwright install chromium` once. `playwright.config.js`'s
+`headless: false` / `viewport: { width: 1920, height: 1080 }` (currently
+commented out — re-enable if you need it) / `baseURL` options apply again
+in that mode.
 
 ## Project layout
 
@@ -77,9 +132,10 @@ pages/auth.helper.js  shared PIN sign-in used by every page object that logs
 pages/               page objects, one file per screen/module (e.g. login.page.js)
 config/moduleClassMap.js   confirmed-working Class/Division/Subject/Chapter/Topic
                      combo per module, for both QA accounts (see below)
-fixtures/electron-app.js   custom Playwright fixture to drive the real desktop
-                     (Electron) client instead of a plain browser — not yet
-                     wired into any spec file, ready for that follow-up
+fixtures/electron-app.js   custom Playwright fixture that drives the real desktop
+                     (Electron) client instead of a plain browser — every spec
+                     file imports `test`/`expect` from here now (see "Desktop
+                     client mode" below)
 CEP_TestCases/       source-of-truth Excel workbooks (one per module) plus
                      LIVE_FINDINGS.md, a running log of confirmed app bugs
                      and DOM/selector gotchas discovered while automating
@@ -119,8 +175,16 @@ Verification -- <specific reason>`).
   (Navigation, Compass, Playlist, AI Homework, AI Notices, Players) — the
   remaining modules still use inline class-setup calls, which work fine but
   aren't yet routed through the shared map.
-- `fixtures/electron-app.js` can drive the real desktop client, but no spec
-  file uses it yet — the suite currently runs against the browser only.
+- Desktop client mode (see above) was wired into every spec file
+  (2026-09-12) and pilot-tested on two modules so far: authentication's
+  `pin-login.spec.js` (19/23 passed originally) and the full
+  `tests/add-resource/` module (50/51 passed after the `auth.helper.js`
+  fix above — the one remaining failure, `AR-BREAK-05`, needs two
+  simultaneous browser tabs on the same account and doesn't map to a
+  single-window desktop client; it's a structural gap in that one test,
+  not an app bug). The remaining modules haven't been run against the real
+  client yet and may surface their own webview-specific quirks the same
+  way these two did.
 - Players (15 files), Authentication (12), Toolbar (11), and Playlist (8)
   still have the most files of any module. Every file in them is a real,
   distinct feature area (e.g. Players' quiz/worksheet/video split, Toolbar's

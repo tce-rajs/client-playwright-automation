@@ -13,7 +13,7 @@
 // fixed flow, so this suite keeps working regardless of which state a
 // previous run (by this suite or anyone else) left the resource in.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

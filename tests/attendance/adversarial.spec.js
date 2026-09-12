@@ -7,7 +7,7 @@
 // recovery behavior, layout under stress) rather than re-testing the
 // already-documented "does content ever load" question.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { AttendancePage } = require('../../pages/attendance.page');

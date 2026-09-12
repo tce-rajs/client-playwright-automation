@@ -5,7 +5,7 @@
 // unexercised by every other Gallery test (they only cover the
 // category/sub-category filter dropdowns, never free-text search).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

@@ -7,7 +7,7 @@
 // keywords, fileName, folder}. Real search endpoint (Library/Gallery share
 // it): GET **/content/search?searchTerm=...
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

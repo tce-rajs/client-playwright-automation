@@ -23,7 +23,7 @@
 // from "Critical bug" to "confirmed working as a real per-session
 // mechanism" -- see LIVE_FINDINGS.md for the full writeup.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

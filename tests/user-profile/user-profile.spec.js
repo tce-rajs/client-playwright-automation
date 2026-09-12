@@ -20,7 +20,7 @@
 // just before the destructive action, and documents the constraint via
 // test.fail() rather than being skipped.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AccountManagementPage } = require('../../pages/account-management.page');
 

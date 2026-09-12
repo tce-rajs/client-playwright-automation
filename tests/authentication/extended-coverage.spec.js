@@ -27,7 +27,7 @@
 // project) makes real multi-tab testing possible.
 
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 
 test.describe('Extended coverage (gap-analysis pass)', () => {
   const { LoginPage } = require('../../pages/login.page');

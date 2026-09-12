@@ -4,7 +4,7 @@
 // Final.xlsx). Same destructive-credential-change caution as the existing
 // suite applies here too -- nothing here submits a real password/PIN change.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AccountManagementPage } = require('../../pages/account-management.page');
 

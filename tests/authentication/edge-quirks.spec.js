@@ -1,7 +1,7 @@
 // UI Edge Quirks.
 // Source: CEP_TestCases/Login_Module_Test_Cases_Final.xlsx, cases EDGE-01..03.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { LoginPage } = require('../../pages/login.page');
 
 test('EDGE-01: Settings-menu Virtual Keyboard toggle stays in sync with the modal\'s own toggle', { tag: '@ui-state' }, async ({ page }) => {

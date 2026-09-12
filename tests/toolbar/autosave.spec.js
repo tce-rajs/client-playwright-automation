@@ -4,7 +4,7 @@
 // CONFIRMED LIVE: after an edit, a "Saving whiteboard E:x / N:y in Zs" toast
 // counts down, then becomes "Whiteboard Saved! N stroke(s)".
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 

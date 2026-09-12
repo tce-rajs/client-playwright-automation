@@ -8,7 +8,7 @@
 // holds multiple distinct, WORKING (non-crash-affected) player types in
 // one place, needed for the multi-type-open and close-method checks below.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

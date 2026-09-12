@@ -5,7 +5,7 @@
 // attributes at all, unlike the rest of the app -- addressed via Angular's
 // formcontrolname attributes instead (title/grade_subject/chapter_topic/share).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

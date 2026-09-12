@@ -2,7 +2,7 @@
 // 32 tests in compass.spec.js. New ID prefix CMP-BREAK-*
 // (CEP_TestCases/Compass_Module_Test_Cases_Final.xlsx).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { CompassPage } = require('../../pages/compass.page');
