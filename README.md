@@ -34,6 +34,12 @@ npx playwright test --grep "@security"
 npx playwright test --grep-invert "@positive"   # everything except positive
 ```
 
+`npm run report` always opens the *latest* run's report from
+`playwright-report/`, which gets overwritten every run. Every run also
+gets an untouched, timestamped copy saved to
+`playwright-report-archive/report_<date>_<time>/`, so older reports are
+never lost just because you ran the suite again.
+
 **Every run opens a real, visible browser window at 1920x1080** — both
 `headless: false` and `viewport: { width: 1920, height: 1080 }` are set as
 defaults in `playwright.config.js`, not just passed as CLI flags. That's

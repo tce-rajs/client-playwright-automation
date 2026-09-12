@@ -4,6 +4,20 @@
 require('dotenv').config();
 const { defineConfig, devices } = require('@playwright/test');
 
+// Folder-name-safe "current date and time" (no colons, since Windows
+// paths can't contain them) — used to give each run's archived report
+// its own timestamped folder. Computed once, when the run starts.
+function reportTimestamp() {
+  const pad = (n) => String(n).padStart(2, '0');
+  const d = new Date();
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_` +
+    `${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+}
+
+// Computed once per run, so the archived html report and its README both
+// land in the same folder.
+const archiveFolder = `playwright-report-archive/report_${reportTimestamp()}`;
+
 module.exports = defineConfig({
   // Where our test files live.
   testDir: './tests',
@@ -26,8 +40,20 @@ module.exports = defineConfig({
   // Retry failing tests automatically on CI (flaky network etc.), not locally.
   retries: process.env.CI ? 2 : 0,
 
-  // HTML report you can open after a run with `npx playwright show-report`.
-  reporter: 'html',
+  // HTML report you can open after a run with `npm run report`
+  // (always the LATEST run, overwritten each time — same as before).
+  //
+  // The default 'html' reporter overwrites playwright-report/ on every
+  // run, so a report is only ever one `npm test` away from being lost.
+  // The second entry below writes an extra, untouched copy per run into
+  // playwright-report-archive/<run start time>/, so past reports stay
+  // safe even after you run the suite again. The third entry drops a
+  // README.md into that same archive folder explaining how to open it.
+  reporter: [
+    ['html', { outputFolder: 'playwright-report' }],
+    ['html', { outputFolder: archiveFolder, open: 'never' }],
+    ['./scripts/archive-readme-reporter.js', { outputFolder: archiveFolder }],
+  ],
 
   use: {
     // Every test can call page.goto('/login') instead of the full URL.
