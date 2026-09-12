@@ -1,21 +1,27 @@
-// Gallery -- NEW adversarial "break the app" cases on top of the existing
-// 19 tests in gallery.spec.js/gallery-gap-analysis.spec.js. New ID prefix
-// GAL-BREAK-* (CEP_TestCases/Gallery_Module_Test_Cases_Final.xlsx). Targets
-// the Gallery search box (`gallerySearchInput`), confirmed via grep to be
-// completely unexercised by every existing Gallery test (they only cover
-// the category/sub-category filter dropdowns, never free-text search).
+// Gallery -- adversarial "break the app" cases on top of the 19 tests in
+// gallery.spec.js. ID prefix GAL-BREAK-*
+// (CEP_TestCases/Gallery_Module_Test_Cases_Final.xlsx). Targets the Gallery
+// search box (`gallerySearchInput`), confirmed via grep to be completely
+// unexercised by every other Gallery test (they only cover the
+// category/sub-category filter dropdowns, never free-text search).
 
 const { test, expect } = require('@playwright/test');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
+  // Uses AddResourcePage.openPickerReliably() -- see LIVE_FINDINGS.md and
+  // drop-it.spec.js's own header comment for the confirmed real bug it
+  // works around (the Add Resources picker can render with
+  // pointer-events:none across its whole popup subtree on a
+  // non-deterministic fraction of fresh logins, ~30-50% observed).
+  testInfo.setTimeout(60000);
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   await pl.loginWithPin(process.env.VALID_PIN);
   await pl.ensureResourcesPresent();
-  await ar.openPicker();
-  await ar.actions.gallery.click();
+  const { stillStuck } = await ar.openPickerReliably(ar.actions.gallery);
+  if (!stillStuck) await ar.actions.gallery.click({ force: true });
   await expect(ar.galleryImageCards.first()).toBeVisible({ timeout: 10000 });
 });
 

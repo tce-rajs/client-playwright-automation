@@ -1,23 +1,28 @@
-// TCE Search Library -- NEW adversarial "break the app" cases on top of the
-// existing 29 tests in library.spec.js/library-gap-analysis.spec.js. New ID
-// prefix TCE-BREAK-* (CEP_TestCases/TCE_Search_Library_Module_Test_Cases_
-// Final.xlsx). TCE-BOUND-01/02 already cover 1-2 char queries and one
-// script-like payload -- these target a genuinely long query, a real
-// character-by-character fast-typing race (distinct from
-// LIB-AUTOSEARCH-RACE-01's "manual vs. autosearch on open" race), and
-// rapid clear/retype cycling.
+// TCE Search Library -- adversarial "break the app" cases on top of the 29
+// tests in tce-search-library.spec.js. ID prefix TCE-BREAK-*
+// (CEP_TestCases/TCE_Search_Library_Module_Test_Cases_Final.xlsx).
+// TCE-BOUND-01/02 already cover 1-2 char queries and one script-like
+// payload -- these target a genuinely long query, a real character-by-
+// character fast-typing race (distinct from LIB-AUTOSEARCH-RACE-01's
+// "manual vs. autosearch on open" race), and rapid clear/retype cycling.
 
 const { test, expect } = require('@playwright/test');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 
-test.beforeEach(async ({ page }) => {
+test.beforeEach(async ({ page }, testInfo) => {
+  // Uses AddResourcePage.openPickerReliably() -- see LIVE_FINDINGS.md and
+  // drop-it.spec.js's own header comment for the confirmed real bug it
+  // works around (the Add Resources picker can render with
+  // pointer-events:none across its whole popup subtree on a
+  // non-deterministic fraction of fresh logins, ~30-50% observed).
+  testInfo.setTimeout(60000);
   const pl = new PlaylistPage(page);
   const ar = new AddResourcePage(page);
   await pl.loginWithPin(process.env.VALID_PIN);
   await pl.ensureResourcesPresent();
-  await ar.openPicker();
-  await ar.actions.library.click();
+  const { stillStuck } = await ar.openPickerReliably(ar.actions.library);
+  if (!stillStuck) await ar.actions.library.click({ force: true });
   await expect(ar.libraryPopup).toBeVisible({ timeout: 10000 });
 });
 
