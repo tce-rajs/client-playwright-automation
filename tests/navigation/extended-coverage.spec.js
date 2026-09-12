@@ -83,8 +83,27 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
     await nav.openChaptersPopup();
     await expect(nav.chapterItems.first()).toBeVisible();
     await page.waitForTimeout(500);
-    const chapterText = (await nav.chapterItems.nth(index).textContent()).trim();
-    await nav.chapterItems.nth(index).click({ timeout: 10000 });
+
+    // CONFIRMED LIVE: the toggle button's own toBeVisible check above can
+    // pass against a stale/closing instance of the popup -- the item count
+    // a moment later is then genuinely 0 because the popup actually closed
+    // rather than opened. If so, toggle it again for a real open before
+    // indexing, rather than nth() timing out against a permanently-empty
+    // list.
+    if ((await nav.chapterItems.count()) === 0) {
+      await nav.openChaptersPopup();
+      await page.waitForTimeout(500);
+    }
+    // CONFIRMED LIVE: right after a rapid sequence of chapter/topic
+    // selections, reopening the popup can briefly re-render fewer than the
+    // full chapter list while it repopulates -- wait for the target index
+    // to actually exist before indexing into it, rather than nth() timing
+    // out against a still-populating list.
+    await expect.poll(() => nav.chapterItems.count(), { timeout: 10000 }).toBeGreaterThan(index);
+    const target = nav.chapterItems.nth(index);
+    await target.scrollIntoViewIfNeeded();
+    const chapterText = (await target.textContent()).trim();
+    await target.click({ timeout: 10000 });
     await page.waitForTimeout(1500);
 
     const topicsShown = await nav.topicItems.first().isVisible({ timeout: 5000 }).catch(() => false);
@@ -100,6 +119,11 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
   }
 
   test('GSD-CYP-01: Chapter/Topic index mapping resolves correctly at the very first and very last chapter', { tag: '@boundary' }, async ({ page }) => {
+    // Three full chapter-selection cycles (middle, first, then up to 5 walk-
+    // back attempts near the tail), each with its own popup open/close and
+    // settle waits, comfortably exceeds the 30s default under real network
+    // latency -- same reasoning as ATT-ACCESS-01's own test.setTimeout.
+    test.setTimeout(90000);
     const nav = new NavigationPage(page);
     await nav.resetToClass('Class 9', 'A', 'Hindi Language'); // confirmed live: 29 chapters
     await nav.openChaptersPopup();
@@ -397,6 +421,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
     if (pageCrashed) return;
 
     await nav.openClassPopup();
+    // CONFIRMED LIVE (see NavigationPage.ensureRecentClasses): resetToClass()
+    // switches to the "All My Classes" tab, and the popup can reopen on
+    // THAT tab rather than defaulting back to Recent Classes -- explicitly
+    // re-select it before counting rather than trusting the default.
+    await nav.recentClassesTab.click({ timeout: 5000 }).catch(() => {});
+    await page.waitForTimeout(300);
     const finalCount = await nav.recentClassButtons.count();
     console.log('Recent Classes entries after switching through', combos.length, 'distinct classes:', finalCount);
     expect(finalCount).toBeLessThanOrEqual(20);
