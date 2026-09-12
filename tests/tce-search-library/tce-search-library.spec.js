@@ -5,7 +5,7 @@
 // workbook, it was just reachable via the Add Resource "+" picker's Library
 // tab.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

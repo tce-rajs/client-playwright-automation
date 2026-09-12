@@ -11,7 +11,7 @@
 // content exists (PLR-TCE-03). This entire module is blocked on a single,
 // concrete need: a real TCE-type resource seeded anywhere.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { applyClassMap } = require('../../config/moduleClassMap');

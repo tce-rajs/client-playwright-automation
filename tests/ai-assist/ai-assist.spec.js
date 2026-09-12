@@ -11,7 +11,7 @@
 // render with pointer-events:none across its whole popup subtree on a
 // non-deterministic fraction of fresh logins).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 const { NavigationPage } = require('../../pages/navigation.page');

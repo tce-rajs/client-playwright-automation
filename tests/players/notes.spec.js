@@ -7,7 +7,7 @@
 // note -- it loads the resource's URL string directly into an iframe with
 // no real content fetch and no editing UI at all.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.use({ viewport: { width: 1920, height: 1080 } });

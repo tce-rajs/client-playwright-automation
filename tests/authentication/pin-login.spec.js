@@ -1,7 +1,7 @@
 // Sign in with PIN.
 // Source: CEP_TestCases/Login_Module_Test_Cases_Final.xlsx, cases PIN-01..23.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { LoginPage } = require('../../pages/login.page');
 
 // The virtual keyboard renders right at the bottom edge of the viewport and

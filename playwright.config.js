@@ -26,6 +26,18 @@ module.exports = defineConfig({
   // Retry failing tests automatically on CI (flaky network etc.), not locally.
   retries: process.env.CI ? 2 : 0,
 
+  // Desktop client mode (fixtures/electron-app.js, the default `page` fixture
+  // for every spec now) can retry a fresh app launch up to 3 times when the
+  // client's own connection-error screen shows up (see that file), each
+  // attempt taking ~10-15s -- comfortably exceeding Playwright's 30s default
+  // test timeout on fixture setup ALONE before a test even starts. Confirmed
+  // live: without this, a real 3-attempt retry fails with Playwright's own
+  // generic "Test timeout of 30000ms exceeded while setting up 'page'"
+  // instead of ever reaching that fixture's own clear blocker error. Spec
+  // files that legitimately need even more than this already call their own
+  // `test.setTimeout(...)` and are unaffected either way.
+  timeout: 90000,
+
   // HTML report you can open after a run with `npx playwright show-report`.
   reporter: 'html',
 
@@ -50,7 +62,7 @@ module.exports = defineConfig({
     // 1280x720 the canvas genuinely only fills that smaller area; at
     // 1920x1080 it correctly fills the whole window). Setting it here
     // makes every file consistent regardless of whether it overrides it.
-    viewport: { width: 1920, height: 1080 },
+    // viewport: { width: 1920, height: 1080 },
 
     // Capture a trace only when a test fails, so we can debug it visually.
     trace: 'on-first-retry',

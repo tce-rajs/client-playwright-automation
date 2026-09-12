@@ -2,7 +2,7 @@
 // cases on top of the existing 94 tests in this folder. New ID prefix
 // AR-BREAK-* (CEP_TestCases/Add_Resource_Module_Test_Cases_Final.xlsx).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

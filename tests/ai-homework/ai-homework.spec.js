@@ -17,7 +17,7 @@
 // This account is VALID_PIN_2 (separate from the concurrently-running
 // verifier agent's VALID_PIN) per this session's account-isolation rule.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { AiHomeworkPage } = require('../../pages/ai-homework.page');

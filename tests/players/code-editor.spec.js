@@ -5,7 +5,7 @@
 // Code resource. This module was previously "not yet covered" in the
 // workbook (Code Editor was searched for under the wrong chapters).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

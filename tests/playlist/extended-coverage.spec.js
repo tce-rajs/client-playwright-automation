@@ -26,7 +26,7 @@
 // pattern, not attempted with tooling this project doesn't have.
 
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 
 test.describe('Extended coverage (gap-analysis pass)', () => {
   const { PlaylistPage } = require('../../pages/playlist.page');

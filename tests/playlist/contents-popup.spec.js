@@ -1,7 +1,7 @@
 // Contents Popup (Chapters/Topics reached via the Playlist's CONTENTS tile).
 // Source: CEP_TestCases/Playlist_Module_Test_Cases_Final.xlsx, cases PL-TOC-01..09.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 // CONFIRMED LIVE: the Chapters/Topics popup renders ~1425px wide, which

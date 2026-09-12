@@ -20,7 +20,7 @@
 // rows specify (e.g. UJ2-08, UJ3-07) -- matching this whole session's
 // established credential/destructive-action-safety convention.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');

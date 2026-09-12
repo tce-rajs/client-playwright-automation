@@ -12,7 +12,7 @@
 // just before the mutating action, or documented as blocked, matching this
 // suite's established pattern elsewhere.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { CompassPage } = require('../../pages/compass.page');

@@ -1,7 +1,7 @@
 // Cross-Cutting: Security (per-topic scoping), State (persistence).
 // Source: CEP_TestCases/Toolbar_Module_Test_Cases_Final.xlsx, cases TB-SEC-01, TB-STATE-01.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 

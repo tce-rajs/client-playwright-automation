@@ -1,7 +1,7 @@
 // Session & State.
 // Source: CEP_TestCases/Login_Module_Test_Cases_Final.xlsx, cases SESS-01..07.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { LoginPage } = require('../../pages/login.page');
 
 // The confirmed "you're logged in" signal: the toolbar's user avatar

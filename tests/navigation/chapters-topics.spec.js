@@ -1,7 +1,7 @@
 // Chapters & Topics Popup.
 // Source: CEP_TestCases/Navigation_Module_Test_Cases_Final.xlsx, cases NAV-CHP-01..09.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { applyClassMap } = require('../../config/moduleClassMap');
 

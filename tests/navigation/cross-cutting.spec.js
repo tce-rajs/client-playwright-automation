@@ -12,7 +12,7 @@
 // tested by making that ONE curriculum request fail during login, not by
 // intercepting a request at popup-open time (there isn't one).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { applyClassMap } = require('../../config/moduleClassMap');
 

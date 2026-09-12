@@ -7,7 +7,7 @@
 // Add Resource -> Create, uploading a plain .txt file (which has no
 // dedicated previewer by design, per PLR-UNS-02).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const path = require('path');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');

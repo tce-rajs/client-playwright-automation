@@ -10,7 +10,7 @@
 // class toggle, not element presence. MinimapPage.isOpen() checks the class,
 // never mere existence.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 const { MinimapPage } = require('../../pages/minimap.page');

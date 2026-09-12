@@ -10,7 +10,7 @@
 // a few topic indices under that chapter for a card matching "FlashCard"
 // rather than hardcoding a guessed index.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

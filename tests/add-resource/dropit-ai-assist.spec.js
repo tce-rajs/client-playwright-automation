@@ -2,7 +2,7 @@
 // dedicated pass" in the workbook; this covers their basic entry behavior.
 // Source: CEP_TestCases/Add_Resource_Module_Test_Cases_Final.xlsx, cases ADD-DRP-01, ADD-AIA-01.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 

@@ -9,7 +9,7 @@
 // Test. This file documents that scoping gap honestly via test.fail()
 // rather than guessing at an unconfirmed UI path.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.use({ viewport: { width: 1920, height: 1080 } });

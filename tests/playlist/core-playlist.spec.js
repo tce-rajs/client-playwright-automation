@@ -1,7 +1,7 @@
 // Core Playlist UI.
 // Source: CEP_TestCases/Playlist_Module_Test_Cases_Final.xlsx, cases PL-CORE-01..07.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.beforeEach(async ({ page }) => {

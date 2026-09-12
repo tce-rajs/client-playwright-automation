@@ -3,7 +3,7 @@
 // drawing/gap-analysis/object/text/undo-redo/widgets.spec.js. New ID prefix
 // TB-BREAK-* (CEP_TestCases/Toolbar_Module_Test_Cases_Final.xlsx).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 

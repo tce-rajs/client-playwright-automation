@@ -2,7 +2,7 @@
 // belongs to the separate Add Resource module).
 // Source: CEP_TestCases/Playlist_Module_Test_Cases_Final.xlsx, cases PL-ADD-01..03.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.beforeEach(async ({ page }) => {

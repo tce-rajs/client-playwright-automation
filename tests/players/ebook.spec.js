@@ -11,7 +11,7 @@
 // checks (not just a timing issue -- rechecked after explicit waits).
 // Every case that needs either drawer's content is consequently blocked.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

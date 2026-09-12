@@ -9,7 +9,7 @@
 // backdrop and does NOT close on Escape -- only clicking its own toggle
 // button opens/closes it (see PlaylistPage#openOptionsMenu/closeOptionsMenu).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 
 // CONFIRMED LIVE: the Chapters/Topics popup (used by PL-FLT-05 to switch

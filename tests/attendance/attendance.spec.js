@@ -20,7 +20,7 @@
 // its own real, live open-and-wait attempt rather than assuming the block,
 // so a future fix is picked up automatically.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { AttendancePage } = require('../../pages/attendance.page');

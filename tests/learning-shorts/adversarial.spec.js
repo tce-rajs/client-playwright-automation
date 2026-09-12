@@ -5,7 +5,7 @@
 // -> Send) as the existing suite, since real camera/mic access is blocked
 // in this environment (LS-ALT-ENTRY-01).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');
 const { LearningShortsPage } = require('../../pages/learning-shorts.page');

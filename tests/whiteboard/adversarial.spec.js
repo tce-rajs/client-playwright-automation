@@ -8,7 +8,7 @@
 // save pipeline is unreachable from the UI), mid-draw interruption, and
 // cross-tab real-time sync.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');

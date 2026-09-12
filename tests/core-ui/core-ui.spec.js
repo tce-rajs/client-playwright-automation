@@ -7,7 +7,7 @@
 // already used below in CORE-07) and emulate timezone (context option), so
 // all 5 are automated for real rather than left as manual-only notes.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 
 // The real app runs on large classroom displays (interactive flat panels).
 // Some Core UI layouts only overlap correctly at that size, so this file

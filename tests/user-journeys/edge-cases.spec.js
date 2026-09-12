@@ -7,7 +7,7 @@
 // same investigation, with a real minimal live check added wherever one is
 // cheap and safe to perform without duplicating work.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 

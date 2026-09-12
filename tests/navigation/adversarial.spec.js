@@ -9,7 +9,7 @@
 // (all existing NAV-STATE-*/NAV-RACE-* cases use in-app popups/tabs, never
 // the browser's own history buttons).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { applyClassMap } = require('../../config/moduleClassMap');
 

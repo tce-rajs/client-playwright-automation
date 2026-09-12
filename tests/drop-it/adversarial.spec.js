@@ -3,7 +3,7 @@
 // (CEP_TestCases/Drop_It_Module_Test_Cases_Final.xlsx). Matches this file's
 // own established convention of using VALID_PIN_2 (not VALID_PIN).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { AddResourcePage } = require('../../pages/add-resource.page');

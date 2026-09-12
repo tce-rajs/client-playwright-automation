@@ -21,7 +21,7 @@
 // loaded question. Every such test below documents this via test.fail()
 // with this confirmed reason rather than hanging for a full test timeout.
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');

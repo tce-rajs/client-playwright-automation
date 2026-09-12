@@ -6,7 +6,7 @@
 // font family select, Bold/Italic/Underline, alignment, To Front/To
 // Back/Duplicate/Delete, and ~24 color swatches).
 
-const { test, expect } = require('@playwright/test');
+const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 

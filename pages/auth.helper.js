@@ -21,14 +21,20 @@ async function loginWithPin(page, pin, { toggleTimeout = 30000, avatarTimeout = 
   const avatar = page.locator('[data-qa-id="toolbar-user-avatar"]');
 
   for (let attempt = 0; attempt <= retries; attempt++) {
-    await page.goto('./');
-    await page.waitForTimeout(2000);
-    await page.locator('[data-qa-id="login-auth-toggle-button"]').click({ timeout: toggleTimeout });
-    for (let i = 0; i < 5; i++) {
-      await page.locator(`[data-qa-id="login-pin-digit-input-${i}"]`).fill(String(pin)[i]);
-    }
-
+    // The whole attempt -- not just the final avatar wait -- needs to be
+    // inside the retry's try/catch. Confirmed live in desktop-client mode
+    // (2026-09-12): `page.goto('./')` itself can throw "Target page,
+    // context or browser has been closed" (an occasional, still-unexplained
+    // "Target closed" -- see LIVE_FINDINGS.md). With only the avatar wait
+    // covered, that exception escaped this function on attempt 0 with zero
+    // retry, contradicting this function's whole stated purpose above.
     try {
+      await page.goto('./');
+      await page.waitForTimeout(2000);
+      await page.locator('[data-qa-id="login-auth-toggle-button"]').click({ timeout: toggleTimeout });
+      for (let i = 0; i < 5; i++) {
+        await page.locator(`[data-qa-id="login-pin-digit-input-${i}"]`).fill(String(pin)[i]);
+      }
       await avatar.waitFor({ state: 'visible', timeout: avatarTimeout });
       return;
     } catch (err) {
