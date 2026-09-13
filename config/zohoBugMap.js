@@ -3144,8 +3144,8 @@ const TEACH_MODE_BUGS = [
     title: 'Error displayed while saving code from AI Assist',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I14943 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: 'Already covered: same underlying finding as TCN-I14943 (confirmed live -- there is no Save/Save to Playlist control anywhere in the Code Editor at all, exhaustively confirmed via a DOM dump of every clickable element), which explains why saving code from any entry point fails.',
   },
   {
     id: 'TCN-I14936',
@@ -3154,7 +3154,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: repro names a specific, ungranted location ("Pin 55678", Class 3A -> Computer Science -> Scratch -> Go To and Glide Blocks) -- a different PIN/account than this project\'s confirmed VALID_PIN/VALID_PIN_2, and Scratch/Blockly-type content is not referenced anywhere in config/moduleClassMap.js or this suite\'s page objects (checked).',
   },
   {
     id: 'TCN-I14948',
@@ -3162,8 +3162,8 @@ const TEACH_MODE_BUGS = [
     title: 'Code Editor Not Working (Displays Blank) V1 & V2',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I14948 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- Monaco editor mounted with 31 real visible code lines at the confirmed codeEditor location, not blank.',
   },
   {
     id: 'TCN-I16694',
@@ -3171,8 +3171,8 @@ const TEACH_MODE_BUGS = [
     title: 'Run button executes empty code and displays internal errors in code editor',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I16694 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- cleared the editor (Ctrl+A, Delete) and ran; output showed no raw internal error text (no "Error during exec"/"Traceback"/"expected an indented block" pattern matched).',
   },
   {
     id: 'TCN-I14935',
@@ -3181,7 +3181,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: a broad, cross-grade content-audit finding ("several issues... across multiple grades and topics") with no single specific Grade/Chapter/Topic named to reproduce against -- same "unconfirmed navigation target" category as other content-audit-style bugs elsewhere in this suite.',
   },
   {
     id: 'TCN-I14938',
@@ -3191,7 +3191,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: "multiple chapters" is not specific enough to reproduce against -- no individual chapter is named, and exhaustively checking every Class 11/12 chapter for code-editor presence is outside this pass\'s scope.',
   },
   {
     id: 'TCN-I14939',
@@ -3199,8 +3199,8 @@ const TEACH_MODE_BUGS = [
     title: 'Side Section Text Overlaps First Section When Collapsing Coding Asset/Resource',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I14939 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- the real collapse control (confirmed via DOM dump: an "as-split" library gutter, class="as-split-gutter-icon", no data-qa-id anywhere on this component) was clicked; no significant text-element overlap found within tce-code-main afterward. (An unscoped whole-page check first found a false positive -- an unrelated background whiteboard "Welcome Back!" panel overlapping its own zoom indicator -- fixed by scoping the check to tce-code-main only.)',
   },
   {
     id: 'TCN-I14940',
@@ -3209,7 +3209,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: requires a Blockly-type sprite editor resource -- Blockly/Scratch content is not referenced anywhere in config/moduleClassMap.js or this suite\'s page objects (checked); the confirmed Code Editor resource in this account is a Python/Monaco editor, a different content type entirely.',
   },
   {
     id: 'TCN-I14943',
@@ -3217,8 +3217,8 @@ const TEACH_MODE_BUGS = [
     title: 'Code file not saved in Playlist in Teach Mode despite clicking Save to Playlist button',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I14943 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: 'RESULT (2026-09-13, live): STILL REPRODUCES (worse than described) -- confirmed via an exhaustive DOM dump of every clickable element inside tce-code-main (only 6 total: close, the collapse gutter, Run, Force Stop, Settings, gear icon) that there is no "Save to Playlist" button anywhere in the Code Editor at all -- not just silently failing when clicked, genuinely absent.',
   },
   {
     id: 'TCN-I14945',
@@ -3227,7 +3227,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: requires a Blockly "Maze" game-type resource -- Blockly/Maze content is not referenced anywhere in config/moduleClassMap.js or this suite\'s page objects (checked); the confirmed Code Editor resource in this account is a Python/Monaco editor, a different content type entirely.',
   },
   {
     id: 'TCN-I14937',
@@ -3235,8 +3235,8 @@ const TEACH_MODE_BUGS = [
     title: '“Add to Playlist” Option Missing in Code Editor',
     priority: 'Medium',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I14937 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: 'RESULT (2026-09-13, live): STILL REPRODUCES -- confirmed via an exhaustive DOM dump of every clickable element inside tce-code-main (only 6 total: close, collapse gutter, Run, Force Stop, Settings, gear icon) that "Add to Playlist" does not exist anywhere in the Code Editor.',
   },
   {
     id: 'TCN-I16654',
@@ -3245,7 +3245,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Medium',
     status: 'Invalid',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED (already marked Invalid in Zoho): requires the AI Assist "Generate Code" flow within the Code Editor -- not a confirmed, reachable entry point in this suite\'s page objects (only Run/Force Stop/Settings/collapse are confirmed to exist, per a live DOM dump this session), and AI-generated content/layout is inherently non-deterministic per generation.',
   },
   {
     id: 'TCN-I17065',

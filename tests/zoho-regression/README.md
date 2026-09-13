@@ -28,7 +28,7 @@ Teach Mode) and are not counted below.
 | Magnet (entry point -> Attendance/Homework/Notices/Learning Shorts) | [magnet.spec.js](./magnet.spec.js) | 26 | 0 | 10 | 16 |
 | Ops / Infra (non-UI) | [ops-infra.spec.js](./ops-infra.spec.js) | 26 | 3 | 12 | 14 |
 | Players (Checkpoint) | [players-checkpoint.spec.js](./players-checkpoint.spec.js) | 78 | 3 | 3 | 75 |
-| Players (Code Editor) | [players-code-editor.spec.js](./players-code-editor.spec.js) | 14 | 0 | 0 | 14 |
+| Players (Code Editor) | [players-code-editor.spec.js](./players-code-editor.spec.js) | 14 | 0 | 6 | 8 |
 | Players (Ebook) | [players-ebook.spec.js](./players-ebook.spec.js) | 6 | 1 | 0 | 6 |
 | Players (Quiz) | [players-quiz.spec.js](./players-quiz.spec.js) | 84 | 9 | 68 | 16 |
 | Players (Worksheet) | [players-worksheet.spec.js](./players-worksheet.spec.js) | 6 | 0 | 0 | 6 |
@@ -39,4 +39,4 @@ Teach Mode) and are not counted below.
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 1 | 3 |
 | Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 38 | 16 |
-| **Total** | | **620** | **64** | **298** | **322** |
+| **Total** | | **620** | **64** | **304** | **316** |
