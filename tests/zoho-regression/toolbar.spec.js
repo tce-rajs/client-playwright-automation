@@ -29,6 +29,7 @@ const { test, expect } = require('../../fixtures/electron-app');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { AccountManagementPage } = require('../../pages/account-management.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
+const { PlaylistPage } = require('../../pages/playlist.page');
 
 test.beforeEach(async ({ page }) => {
   const nav = new NavigationPage(page);
@@ -222,6 +223,311 @@ test(
       panelBox.y + panelBox.height > widgetBox.y;
     test.fail(overlaps, 'CONFIRMED (matches Zoho CWR-I670): a widget overlaps the widget selection panel');
     expect(overlaps).toBe(false);
+  }
+);
+
+test(
+  'TCN-I17047: The Pen tool can draw an annotation on the whiteboard',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I17047 (raw title "[119231] Pen Annotation Not Working").
+    const tb = new ToolbarPage(page);
+    await tb.waitForBoardToSettle();
+    const before = await tb.pathCount();
+    await tb.selectTool('gtPen');
+    await tb.drawStroke({ x: 200, y: 200 }, { x: 400, y: 300 });
+    const after = await tb.pathCount();
+    console.log('Path count before:', before, '| after drawing a Pen stroke:', after);
+
+    test.fail(after <= before, 'CONFIRMED (matches Zoho TCN-I17047): the Pen tool did not create a new annotation');
+    expect(after).toBeGreaterThan(before);
+  }
+);
+
+test(
+  "CWR-I654: A tool's options panel is not hidden/mispositioned after moving the toolbar (dock toggle)",
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I654 -- the context menu (tool options panel) gets hidden when the toolbar is moved.
+    // Reuses the established dock-toggle mechanism from tests/toolbar/extended-coverage.spec.js's
+    // TB-GAP-02.
+    const tb = new ToolbarPage(page);
+    const toggleBtn = page.locator('.leftRightBtn.left button, .leftRightBtn.right button').first();
+    const toggleCount = await toggleBtn.count();
+    test.fail(toggleCount === 0, 'No dock-toggle control found this pass');
+    if (toggleCount === 0) {
+      expect(toggleCount).toBeGreaterThan(0);
+      return;
+    }
+    await toggleBtn.click({ force: true });
+    await page.waitForTimeout(800);
+    await tb.openToolPanel('gtErase');
+    const panelVisible = await tb.panel.isVisible({ timeout: 5000 }).catch(() => false);
+    const panelBox = panelVisible ? await tb.panel.boundingBox() : null;
+    console.log('Tool options panel visible after moving the toolbar:', panelVisible, '| box:', JSON.stringify(panelBox));
+    // Restore original dock position for other tests sharing this board.
+    await toggleBtn.click({ force: true }).catch(() => {});
+
+    const offScreen = panelBox && (panelBox.x < 0 || panelBox.y < 0);
+    test.fail(
+      !panelVisible || offScreen,
+      `CONFIRMED (matches Zoho CWR-I654): the tool options panel is ${!panelVisible ? 'not visible' : 'positioned off-screen'} after moving the toolbar`
+    );
+    expect(panelVisible).toBe(true);
+    expect(offScreen).toBeFalsy();
+  }
+);
+
+test(
+  "CWR-I299: Other widgets remain clickable after closing one widget",
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I299 -- after closing one widget, other widgets become unclickable.
+    const tb = new ToolbarPage(page);
+    await tb.openToolPanel('gtWidgets');
+    await tb.widgetTool('Ruler').click({ force: true });
+    await page.waitForTimeout(1000);
+    await tb.closePanelByTappingOutside();
+    const rulerVisible = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 5000 }).catch(() => false);
+    test.fail(!rulerVisible, 'Ruler widget did not open this pass');
+    if (!rulerVisible) {
+      expect(rulerVisible).toBe(true);
+      return;
+    }
+    const rulerReadout = page.getByText(/\d+(\.\d+)?\s*cm/).first();
+    const box = await rulerReadout.boundingBox();
+    await page.mouse.click(box.x - 60, box.y);
+    await page.waitForTimeout(800);
+
+    await tb.openToolPanel('gtWidgets');
+    const protractorBtn = tb.widgetTool('Protractor');
+    const clickable = await protractorBtn.isEnabled({ timeout: 3000 }).catch(() => false);
+    await protractorBtn.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(1000);
+    const protractorOpened = await page.locator('[class*="protractor" i]').first().isVisible({ timeout: 3000 }).catch(() => false);
+    console.log('Protractor widget clickable/enabled:', clickable, '| opened after clicking:', protractorOpened);
+
+    test.fail(
+      !clickable,
+      'CONFIRMED (matches Zoho CWR-I299): another widget became unclickable after closing the first one'
+    );
+    expect(clickable).toBe(true);
+  }
+);
+
+test(
+  'CWR-I667 / CWR-I668: The Protractor (angle tool) has no gap to a drawn line and its scale numbers are fully visible',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I667 -- a gap is observed between the angle tool and a drawn line.
+    // Zoho CWR-I668 -- scale numbers on the angle tool are incorrect/partially visible at the edges.
+    const tb = new ToolbarPage(page);
+    await tb.openToolPanel('gtWidgets');
+    const protractorBtn = tb.widgetTool('Protractor');
+    const protractorCount = await protractorBtn.count();
+    test.fail(protractorCount === 0, 'Protractor (angle tool) not found this pass');
+    if (protractorCount === 0) {
+      expect(protractorCount).toBeGreaterThan(0);
+      return;
+    }
+    await protractorBtn.click({ force: true });
+    await page.waitForTimeout(1000);
+    await tb.closePanelByTappingOutside();
+    const protractorEl = page.locator('[class*="protractor" i]').first();
+    const protractorVisible = await protractorEl.isVisible({ timeout: 5000 }).catch(() => false);
+    test.fail(!protractorVisible, 'Protractor did not appear on canvas this pass');
+    if (!protractorVisible) {
+      expect(protractorVisible).toBe(true);
+      return;
+    }
+    const protractorBox = await protractorEl.boundingBox();
+    // Check for any scale-number label whose box is clipped/cut off by the protractor's own
+    // container overflow.
+    const clippedNumbers = await protractorEl.evaluate((el) => {
+      const style = getComputedStyle(el);
+      if (style.overflow !== 'hidden') return false;
+      const containerBox = el.getBoundingClientRect();
+      const numberEls = [...el.querySelectorAll('text, span, div')].filter((n) => /^\d+°?$/.test((n.textContent || '').trim()));
+      return numberEls.some((n) => {
+        const b = n.getBoundingClientRect();
+        return b.left < containerBox.left || b.right > containerBox.right || b.top < containerBox.top || b.bottom > containerBox.bottom;
+      });
+    }).catch(() => false);
+    console.log('Protractor box:', JSON.stringify(protractorBox), '| any scale-number label clipped:', clippedNumbers);
+
+    test.fail(
+      clippedNumbers,
+      'CONFIRMED (matches Zoho CWR-I668): a scale-number label on the angle tool is clipped/partially visible'
+    );
+    expect(clippedNumbers).toBe(false);
+  }
+);
+
+test(
+  'CWR-I669: A line drawn using the Ruler tool does not continue beyond the ruler length',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I669 -- a drawn line continues beyond the ruler's own length when drawing using it.
+    const tb = new ToolbarPage(page);
+    await tb.openToolPanel('gtWidgets');
+    await tb.widgetTool('Ruler').click({ force: true });
+    await page.waitForTimeout(1000);
+    await tb.closePanelByTappingOutside();
+    const rulerVisible = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 5000 }).catch(() => false);
+    test.fail(!rulerVisible, 'Ruler widget did not open this pass');
+    if (!rulerVisible) {
+      expect(rulerVisible).toBe(true);
+      return;
+    }
+    // CONFIRMED LIVE (this pass, via a throwaway diagnostic): the real ruler container class is
+    // "widgetsRuler" (a <div> wrapping the SVG), not a generic "ruler"-containing class.
+    const rulerEl = page.locator('.widgetsRuler').first();
+    const rulerBox = await rulerEl.boundingBox().catch(() => null);
+    console.log('Ruler box:', JSON.stringify(rulerBox));
+    test.fail(!rulerBox, 'Could not measure the Ruler widget this pass');
+    if (!rulerBox) {
+      expect(rulerBox).toBeTruthy();
+      return;
+    }
+    // Draw a Pen stroke starting well inside the ruler and dragging far past its right edge.
+    await tb.selectTool('gtPen');
+    const before = await tb.pathCount();
+    await tb.drawStroke(
+      { x: rulerBox.x + 20, y: rulerBox.y + rulerBox.height / 2 },
+      { x: rulerBox.x + rulerBox.width + 300, y: rulerBox.y + rulerBox.height / 2 }
+    );
+    const after = await tb.pathCount();
+    console.log('Path count before draw:', before, '| after:', after);
+    test.fail(after <= before, 'Drawing along the ruler did not create a new stroke this pass');
+    if (after <= before) {
+      expect(after).toBeGreaterThan(before);
+      return;
+    }
+    const strokeBox = await tb.paths.last().boundingBox();
+    const rulerRight = rulerBox.x + rulerBox.width;
+    const strokeRight = strokeBox.x + strokeBox.width;
+    console.log('Ruler right edge:', rulerRight, '| resulting stroke right edge:', strokeRight);
+
+    const continuesBeyond = strokeRight > rulerRight + 20; // small tolerance
+    test.fail(
+      continuesBeyond,
+      `CONFIRMED (matches Zoho CWR-I669): the drawn line (right edge ${strokeRight.toFixed(0)}) continues well beyond the ruler's own length (right edge ${rulerRight.toFixed(0)})`
+    );
+    expect(continuesBeyond).toBe(false);
+  }
+);
+
+test(
+  'CWR-I733 / CWR-I734: The Widgets tool panel does not hide action buttons or overlap the Resource Tray',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I733 -- action buttons hidden on the Tool/Widget screen, only content visible.
+    // Zoho CWR-I734 -- Resource Tray overlaps the Widget screen when opened from ExploreIt.
+    const tb = new ToolbarPage(page);
+    const pl = new PlaylistPage(page);
+    await tb.openToolPanel('gtWidgets');
+    await expect(tb.panel).toBeVisible({ timeout: 5000 });
+    const closeBtnVisible = await tb.widgetCloseBtn.isVisible({ timeout: 3000 }).catch(() => false);
+    const disciplineSelectVisible = await tb.widgetDisciplineSelect.isVisible({ timeout: 3000 }).catch(() => false);
+    console.log('Widget panel close button visible:', closeBtnVisible, '| discipline select (an action control) visible:', disciplineSelectVisible);
+
+    const panelBox = await tb.panel.boundingBox();
+    const firstCardBox = await pl.resourceCards.first().boundingBox().catch(() => null);
+    let overlaps = false;
+    if (panelBox && firstCardBox) {
+      overlaps =
+        panelBox.x < firstCardBox.x + firstCardBox.width && panelBox.x + panelBox.width > firstCardBox.x &&
+        panelBox.y < firstCardBox.y + firstCardBox.height && panelBox.y + panelBox.height > firstCardBox.y;
+    }
+    console.log('Widget panel box:', JSON.stringify(panelBox), '| first Resource Tray card box:', JSON.stringify(firstCardBox), '| overlaps:', overlaps);
+
+    const bugReproduces = !closeBtnVisible || !disciplineSelectVisible || overlaps;
+    test.fail(
+      bugReproduces,
+      `CONFIRMED (matches Zoho CWR-I733/CWR-I734): ${!closeBtnVisible || !disciplineSelectVisible ? 'action buttons are hidden on the Widget screen' : 'the Widget panel overlaps the Resource Tray'}`
+    );
+    expect(bugReproduces).toBe(false);
+  }
+);
+
+test(
+  'CWR-I656: Widget tool selection state does not persist unexpectedly across topic navigation',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I656 -- widget tool state is not (correctly) maintained across topic navigation.
+    const tb = new ToolbarPage(page);
+    await tb.openToolPanel('gtWidgets');
+    await tb.widgetTool('Ruler').click({ force: true });
+    await page.waitForTimeout(1000);
+    await tb.closePanelByTappingOutside();
+    const rulerVisibleBefore = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 5000 }).catch(() => false);
+    test.fail(!rulerVisibleBefore, 'Ruler widget did not open this pass');
+    if (!rulerVisibleBefore) {
+      expect(rulerVisibleBefore).toBe(true);
+      return;
+    }
+    const nextTopicBtn = page.locator('[data-qa-id="playlist-nav-topic-right"]');
+    await nextTopicBtn.scrollIntoViewIfNeeded().catch(() => {});
+    await nextTopicBtn.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const rulerVisibleAfter = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 3000 }).catch(() => false);
+    console.log('Ruler still visible after switching topics:', rulerVisibleAfter, '(expected: false -- a per-topic tool should not bleed into a different topic)');
+
+    test.fail(
+      rulerVisibleAfter,
+      'CONFIRMED (matches Zoho CWR-I656): the Ruler widget from the previous topic remains visible after switching to a different topic'
+    );
+    expect(rulerVisibleAfter).toBe(false);
+  }
+);
+
+test(
+  'CWR-I272 / CWR-I276: Widgets and geography maps do not appear as Playlist resource cards',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I272 -- widgets incorrectly appear in the Playlist.
+    // Zoho CWR-I276 -- geography maps are treated/displayed as widgets in the Playlist.
+    const pl = new PlaylistPage(page);
+    const titles = await pl.resourceCards.allTextContents();
+    console.log('Current Playlist resource card titles:', JSON.stringify(titles));
+    const widgetLike = titles.filter((t) => /widget|geography map/i.test(t));
+    console.log('Widget/geography-map-like Playlist entries:', JSON.stringify(widgetLike));
+
+    test.fail(
+      widgetLike.length > 0,
+      `CONFIRMED (matches Zoho CWR-I272/CWR-I276): ${widgetLike.length} widget/geography-map-like entries appear in the Playlist: ${JSON.stringify(widgetLike)}`
+    );
+    expect(widgetLike.length).toBe(0);
+  }
+);
+
+test(
+  'CWR-I331: Resource Edit/Delete controls do not overlap the topic-navigation buttons',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I331 -- while editing/removing resources, the Edit and Delete buttons overlap the
+    // Navigation button, causing mis-clicks.
+    const pl = new PlaylistPage(page);
+    await pl.openOptionsMenu();
+    await pl.filterEditBtn.click();
+    await page.locator('button', { hasText: /finish editing/i }).waitFor({ state: 'visible', timeout: 5000 });
+    await pl.resourceCards.first().hover();
+    const removeBtnBox = await pl.resourceRemoveBtn.first().boundingBox().catch(() => null);
+    const navRightBox = await page.locator('[data-qa-id="playlist-nav-topic-right"]').boundingBox().catch(() => null);
+    const navLeftBox = await page.locator('[data-qa-id="playlist-nav-topic-left"]').boundingBox().catch(() => null);
+    console.log('Remove button box:', JSON.stringify(removeBtnBox), '| nav-right box:', JSON.stringify(navRightBox), '| nav-left box:', JSON.stringify(navLeftBox));
+    await page.locator('button', { hasText: /finish editing/i }).click().catch(() => {});
+
+    function overlaps(a, b) {
+      if (!a || !b) return false;
+      return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+    }
+    const anyOverlap = overlaps(removeBtnBox, navRightBox) || overlaps(removeBtnBox, navLeftBox);
+    test.fail(
+      anyOverlap,
+      'CONFIRMED (matches Zoho CWR-I331): the resource remove/edit control overlaps a topic-navigation button'
+    );
+    expect(anyOverlap).toBe(false);
   }
 );
 

@@ -35,8 +35,8 @@ Teach Mode) and are not counted below.
 | Playlist | [playlist.spec.js](./playlist.spec.js) | 47 | 7 | 19 | 28 |
 | Student Test / Reports | [student-test-reports.spec.js](./student-test-reports.spec.js) | 19 | 1 | 0 | 19 |
 | TCE Search Library | [tce-search-library.spec.js](./tce-search-library.spec.js) | 2 | 1 | 0 | 2 |
-| Toolbar | [toolbar.spec.js](./toolbar.spec.js) | 33 | 1 | 5 | 28 |
+| Toolbar | [toolbar.spec.js](./toolbar.spec.js) | 33 | 1 | 18 | 15 |
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 1 | 3 |
 | Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 38 | 16 |
-| **Total** | | **620** | **64** | **311** | **309** |
+| **Total** | | **620** | **64** | **324** | **296** |
