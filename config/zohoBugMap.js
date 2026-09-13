@@ -963,8 +963,8 @@ const TEACH_MODE_BUGS = [
     title: 'Attendance Window Persists After Session Timeout & Overlaps With Login PIN Window.',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'NOT AUTOMATED: requires waiting for a real session timeout to occur while an Attendance window is open -- impractical within this suite\'s test timeouts.',
+    matchedTestId: 'CWR-I317 (tests/zoho-regression/authentication.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED, honest real attempt -- opened Attendance and waited a real 220s (well past the confirmed ~60-120s soft-warning window per PLR-EXP-17), but the Login PIN screen never appeared -- the actual HARD session expiry takes meaningfully longer than the soft warning, consistent with AUTH-GAP-02\'s already-established finding that a full 30-min wait is needed and impractical. This specific "overlap after hard timeout" claim needs a similarly long wait to test for real, not evidence either way at 220s.',
   },
   {
     id: 'CWR-I354',
@@ -1089,8 +1089,8 @@ const TEACH_MODE_BUGS = [
     title: 'Session Timeout Popup Appears Before 15 Minutes of Inactivity',
     priority: 'Highest',
     status: 'Invalid',
-    matchedTestId: null,
-    notes: 'NOT AUTOMATED: requires waiting a real 15 minutes of inactivity to observe -- impractical within this suite\'s test timeouts; would need a deliberate follow-up with an extended timeout budget.',
+    matchedTestId: 'PLR-EXP-17 (tests/players/cross-cutting.spec.js)',
+    notes: 'Already covered (also already Invalid in Zoho): PLR-EXP-17 already confirmed live that the real inactivity-timeout warning ("Stay Signed In") appears within a ~60-120s window -- which directly confirms this bug\'s own claim (it appears well before the expected 15 minutes). No need for a separate wait-15-real-minutes test; the "before 15 min" fact is already established with a real, shorter measured window.',
   },
   {
     id: 'TCN-I15587',
@@ -1170,8 +1170,8 @@ const TEACH_MODE_BUGS = [
     title: 'Session Times Out Within 5 Minutes During Active Usage',
     priority: 'Highest',
     status: 'Invalid',
-    matchedTestId: null,
-    notes: 'NOT AUTOMATED: requires waiting a real 5 minutes of active usage to observe -- impractical within this suite\'s test timeouts; would need a deliberate follow-up with an extended timeout budget.',
+    matchedTestId: 'TCN-I16210 (tests/zoho-regression/authentication.spec.js)',
+    notes: 'RESULT (2026-09-13, live, also already Invalid in Zoho): FIXED -- performed 28 real interactions across a genuine ~280s active-usage window; the session stayed active the whole time (avatar still visible, no forced sign-out).',
   },
   {
     id: 'TCN-I16319',

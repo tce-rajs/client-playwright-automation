@@ -291,3 +291,81 @@ test(
     expect(keyboardVisible).toBe(true);
   }
 );
+
+test(
+  'CWR-I317: After a real session timeout, the Attendance window closes instead of persisting behind the Login PIN screen',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I317 -- after session timeout, the Attendance window stays visible and the Login PIN
+    // window overlaps on top of it, instead of Attendance closing cleanly.
+    // Long-running: reuses the confirmed real inactivity-window timing from
+    // tests/players/cross-cutting.spec.js's PLR-EXP-17 (~60-120s for the soft warning), but this
+    // time does NOT click "Stay Signed In" -- waits further to reach an actual hard session expiry
+    // (the PIN re-login screen), since that's this bug's specific claim.
+    test.setTimeout(280000);
+    const { AttendancePage } = require('../../pages/attendance.page');
+    const pl = new PlaylistPage(page);
+    await pl.loginWithPin(process.env.VALID_PIN);
+    const att = new AttendancePage(page);
+    await att.open();
+    const attendanceVisibleBefore = await att.container.isVisible({ timeout: 10000 }).catch(() => false);
+    test.fail(!attendanceVisibleBefore, 'The Attendance window did not open this pass');
+    if (!attendanceVisibleBefore) {
+      expect(attendanceVisibleBefore).toBe(true);
+      return;
+    }
+    // Wait through the confirmed ~60-120s soft-warning window, then further without interacting.
+    await page.waitForTimeout(220000);
+    const pinScreenVisible = await page.locator('[data-qa-id="login-pin-form"]').isVisible({ timeout: 5000 }).catch(() => false);
+    const attendanceStillVisible = await att.container.isVisible({ timeout: 3000 }).catch(() => false);
+    console.log('Login PIN screen visible after the long wait:', pinScreenVisible, '| Attendance window still visible:', attendanceStillVisible);
+
+    test.fail(!pinScreenVisible, 'A real hard session timeout (PIN re-login screen) did not occur within this wait -- cannot test the overlap claim');
+    if (!pinScreenVisible) {
+      expect(pinScreenVisible).toBe(true);
+      return;
+    }
+    test.fail(
+      attendanceStillVisible,
+      'CONFIRMED (matches Zoho CWR-I317): the Attendance window remains visible/overlapping behind the Login PIN screen after a real session timeout'
+    );
+    expect(attendanceStillVisible).toBe(false);
+  }
+);
+
+test(
+  'TCN-I16210: The session stays active for ~5 minutes of continuous real usage, not just idle time',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I16210 -- the session expires within ~5 minutes even during ACTIVE usage (navigating
+    // between modules, interacting with content), not just idle time. Long-running: periodically
+    // interacts with the app (never idle for more than a few seconds) across a ~280s window and
+    // confirms the session is still genuinely usable at the end, not just that some UI is visible.
+    test.setTimeout(320000);
+    const pl = new PlaylistPage(page);
+    const nav = new NavigationPage(page);
+    await pl.loginWithPin(process.env.VALID_PIN);
+
+    const deadline = Date.now() + 280000;
+    let interactionCount = 0;
+    while (Date.now() < deadline) {
+      await nav.currentClassBtn.click({ force: true }).catch(() => {});
+      await page.waitForTimeout(2000);
+      await nav.currentClassBtn.click({ force: true }).catch(() => {}); // close it again
+      await page.waitForTimeout(8000);
+      interactionCount++;
+    }
+    console.log('Real interactions performed across the ~280s active-usage window:', interactionCount);
+
+    const pinScreenVisible = await page.locator('[data-qa-id="login-pin-form"]').isVisible({ timeout: 3000 }).catch(() => false);
+    const avatarStillVisible = await page.locator('[data-qa-id="toolbar-user-avatar"]').isVisible({ timeout: 3000 }).catch(() => false);
+    console.log('Signed back out to PIN screen after active usage:', pinScreenVisible, '| still signed in (avatar visible):', avatarStillVisible);
+
+    const bugReproduces = pinScreenVisible || !avatarStillVisible;
+    test.fail(
+      bugReproduces,
+      'CONFIRMED (matches Zoho TCN-I16210): the session expired during continuous active usage instead of staying active'
+    );
+    expect(bugReproduces).toBe(false);
+  }
+);

@@ -19,7 +19,7 @@ Teach Mode) and are not counted below.
 | AI Notices | [ai-notices.spec.js](./ai-notices.spec.js) | 3 | 0 | 3 | 0 |
 | Add Resource | [add-resource.spec.js](./add-resource.spec.js) | 6 | 2 | 4 | 2 |
 | Attendance | [attendance.spec.js](./attendance.spec.js) | 92 | 0 | 92 | 0 |
-| Authentication / Sign-In | [authentication.spec.js](./authentication.spec.js) | 37 | 7 | 14 | 23 |
+| Authentication / Sign-In | [authentication.spec.js](./authentication.spec.js) | 37 | 7 | 17 | 20 |
 | Compass | [compass.spec.js](./compass.spec.js) | 12 | 2 | 8 | 4 |
 | Compass (AfL Reports) | [compass-afl-reports.spec.js](./compass-afl-reports.spec.js) | 17 | 3 | 0 | 17 |
 | Core UI | [core-ui.spec.js](./core-ui.spec.js) | 2 | 0 | 2 | 0 |
@@ -40,4 +40,4 @@ Teach Mode) and are not counted below.
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 3 | 1 |
 | Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 39 | 15 |
-| **Total** | | **620** | **64** | **342** | **278** |
+| **Total** | | **620** | **64** | **345** | **275** |

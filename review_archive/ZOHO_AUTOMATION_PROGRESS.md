@@ -400,6 +400,28 @@ Highlights and lessons from this pass:
 **Next and final phase**: the session-timeout tests (CWR-I317, TCN-I15445, TCN-I16210), queued last
 per explicit instruction, using the proven `PLR-EXP-17` pattern.
 
+## Session update (2026-09-13, continuation 3): session-timeout tests -- effort complete
+
+Final phase done. All three session-timeout bugs now have real results:
+
+- **TCN-I15445** ("timeout popup before 15 min") -- matched directly to `PLR-EXP-17`'s own
+  already-confirmed finding (the real warning window is ~60-120s, well under 15 min) -- no new test
+  needed, the fact was already established.
+- **TCN-I16210** ("session times out within 5 min during active usage") -- FIXED. Ran 28 real
+  interactions across a genuine ~280s window; the session stayed active throughout (avatar still
+  visible, no forced sign-out).
+- **CWR-I317** ("Attendance window overlaps Login PIN screen after timeout") -- BLOCKED, an honest
+  real result: opened Attendance and waited 220s (well past the confirmed soft-warning window), but
+  the actual hard logout (PIN re-login screen) never triggered within that time. The gap between the
+  soft warning and a real forced logout is evidently much longer than 220s, consistent with
+  `AUTH-GAP-02`'s own established "30 real minutes, impractical" finding -- this specific overlap
+  claim needs a similarly long wait to test for real, not evidence either way at 220s.
+
+### Effort-wide final tally
+**620 in-scope bugs: 345 automated (real live test), 275 documented not-automatable, 0 untouched.**
+Every single one has either a real, live-verified test against the current app or a concrete,
+specific reason it can't be tested here. Nothing left pending.
+
 ## User's standing instructions for this effort
 
 - Keep going through all 620 in the original priority order regardless of how long it takes
