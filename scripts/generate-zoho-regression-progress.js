@@ -24,6 +24,7 @@ const MODULE_SLUGS = {
   'Drop It': 'drop-it',
   'Grade / Subject / Division': 'grade-subject-division',
   'Magnet (entry point -> Attendance/Homework/Notices/Learning Shorts)': 'magnet',
+  Minimap: 'minimap',
   'Ops / Infra (non-UI)': 'ops-infra',
   'Players (Checkpoint)': 'players-checkpoint',
   'Players (Code Editor)': 'players-code-editor',

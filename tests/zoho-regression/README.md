@@ -26,6 +26,7 @@ Teach Mode) and are not counted below.
 | Drop It | [drop-it.spec.js](./drop-it.spec.js) | 3 | 2 | 3 | 0 |
 | Grade / Subject / Division | [grade-subject-division.spec.js](./grade-subject-division.spec.js) | 17 | 3 | 6 | 11 |
 | Magnet (entry point -> Attendance/Homework/Notices/Learning Shorts) | [magnet.spec.js](./magnet.spec.js) | 26 | 0 | 10 | 16 |
+| Minimap | [minimap.spec.js](./minimap.spec.js) | 3 | 0 | 3 | 0 |
 | Ops / Infra (non-UI) | [ops-infra.spec.js](./ops-infra.spec.js) | 26 | 3 | 12 | 14 |
 | Players (Checkpoint) | [players-checkpoint.spec.js](./players-checkpoint.spec.js) | 78 | 3 | 3 | 75 |
 | Players (Code Editor) | [players-code-editor.spec.js](./players-code-editor.spec.js) | 14 | 0 | 6 | 8 |
@@ -39,4 +40,4 @@ Teach Mode) and are not counted below.
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 1 | 3 |
 | Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 38 | 16 |
-| **Total** | | **620** | **64** | **332** | **288** |
+| **Total** | | **620** | **64** | **335** | **285** |

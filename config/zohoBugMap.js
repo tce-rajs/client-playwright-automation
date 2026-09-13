@@ -1413,8 +1413,8 @@ const TEACH_MODE_BUGS = [
     title: 'Content Preview Not Visible in Satellite/Minimap in Some Scenarios',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Minimap.',
+    matchedTestId: 'TCN-I15382 (tests/zoho-regression/minimap.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- after drawing content and zooming in, the Minimap canvas rendered a real, correctly-sized preview (250x150 box).',
   },
   {
     id: 'TCN-I15969',
@@ -1539,8 +1539,8 @@ const TEACH_MODE_BUGS = [
     title: 'Satellite/Minimap Popup Persists During Topic Switch and Sign Out',
     priority: 'Medium',
     status: 'Invalid',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Minimap.',
+    matchedTestId: 'TCN-I15383 (tests/zoho-regression/minimap.spec.js)',
+    notes: 'RESULT (2026-09-13, live, despite already Invalid in Zoho): STILL REPRODUCES -- the Minimap popup remained open after switching to the next topic instead of closing automatically.',
   },
   {
     id: 'TCN-I15384',
@@ -1557,8 +1557,8 @@ const TEACH_MODE_BUGS = [
     title: 'Satellite/Minimap Preview Remains Visible After Logout Without Closing Popup',
     priority: 'Medium',
     status: 'Invalid',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Minimap.',
+    matchedTestId: 'TCN-I15385 (tests/zoho-regression/minimap.spec.js)',
+    notes: 'RESULT (2026-09-13, live, despite already Invalid in Zoho): STILL REPRODUCES -- after drawing content, opening the Minimap, and signing all the way out back to Guest Mode, the Minimap container still carried the "visible" class.',
   },
   {
     id: 'TCN-I15356',
