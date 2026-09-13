@@ -823,3 +823,81 @@ test(
     expect(formattingPanelVisible).toBe(true);
   }
 );
+
+test(
+  'TCN-I15589: Panning the whiteboard on one topic does not change the pan position of a previously-visited topic',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15589 -- whiteboard pan/position state is synchronized across topics; panning in
+    // one topic also shifts a previously-visited topic's own pan position.
+    const tb = new ToolbarPage(page);
+    const nav = new NavigationPage(page);
+    await tb.waitForBoardToSettle();
+
+    // CONFIRMED LIVE (this pass): this app's whiteboard <svg> has no viewBox attribute at all, so
+    // that can't be used as a pan-position proxy. Instead, draw a reference stroke on each topic
+    // and track ITS on-screen position -- if panning Topic A shifts Topic B's own reference stroke
+    // too, that's the cross-topic bleed the bug describes. Also verify the topic label itself
+    // actually changes at each step -- tb.paths.last() alone can't distinguish "topic didn't
+    // switch" from "topic switched and content bled across", so both need checking.
+    const topicLabelOf = async () => nav.currentChapterTopicBtn.textContent().catch(() => null);
+    const topicALabel = (await topicLabelOf() || '').trim();
+
+    await tb.selectTool('gtPen');
+    await tb.drawStroke({ x: 200, y: 200 }, { x: 260, y: 200 });
+    const strokeABox1 = await tb.paths.last().boundingBox();
+
+    const nextTopicBtn = page.locator('[data-qa-id="playlist-nav-topic-right"]');
+    await nextTopicBtn.scrollIntoViewIfNeeded().catch(() => {});
+    await nextTopicBtn.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const topicBLabel = (await topicLabelOf() || '').trim();
+    await tb.selectTool('gtPen');
+    await tb.drawStroke({ x: 200, y: 200 }, { x: 260, y: 200 });
+    const strokeBBox1 = await tb.paths.last().boundingBox();
+
+    const prevTopicBtn = page.locator('[data-qa-id="playlist-nav-topic-left"]');
+    await prevTopicBtn.scrollIntoViewIfNeeded().catch(() => {});
+    await prevTopicBtn.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const topicALabelAgain = (await topicLabelOf() || '').trim();
+
+    // Pan topic A using the Pan tool.
+    await tb.selectTool('gtPan');
+    const wbBox = await tb.wbSvg.boundingBox();
+    await page.mouse.move(wbBox.x + wbBox.width / 2, wbBox.y + wbBox.height / 2);
+    await page.mouse.down();
+    await page.mouse.move(wbBox.x + wbBox.width / 2 + 150, wbBox.y + wbBox.height / 2 + 100, { steps: 10 });
+    await page.mouse.up();
+    await page.waitForTimeout(800);
+    const strokeABox2 = await tb.paths.last().boundingBox();
+    console.log('Topic A reference stroke box before pan:', JSON.stringify(strokeABox1), '| after pan:', JSON.stringify(strokeABox2));
+
+    await nextTopicBtn.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(1500);
+    const topicBLabelAgain = (await topicLabelOf() || '').trim();
+    const strokeBBox2 = await tb.paths.last().boundingBox();
+    console.log('Topic labels -- A:', topicALabel, '| B:', topicBLabel, '| A again:', topicALabelAgain, '| B again:', topicBLabelAgain);
+    console.log('Topic B reference stroke box baseline:', JSON.stringify(strokeBBox1), '| after Topic A was panned:', JSON.stringify(strokeBBox2));
+
+    const topicSwitchingWorked = topicALabel !== topicBLabel && topicALabelAgain === topicALabel && topicBLabelAgain === topicBLabel;
+    test.fail(!topicSwitchingWorked, `Topic switching did not behave as expected this pass (labels: A="${topicALabel}" B="${topicBLabel}" A2="${topicALabelAgain}" B2="${topicBLabelAgain}") -- cannot trust the cross-topic measurement`);
+    if (!topicSwitchingWorked) {
+      expect(topicSwitchingWorked).toBe(true);
+      return;
+    }
+
+    const panActuallyMovedA = strokeABox1 && strokeABox2 && (Math.abs(strokeABox1.x - strokeABox2.x) > 5 || Math.abs(strokeABox1.y - strokeABox2.y) > 5);
+    test.fail(!panActuallyMovedA, 'Panning Topic A did not visibly move its own reference stroke this pass -- cannot test cross-topic bleed');
+    if (!panActuallyMovedA) {
+      expect(panActuallyMovedA).toBe(true);
+      return;
+    }
+    const topicBAffected = strokeBBox1 && strokeBBox2 && (Math.abs(strokeBBox1.x - strokeBBox2.x) > 5 || Math.abs(strokeBBox1.y - strokeBBox2.y) > 5);
+    test.fail(
+      Boolean(topicBAffected),
+      `CONFIRMED (matches Zoho TCN-I15589): panning Topic A also moved Topic B's own reference stroke (baseline ${JSON.stringify(strokeBBox1)} -> ${JSON.stringify(strokeBBox2)})`
+    );
+    expect(topicBAffected).toBeFalsy();
+  }
+);

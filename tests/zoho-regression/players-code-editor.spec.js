@@ -29,6 +29,7 @@ const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
 const { NavigationPage } = require('../../pages/navigation.page');
 const { PlayerPage } = require('../../pages/player.page');
+const { AddResourcePage } = require('../../pages/add-resource.page');
 const { applyClassMap } = require('../../config/moduleClassMap');
 
 test.use({ viewport: { width: 1920, height: 1080 } });
@@ -207,5 +208,46 @@ test(
       `CONFIRMED (matches Zoho TCN-I14943): "Save to Playlist" produced a real 400 error response: ${JSON.stringify(badResponses)}`
     );
     expect(badResponses.length).toBe(0);
+  }
+);
+
+test(
+  'CWR-I658: A code file in the Library opens with real content',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I658 -- a code file in the Library section does not open, no content and no error
+    // shown.
+    const pl = new PlaylistPage(page);
+    const ar = new AddResourcePage(page);
+    await pl.ensureResourcesPresent();
+    const { stillStuck } = await ar.openPickerReliably(ar.actions.library);
+    if (!stillStuck) await ar.actions.library.click({ force: true });
+    const libraryOpen = await ar.libraryResults.first().isVisible({ timeout: 10000 }).catch(() => false);
+    test.fail(!libraryOpen, 'The Library picker did not open reliably this pass');
+    if (!libraryOpen) {
+      expect(libraryOpen).toBe(true);
+      return;
+    }
+    const codeCard = ar.libraryResults.filter({ hasText: /code/i }).first();
+    const hasCode = await codeCard.count();
+    test.fail(hasCode === 0, 'No code-file resource available in the Library this pass');
+    if (hasCode === 0) {
+      expect(hasCode).toBeGreaterThan(0);
+      return;
+    }
+    await codeCard.click({ force: true });
+    await page.waitForTimeout(2000);
+    const plr = new PlayerPage(page);
+    const newCard = pl.resourceCards.last();
+    await plr.openResourceCard(newCard);
+    await page.waitForTimeout(2000);
+    const monacoMounted = await plr.monacoEditor.isVisible({ timeout: 8000 }).catch(() => false);
+    console.log('Monaco editor mounted for the Library code file:', monacoMounted);
+
+    test.fail(
+      !monacoMounted,
+      'CONFIRMED (matches Zoho CWR-I658): the Library code file does not open -- no content displayed'
+    );
+    expect(monacoMounted).toBe(true);
   }
 );

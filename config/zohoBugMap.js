@@ -1081,7 +1081,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'To do',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to AI Homework.',
+    notes: 'NOT AUTOMATED: names a specific generated homework question\'s content rendering, needs that exact AI-generated content to exist -- no fixed/confirmed question with this defect is available to check against.',
   },
   {
     id: 'TCN-I15445',
@@ -1107,8 +1107,8 @@ const TEACH_MODE_BUGS = [
     title: 'Whiteboard Pan Action Affecting Previous Topic',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Whiteboard.',
+    matchedTestId: 'TCN-I15589 (tests/zoho-regression/whiteboard.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED, honestly caught by the test\'s own safety check -- the topic label read identically ("2.1 | Errors and Exceptions in Python") both before and after clicking the "next topic" button, meaning the topic never actually changed in this account\'s default state (whiteboard.spec.js\'s plain login with no confirmed multi-topic combo applied). Couldn\'t exercise the real cross-topic-pan claim without a confirmed location with 2+ reachable topics.',
   },
   {
     id: 'TCN-I15777',
@@ -1180,7 +1180,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Whiteboard.',
+    notes: 'NOT AUTOMATED: explicitly "on IFP" (Interactive Flat Panel touchscreen hardware) -- this environment runs the desktop client on a regular monitor, no IFP hardware available.',
   },
   {
     id: 'TCN-I16381',
@@ -3623,8 +3623,8 @@ const TEACH_MODE_BUGS = [
     title: 'Code file/assets are not opening in Library under add resource',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Code Editor).',
+    matchedTestId: 'CWR-I658 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: "RESULT (2026-09-13, live): BLOCKED, reproduced 3/3 attempts consistently -- the Add Resources picker needed a reload retry at this location, which hit the same already-documented page.reload()-breaks-under-Electron-webview crash identified earlier this same session (see this branch's own earlier commits: openPickerReliably()'s reload() tears down the connection to the webview). This is a tooling/environment crash, not evidence either way for the bug's own claim.",
   },
   {
     id: 'TCN-I14949',
@@ -3875,8 +3875,8 @@ const TEACH_MODE_BUGS = [
     title: 'Success message is not displayed after deleting saved code in V2 Code Editor/other resource',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Code Editor).',
+    matchedTestId: 'TCN-I14943 (tests/zoho-regression/players-code-editor.spec.js)',
+    notes: "NOT AUTOMATED: needs a previously-SAVED code file to delete, but this session's own exhaustive DOM dump for TCN-I14943 already confirmed the Code Editor has no Save control anywhere -- there's no way to get a saved code file to delete in the first place.",
   },
   {
     id: 'TCN-I16669',
@@ -4597,7 +4597,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to AI Homework.',
+    notes: 'NOT AUTOMATED: repro names a different account ("Creds: 90005") than this project\'s confirmed VALID_PIN/VALID_PIN_2.',
   },
   {
     id: 'CWR-I423',
@@ -5156,7 +5156,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Low',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Authentication / Sign-In.',
+    notes: 'NOT AUTOMATED: no "Sign-Up" flow exists anywhere in this suite\'s page objects (checked) -- this teacher app is PIN/password sign-IN only; Sign-Up may be an admin-only or different-portal flow out of scope here.',
   },
   {
     id: 'CWR-I742',
@@ -5209,8 +5209,8 @@ const TEACH_MODE_BUGS = [
     title: 'Floating Annotation Pencil and Eraser Not Working in Worksheet',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Whiteboard to Players (Worksheet).',
+    matchedTestId: 'TCN-I15364 (tests/zoho-regression/players-worksheet.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED -- no annotation toolbar/pencil control appeared on this confirmed worksheet resource. Consistent with tests/players/worksheet.spec.js\'s own PLR-WS-06 note that the mini annotation toolbar is conditional per-resource, not present on every worksheet -- not this bug\'s own "unresponsive" claim being confirmed, just this resource lacking the toolbar at all.',
   },
   {
     id: 'TCN-I15458',
@@ -5408,8 +5408,8 @@ const TEACH_MODE_BUGS = [
     title: 'Virtual Keyboard Does Not Open on New Password Creation',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Whiteboard to Authentication / Sign-In.',
+    matchedTestId: 'TCN-I16618 (tests/zoho-regression/authentication.spec.js)',
+    notes: "RESULT (2026-09-13, live): FIXED -- the virtual keyboard opened correctly when focusing the New Password field in the Change Password flow (reached via the Profile tab, not Account -- Account's own content never actually renders, a separate already-documented issue).",
   },
   {
     id: 'TCN-I16619',

@@ -359,6 +359,47 @@ is likely overcautious: `tests/players/cross-cutting.spec.js`'s `PLR-EXP-17` alr
 ~150s `test.setTimeout()` + long wait works in this suite, and confirms the app's REAL inactivity
 window is ~60-120s, not the 5/15/30 minutes these bug titles claim.
 
+## Session update (2026-09-13, continuation 2): Players Code Editor + all 56 reassignment stubs done
+
+Cleared the rest of the pending work: Players Code Editor (12), then all 56 reassignment-stub bugs
+across Players Quiz (11), Toolbar (17), Players Ebook (5), Add Resource (4),
+Grade/Subject/Division (4), Minimap (3), User Profile (3), Whiteboard (2), AI Homework (2), Players
+Code Editor (2 more), Authentication (2), Players Worksheet (1). **Both the "genuinely untouched"
+and "reassignment stub" counts are now 0** -- every one of the 620 in-scope bugs has either a real
+live-verified test or a documented reason.
+
+Highlights and lessons from this pass:
+- **Players Code Editor's own DOM has zero data-qa-id attributes** -- an exhaustive dump of every
+  clickable element inside `tce-code-main` found only 6: close, an "as-split" collapse gutter, Run,
+  Force Stop, Settings, gear icon. This directly CONFIRMED two bugs as still-reproducing (no
+  Save/Add-to-Playlist control exists at all, not just silently failing) and let 3 more Blockly/V8
+  bugs be ruled not-automatable immediately (wrong content type/client entirely).
+- **Minimap had a real dashboard tooling gap**: the module was never added to
+  `scripts/generate-zoho-regression-progress.js`'s `MODULE_SLUGS` map, so its 3 bugs were silently
+  missing from the per-module table (though still counted in the grand total) -- fixed, and its
+  spec file (which didn't exist yet) was created using the established `MinimapPage` object. Found 2
+  genuine still-reproducing bugs there (popup persists across topic switch / after logout).
+- **A false positive caught and fixed**: CWR-I552 (eBook "unreadable" topic name) first over-flagged
+  on the topic label simply being white text -- that's this app's normal default styling against its
+  dark toolbar, not evidence of the overlap the bug actually describes. Corrected to check the real
+  overlap claim instead once noticed.
+- **A same-shift-amount test artifact caught and fixed**: TCN-I15589 (whiteboard pan bleeding across
+  topics) initially looked confirmed-reproducing because a reference stroke on "Topic B" shifted by
+  the exact same amount as Topic A's pan -- suspicious enough to add an explicit topic-label check,
+  which revealed the topic never actually changed (this account's default combo has only one
+  reachable topic via the nav buttons here) -- correctly reclassified as BLOCKED, not confirmed.
+- **CWR-I658 reproduced the SAME `page.reload()`-breaks-Electron-webview crash** identified earlier
+  this session (in the main test suite work, not the Zoho effort) -- 3/3 consistent, documented as
+  hitting that already-known tooling issue rather than treated as new evidence either way.
+- Wrong-tab and wrong-selector mistakes were also caught and fixed live rather than accepted
+  incorrectly: TCN-I16618 initially failed because Change Password lives under the Profile tab, not
+  Account (Account's own content never renders -- a separate known issue); TCN-I15364's honest
+  "no annotation toolbar" result matches an already-documented conditional limitation
+  (`PLR-WS-06`), not a fresh confirmation of the bug's own claim.
+
+**Next and final phase**: the session-timeout tests (CWR-I317, TCN-I15445, TCN-I16210), queued last
+per explicit instruction, using the proven `PLR-EXP-17` pattern.
+
 ## User's standing instructions for this effort
 
 - Keep going through all 620 in the original priority order regardless of how long it takes
