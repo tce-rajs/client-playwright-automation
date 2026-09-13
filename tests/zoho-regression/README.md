@@ -17,7 +17,7 @@ Teach Mode) and are not counted below.
 | AI Assist | [ai-assist.spec.js](./ai-assist.spec.js) | 3 | 0 | 3 | 0 |
 | AI Homework | [ai-homework.spec.js](./ai-homework.spec.js) | 5 | 2 | 3 | 2 |
 | AI Notices | [ai-notices.spec.js](./ai-notices.spec.js) | 3 | 0 | 3 | 0 |
-| Add Resource | [add-resource.spec.js](./add-resource.spec.js) | 6 | 2 | 2 | 4 |
+| Add Resource | [add-resource.spec.js](./add-resource.spec.js) | 6 | 2 | 4 | 2 |
 | Attendance | [attendance.spec.js](./attendance.spec.js) | 92 | 0 | 92 | 0 |
 | Authentication / Sign-In | [authentication.spec.js](./authentication.spec.js) | 37 | 7 | 13 | 24 |
 | Compass | [compass.spec.js](./compass.spec.js) | 12 | 2 | 8 | 4 |
@@ -39,4 +39,4 @@ Teach Mode) and are not counted below.
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 1 | 3 |
 | Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 38 | 16 |
-| **Total** | | **620** | **64** | **329** | **291** |
+| **Total** | | **620** | **64** | **331** | **289** |

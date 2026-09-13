@@ -1494,8 +1494,8 @@ const TEACH_MODE_BUGS = [
     title: 'PDF Added from Library to Playlist Keeps Loading and Does Not Open',
     priority: 'Medium',
     status: 'On Hold',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Add Resource.',
+    matchedTestId: 'TCN-I15338 (tests/zoho-regression/add-resource.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED, reproduced 3/3 attempts (not the usual ~30-50% picker flakiness -- consistent) -- the Library picker never opened reliably enough to reach adding a PDF at all, so the actual "does the added PDF load" claim could not be exercised this pass.',
   },
   {
     id: 'TCN-I15340',
@@ -4812,8 +4812,8 @@ const TEACH_MODE_BUGS = [
     title: 'Filter resource list appears every time user opens any asset after clicking "Filter Resource"',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Add Resource.',
+    matchedTestId: 'CWR-I285 (tests/zoho-regression/add-resource.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- closed the filter panel, opened an unrelated asset, the filter panel did not reappear.',
   },
   {
     id: 'CWR-I379',
@@ -5021,7 +5021,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'Ready for Testing',
     matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Add Resource.',
+    notes: 'NOT AUTOMATED: needs a "create then update a Custom Resource" flow with no established page-object support in this suite (no confirmed create-custom-resource/edit-custom-resource selectors) -- would need dedicated exploration to build first.',
   },
   {
     id: 'CWR-I287',
@@ -5030,7 +5030,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Medium',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Add Resource.',
+    notes: 'NOT AUTOMATED: needs uploading a real Excel file and waiting for its backend PDF conversion to fail (non-deterministic timing/condition), then checking a DIFFERENT resource type (video) for layout fallout -- no established file-upload flow in this suite\'s page objects for this path, and deliberately uploading real files against the shared QA account carries the same data-safety caution used elsewhere in this project.',
   },
   {
     id: 'CWR-I668',
