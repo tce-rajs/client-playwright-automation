@@ -1893,7 +1893,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: 'CWR-I277 (tests/zoho-regression/grade-subject-division.spec.js)',
-    notes: 'RESULT (2026-09-13, live): STILL REPRODUCES (tentative) -- 0 grade options were visible when opening the Grade selector this pass. Note: every other test in this same batch also failed to reach the grade selector, so this may reflect a transient environment/navigation issue rather than a fully confirmed defect -- worth a clean re-run before treating as certain.',
+    notes: 'RESULT (2026-09-13, live): FIXED -- 13 grade options were visible after a clean re-run. The original "0 options" result was a TEST-AUTHORING GAP, not an app bug or env flake: the test opened the class popup but never clicked into the "All My Classes" tab (the proven working pattern in tests/navigation/cascade.spec.js), so gradeButtons never existed in the DOM at all. Fixed and re-verified live.',
   },
   {
     id: 'CWR-I360',
@@ -1902,7 +1902,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: 'CWR-I360 (tests/zoho-regression/grade-subject-division.spec.js)',
-    notes: 'RESULT (2026-09-13, live): BLOCKED -- the grade selector was not reachable this pass (0 options, same as CWR-I277 in this same batch) before the alphabetical-order comparison could run.',
+    notes: 'RESULT (2026-09-13, live): FIXED -- re-run after fixing the same test-authoring gap as CWR-I277 (missing "All My Classes" tab click). Real subject order confirmed alphabetical: ["English","Environmental Science","Hindi","Mathematics"].',
   },
   {
     id: 'CWR-I365',
@@ -1911,7 +1911,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'Duplicate',
     matchedTestId: 'CWR-I365 (tests/zoho-regression/grade-subject-division.spec.js)',
-    notes: 'RESULT (2026-09-13, live): BLOCKED -- same grade-selector-not-reachable issue as CWR-I360.',
+    notes: 'RESULT (2026-09-13, live): FIXED -- re-run after fixing the same test-authoring gap as CWR-I277/CWR-I360. The Subject selection window stayed open (Subject options still visible) after switching Division, confirmed live.',
   },
   {
     id: 'TCN-I14959',
@@ -1956,7 +1956,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Medium',
     status: 'Closed',
     matchedTestId: 'TCN-I15337 (tests/zoho-regression/grade-subject-division.spec.js)',
-    notes: 'RESULT (2026-09-13, live): BLOCKED -- hit an early precondition failure this pass (no playlist resources found) before the first-click-load comparison could run.',
+    notes: 'RESULT (2026-09-13, live): FIXED -- re-run cleanly reached a real playlist resource and confirmed it opened on the first click (no re-click needed).',
   },
   {
     id: 'TCN-I15354',
@@ -4489,7 +4489,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: 'CWR-I740 (tests/zoho-regression/toolbar.spec.js)',
-    notes: 'RESULT (2026-09-13, live): BLOCKED -- hit an early precondition failure this pass (text editor or Clear Annotation(s) control not reachable) before the real comparison could run. Needs a retry/investigation, not yet a confirmed finding either way.',
+    notes: 'RESULT (2026-09-13, live): FIXED -- re-run after fixing a test-authoring gap (used selectTool(\'gtErase\') instead of openToolPanel(\'gtErase\'), so the Clear Annotation(s) control was never actually revealed -- confirmed via tests/toolbar/extended-coverage.spec.js\'s TB-CYP-02 reaching the sibling clear-whiteboard control the same correct way). Real result: pen strokes cleared to 0, but the text box remained present after -- Clear Annotation(s) correctly only clears annotations.',
   },
   {
     id: 'CWR-I754',
@@ -4507,7 +4507,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Medium',
     status: 'QA  Sign off/Closed',
     matchedTestId: 'CWR-I666 (tests/zoho-regression/toolbar.spec.js)',
-    notes: 'RESULT (2026-09-13, live): BLOCKED -- the zoom slider or its thumb element was not reachable this pass before the real comparison could run. Needs a retry/investigation, not yet a confirmed finding either way.',
+    notes: "RESULT (2026-09-13, live): FIXED -- required 3 rounds of live DOM investigation to get a real signal (see tests/zoho-regression/toolbar.spec.js's comment on this test): (1) test-authoring gap, needed openToolPanel('gtZoom') not selectTool; (2) the mat-slider's real <input> is an invisible (opacity:0) accessibility-only element with no children, so nothing was ever found inside it; (3) the actual visual thumb (<mat-slider-visual-thumb>) is a SIBLING of that input, not a descendant. Once corrected: thumb box (40.8x40.8) sits exactly within its container box, no overflow, container doesn't even clip -- confirmed not reproducing.",
   },
   {
     id: 'CWR-I670',
@@ -4516,7 +4516,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Medium',
     status: 'QA  Sign off/Closed',
     matchedTestId: 'CWR-I670 (tests/zoho-regression/toolbar.spec.js)',
-    notes: 'RESULT (2026-09-13, live): BLOCKED -- the widget selection panel was not reachable this pass before the real comparison could run. Needs a retry/investigation, not yet a confirmed finding either way.',
+    notes: "RESULT (2026-09-13, live re-run): PARTIALLY UNBLOCKED, still not a real finding -- the widget selection panel IS now reachable and measurable (previous 'not reachable' was a transient issue), but the test only checks an ALREADY-PLACED widget for overlap and none was placed on the canvas this pass, so the actual comparison still didn't run. The test itself needs to place a widget first (e.g. drag one onto the canvas) rather than hoping one already exists -- a real test-design gap, not yet a confirmed finding either way.",
   },
   {
     id: 'CWR-I671',
@@ -5246,7 +5246,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: explicitly requires "server setup environment without internet connectivity" -- this suite only runs against the live QA backend with real internet, no offline-server variant is available here.',
   },
   {
     id: 'TCN-I15836',
@@ -5291,7 +5291,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: repro steps explicitly require "Offline Server Setup" with a specific different credential (19626) -- neither is available in this project (this suite only has VALID_PIN/VALID_PIN_2 against the live QA backend).',
   },
   {
     id: 'TCN-I16133',
@@ -5463,7 +5463,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'To do',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: repro steps explicitly say "Launch the V8 client" -- same structural "V8 Client" gap already documented for other bugs (Authentication\'s TCN-I16707/16709/16923-16926, Playlist\'s TCN-I16703/16704) -- this environment has a different client build (v0.0.214) installed.',
   },
   {
     id: 'TCN-I16706',
@@ -5472,7 +5472,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'To do',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: repro steps explicitly say "Launch the V8 client" -- same structural "V8 Client" gap already documented elsewhere in this suite; this environment has a different client build (v0.0.214) installed.',
   },
   {
     id: 'TCN-I16712',

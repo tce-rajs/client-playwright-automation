@@ -64,9 +64,21 @@ test(
   { tag: '@historical-regression' },
   async ({ page }) => {
     // Zoho CWR-I277 -- Primary & Secondary grade options are not visible in the application.
+    //
+    // FIXED (test-authoring gap, not app bug): opening the class popup alone does not render
+    // gradeButtons -- confirmed via tests/navigation/cascade.spec.js's own beforeEach, the popup
+    // defaults to a different tab and needs an explicit click into "All My Classes" before the
+    // Grade/Division/Subject cascade (and gradeButtons within it) exists in the DOM at all. The
+    // original version of this test skipped that click, so "Grade options visible: 0" reproduced
+    // consistently across two separate live runs -- but it was measuring a test gap, not the app.
     const nav = new NavigationPage(page);
-    await nav.currentClassBtn.click({ force: true });
-    await page.waitForTimeout(500);
+    await nav.openClassPopup();
+    await nav.allMyClassesTab.click();
+    await page
+      .locator('[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
+      .catch(() => {});
     const gradeCount = await nav.gradeButtons.count();
     console.log('Grade options visible:', gradeCount);
 
@@ -80,9 +92,16 @@ test(
   { tag: '@historical-regression' },
   async ({ page }) => {
     // Zoho CWR-I360 -- V2-Subject list is not displayed in alphabetical order.
+    // FIXED (test-authoring gap, not app bug) -- see CWR-I277's comment above for why the popup
+    // needs the explicit "All My Classes" tab click before gradeButtons exists at all.
     const nav = new NavigationPage(page);
-    await nav.currentClassBtn.click({ force: true });
-    await page.waitForTimeout(500);
+    await nav.openClassPopup();
+    await nav.allMyClassesTab.click();
+    await page
+      .locator('[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
+      .catch(() => {});
     const gradeCount = await nav.gradeButtons.count();
     test.fail(gradeCount === 0, 'Grade selector not reachable this pass');
     if (gradeCount === 0) {
@@ -110,9 +129,16 @@ test(
   async ({ page }) => {
     // Zoho CWR-I365 (Duplicate) -- the Subject/Grade selection window closes when switching
     // Divisions.
+    // FIXED (test-authoring gap, not app bug) -- see CWR-I277's comment above for why the popup
+    // needs the explicit "All My Classes" tab click before gradeButtons exists at all.
     const nav = new NavigationPage(page);
-    await nav.currentClassBtn.click({ force: true });
-    await page.waitForTimeout(500);
+    await nav.openClassPopup();
+    await nav.allMyClassesTab.click();
+    await page
+      .locator('[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]')
+      .first()
+      .waitFor({ state: 'visible', timeout: 10000 })
+      .catch(() => {});
     const gradeCount = await nav.gradeButtons.count();
     test.fail(gradeCount === 0, 'Grade selector not reachable this pass');
     if (gradeCount === 0) {

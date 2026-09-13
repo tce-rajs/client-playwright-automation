@@ -81,6 +81,13 @@ test(
     // Zoho CWR-I740 -- "Clear Annotation" button clears the entire whiteboard instead of only
     // annotations. Uses a Text object as a non-annotation content marker (annotations = pen/shape
     // strokes) to distinguish the two.
+    //
+    // FIXED (test-authoring gap, not app bug): the original version used selectTool('gtErase')
+    // (single click -- just activates the tool for drawing) instead of openToolPanel('gtErase')
+    // (double click -- actually opens the panel containing Clear Annotation(s)/Clear Whiteboard).
+    // Confirmed via tests/toolbar/extended-coverage.spec.js's TB-CYP-02, which reaches the sibling
+    // toolbar-eraser-clear-whiteboard control the same way. The original always hit "Clear
+    // Annotation(s) control not reachable this pass" because it never opened the panel at all.
     const tb = new ToolbarPage(page);
     await tb.waitForBoardToSettle();
     await tb.selectTool('gtInserttext');
@@ -102,7 +109,7 @@ test(
     await page.waitForTimeout(500);
 
     const textBoxVisibleBefore = await tb.wbContainer.locator('.text-input-container').first().isVisible({ timeout: 2000 }).catch(() => false);
-    await tb.selectTool('gtErase');
+    await tb.openToolPanel('gtErase');
     const clearAnnotationsBtn = tb.eraserClearAnnotationsBtn;
     const clearBtnVisible = await clearAnnotationsBtn.isVisible({ timeout: 3000 }).catch(() => false);
     test.fail(!clearBtnVisible, 'Clear Annotation(s) control not reachable this pass');
@@ -133,18 +140,32 @@ test(
   { tag: '@historical-regression' },
   async ({ page }) => {
     // Zoho CWR-I666 -- Zoom Slider Thumb Appears Partially Cut on Hover.
+    //
+    // FIXED (test-authoring gap, not app bug): the original used selectTool('gtZoom') (single
+    // click) instead of openToolPanel('gtZoom') (double click) -- confirmed via the established,
+    // known-working tests/toolbar/canvas-controls.spec.js's TB-ZOOM-01, which needs the double
+    // click to reveal the zoom panel/slider at all. The original always hit "Zoom slider not
+    // reachable this pass" because it never opened the panel.
+    // CONFIRMED LIVE (this pass, via a throwaway diagnostic test dumping the real DOM): this is an
+    // Angular Material <mat-slider>. zoomSlider (data-qa-id="toolbar-zoom-slider") is the REAL
+    // interactive element, but it's a native <input type="range"> with opacity:0 (invisible by
+    // design, ARIA/interaction only) -- it has NO children, so a `.locator()` scoped inside it can
+    // never find anything (explains the original test's "thumb element not found" every time). The
+    // actual VISUAL thumb is <mat-slider-visual-thumb class="mdc-slider__thumb ..."> and the visual
+    // track is <div class="mdc-slider__track">, both SIBLINGS of zoomSlider under the shared
+    // <mat-slider> parent -- that parent is the real container to check for clipping against.
     const tb = new ToolbarPage(page);
-    await tb.selectTool('gtZoom');
-    const sliderVisible = await tb.zoomSlider.isVisible({ timeout: 5000 }).catch(() => false);
-    test.fail(!sliderVisible, 'Zoom slider not reachable this pass');
-    if (!sliderVisible) {
-      expect(sliderVisible).toBe(true);
+    await tb.openToolPanel('gtZoom');
+    const sliderContainer = tb.zoomSlider.locator('xpath=..');
+    const containerBox = await sliderContainer.boundingBox().catch(() => null);
+    test.fail(!containerBox, 'Zoom slider not reachable this pass');
+    if (!containerBox) {
+      expect(containerBox).toBeTruthy();
       return;
     }
-    const sliderBox = await tb.zoomSlider.boundingBox();
-    await page.mouse.move(sliderBox.x + sliderBox.width / 2, sliderBox.y + sliderBox.height / 2);
+    await page.mouse.move(containerBox.x + containerBox.width / 2, containerBox.y + containerBox.height / 2);
     await page.waitForTimeout(500);
-    const thumb = tb.zoomSlider.locator('[class*="thumb" i], [class*="handle" i]').first();
+    const thumb = sliderContainer.locator('mat-slider-visual-thumb, [class*="thumb" i]').first();
     const thumbCount = await thumb.count();
     test.fail(thumbCount === 0, 'Zoom slider thumb element not found this pass');
     if (thumbCount === 0) {
@@ -153,9 +174,10 @@ test(
     }
     const thumbBox = await thumb.boundingBox();
     const overflowsContainer =
-      thumbBox && sliderBox && (thumbBox.x < sliderBox.x - 2 || thumbBox.x + thumbBox.width > sliderBox.x + sliderBox.width + 2);
-    const clippedByOverflowHidden = await tb.zoomSlider.evaluate((el) => getComputedStyle(el).overflow === 'hidden');
-    console.log('Thumb box:', thumbBox, '| slider box:', sliderBox, '| slider clips overflow:', clippedByOverflowHidden);
+      thumbBox && containerBox &&
+      (thumbBox.x < containerBox.x - 2 || thumbBox.x + thumbBox.width > containerBox.x + containerBox.width + 2);
+    const clippedByOverflowHidden = await sliderContainer.evaluate((el) => getComputedStyle(el).overflow === 'hidden');
+    console.log('Thumb box:', thumbBox, '| slider container box:', containerBox, '| container clips overflow:', clippedByOverflowHidden);
 
     test.fail(
       Boolean(overflowsContainer && clippedByOverflowHidden),

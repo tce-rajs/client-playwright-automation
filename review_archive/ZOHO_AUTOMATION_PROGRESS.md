@@ -77,16 +77,85 @@ bugs regress. The **only** valid reasons to leave a bug unautomated:
 
 ## Progress snapshot (as of 2026-09-13, this session)
 
-620 in-scope bugs, **289 automated** (per `matchedTestId` set). Toolbar and Grade/Subject/Division
-batches are done (5 automated each); ~48 bugs remain with NO decision made at all (Players Code
-Editor ~12, Whiteboard leftovers ~9, Compass leftovers ~5, Players Worksheet ~5, plus a handful of
-"BLOCKED -- needs retry" results from this last batch worth re-running: CWR-I740, CWR-I666,
-CWR-I670 in Toolbar, and CWR-I360/CWR-I365/TCN-I15337 in Grade/Subject/Division -- all hit an early
-precondition failure rather than a real comparison, and CWR-I277's "0 grade options" result is
-tentative, worth a clean re-run before trusting it). **Session paused here at the user's request**
-("once the current test is done stop, I will tell you what to do next") -- awaiting further
-instruction before continuing. Full per-module table:
-see `tests/zoho-regression/README.md` (regenerate for the latest numbers).
+620 in-scope bugs, **289 automated** (per `matchedTestId` set; unchanged this pass -- this session's
+work resolved existing flagged results and documented new not-automatable gaps rather than adding
+brand-new matched tests). ~27 bugs remain with NO decision made at all (Players Code Editor 12,
+Whiteboard leftovers 5, Compass leftovers 5, Players Worksheet 5). Full per-module table: see
+`tests/zoho-regression/README.md` (regenerate with `node scripts/generate-zoho-regression-progress.js`
+for the latest numbers).
+
+### This session: resolved all 7 previously-flagged "BLOCKED -- needs retry" results
+All 7 items flagged in the prior session (CWR-I277, CWR-I360, CWR-I365, TCN-I15337, CWR-I740,
+CWR-I666, CWR-I670) now have real, confirmed results -- **6 confirmed FIXED, 1 still genuinely
+unresolved (test-design gap, not app bug)**:
+
+- **CWR-I277, CWR-I360, CWR-I365 (Grade/Subject/Division) -- FIXED.** Root cause of the original
+  "0 grade options" result: a **test-authoring gap**, not an app bug or env flake. These tests
+  opened the class popup (`currentClassBtn.click()`) but never clicked into the "All My Classes" tab
+  -- the proven working pattern in `tests/navigation/cascade.spec.js` shows `gradeButtons` doesn't
+  exist in the DOM at all until that tab is explicitly selected. Fixed by adding
+  `nav.openClassPopup(); await nav.allMyClassesTab.click();` (plus waiting for the active-grade
+  highlight, matching cascade.spec.js). Re-run confirmed clean: 13 real grade options, subjects in
+  correct alphabetical order, selection window stays open across a Division switch.
+- **TCN-I15337 (Grade/Subject/Division) -- FIXED.** No code change needed -- the original "no
+  playlist resources found" was a genuine one-off; a clean re-run found real content and confirmed
+  it opens on the first click.
+- **CWR-I740 (Toolbar, "Clear Annotation" scope) -- FIXED.** Root cause: **test-authoring gap** --
+  used `selectTool('gtErase')` (single click, just activates the tool) instead of
+  `openToolPanel('gtErase')` (double click, actually opens the panel containing Clear
+  Annotation(s)/Clear Whiteboard) -- confirmed via the established `tests/toolbar/
+  extended-coverage.spec.js`'s TB-CYP-02 reaching the sibling clear-whiteboard control the correct
+  way. Re-run confirmed clean: pen strokes cleared to 0, text box correctly left intact.
+- **CWR-I666 (Toolbar, zoom slider thumb clipping) -- FIXED, took 3 rounds to get a real signal.**
+  (1) Same `selectTool`->`openToolPanel` test-authoring gap as CWR-I740. (2) Even after that fix,
+  `zoomSlider.boundingBox()`/`.isVisible()` still failed -- a throwaway diagnostic test (dumped the
+  live DOM via `element.evaluate(el => el.outerHTML)`) revealed this is an Angular Material
+  `<mat-slider>`: the real `<input data-qa-id="toolbar-zoom-slider">` is an invisible
+  (`opacity:0`) accessibility-only element with **no children at all**, so the original code's
+  `tb.zoomSlider.locator('[class*="thumb"]')` could never find anything -- not a real bug, just an
+  impossible query. (3) The actual visual thumb (`<mat-slider-visual-thumb>`) is a **sibling** of
+  that input under the shared `<mat-slider>` parent, not a descendant -- fixed to query there
+  instead. Final clean result: thumb box (40.8x40.8) sits exactly within its container, no overflow.
+  **Lesson for future sessions**: when a locator search inside a confirmed-reachable element finds
+  nothing, check whether that element can even HAVE children (native `<input>`/`<img>` cannot) before
+  assuming an app bug or writing it off as blocked -- a live DOM dump resolves this in one step.
+- **CWR-I670 (Toolbar, widget/panel overlap) -- still not a real finding, but partially unblocked.**
+  The widget selection panel IS now reachable/measurable (the previous "not reachable" was
+  transient), but the test only checks an ALREADY-PLACED widget for overlap, and none was placed on
+  the canvas this pass -- the real comparison still didn't run. This is a genuine test-design gap
+  (needs to place a widget itself first, not just hope one exists) worth fixing in a future pass, not
+  an app bug or a blocked environment.
+
+### This session: 4 Whiteboard bugs documented as not-automatable (structural, no test needed)
+Read all 9 remaining Whiteboard bugs' full repro text. 4 have explicit environment requirements this
+suite cannot meet, matching already-established non-automatable categories:
+- **TCN-I15771, TCN-I16038** -- both explicitly require an "Offline Server Setup" / "server setup
+  without internet connectivity" (TCN-I16038 also names a different login credential, 19626) -- this
+  suite only runs against the live QA backend with real internet.
+- **TCN-I16705, TCN-I16706** -- both explicitly say "Launch the V8 client" -- the same already-
+  documented "V8 Client" gap as several Authentication/Playlist bugs (this environment has v0.0.214
+  installed).
+
+Remaining Whiteboard leftovers to pick up next: **TCN-I15837** (stroke smoothness -- may be
+objectively testable via `pathCount()` before/after a continuous curved stroke, unlike the other
+smoothness bugs which needed V8/offline), **CWR-I274** (whiteboard asset 404 -- distinct from the
+already-RESOLVED client-startup race in `review_archive/CEP_TestCases/LIVE_FINDINGS.md`, needs its
+own live check via network response monitoring), **CWR-I288** (gallery image not appearing on
+whiteboard -- `tests/gallery/gallery.spec.js` already has established, if sometimes-inconclusive,
+"detect an inserted image on canvas" probing logic worth reusing), **TCN-I15392** (text edit popup
+after heavy content -- needs building up real content first), **TCN-I15917** (eraser distorts
+remaining shape -- may be testable via bounding-box/path-count comparison before/after a partial
+erase).
+
+**Not yet reached this session**: Compass leftovers (5 -- 4 are a "Revision Test popup" cluster with
+no existing page-object method beyond a visibility check, `cmp.revisionTestsItem`/`listAssignment()`
+exist but nothing actually opens+interacts with the popup itself yet; 1, TCN-I16623, is almost
+certainly the same "no confirmed AfL Report UI entry point" structural blocker as the whole Compass
+(AfL Reports) module -- worth confirming and matching rather than re-investigating from scratch),
+Players Worksheet (5, all "V1-CBA/Case-Study/Assertion-Reasoning" content-specific -- likely blocked
+on whether that specific question content exists in the confirmed worksheet resource, needs a live
+check per this suite's own rule that "the test's real outcome IS the finding," not an assumption),
+Players Code Editor (12, largest remaining chunk, not yet even read).
 
 ### Modules fully done (nothing left to process)
 - AI Assist (3/3), AI Notices (3/3), Core UI (2/2), Drop It (3/3).
