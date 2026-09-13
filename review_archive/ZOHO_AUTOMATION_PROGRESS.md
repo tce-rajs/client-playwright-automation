@@ -284,6 +284,81 @@ persona/flow this suite can't reach) before writing individual tests one-by-one 
 the single highest-leverage move in every large module so far (Quiz: 59 bugs from one finding;
 Attendance: 92 bugs from one finding).
 
+## Session update (2026-09-13, continuation): Compass, Players Worksheet, Whiteboard leftovers done
+
+Picked back up from the "27 genuinely untouched" snapshot. Compass, Players Worksheet, and all 9
+Whiteboard leftovers are now fully resolved (each bug has either a real live-verified test or a
+documented reason). Remaining genuinely untouched: **Players Code Editor (12)** plus the 56
+reassignment-stub bugs identified this session (bugs correctly moved to their real module but never
+actually triaged there -- see below).
+
+### Compass -- 4/5 done, 1 real blocker found
+No existing page-object method went beyond checking `revisionTestsItem`'s visibility -- a throwaway
+diagnostic test was needed to discover the real popup structure: clicking it opens a "Student Tests"
+list at `[data-qa-id^="player-student-test-item-sat-"]` (NOT the page object's own
+`listAssignment(cxId)` pattern, which matches nothing). This account's `compassBaseline` combo has 3
+real cards, including one literally titled **"testing title overlap issue"** -- almost certainly
+seeded by a prior QA pass specifically for TCN-I16048.
+- TCN-I16052 (popup overlaps Resource Tray) -- FIXED, no overlap, tray stays clickable.
+- TCN-I16056 (Compass opens behind popup on re-click) -- FIXED, re-click cleanly closes both.
+- TCN-I16048 (title/metadata overlap) -- FIXED, tested against the seeded card, real gap between them.
+- TCN-I16623 (Analyse It buttons) -- matched to the already-established Compass AfL Reports
+  structural blocker (no UI entry point exists anywhere in this suite).
+- **TCN-I16046 (popup doesn't close on topic nav) -- BLOCKED, reproduced 3/3 attempts (not flaky).**
+  Right after opening the Revision Test popup, the page consistently breaks into an unrelated state
+  ("No web URLs available. Please check your settings.", a "Teacher Connect Notice" overlay, code
+  "LM1063"), making the topic-nav button permanently unreachable. A real, separate environment issue
+  worth its own investigation -- not this bug's own claim being tested.
+
+### Players Worksheet -- 5/5 documented not-automatable
+All 5 bugs need real "Case Study"/CBA/Assertion-Reasoning question content. Checked live at TWO
+locations (the `playersDefault` combo -- 11 real cards, none matching; and the `quiz` combo, the one
+location previously confirmed via TCN-I15680 to have SOME Exercise-type resource -- but a fresh check
+found none there now either, content may have changed over time). No combo anywhere in
+`config/moduleClassMap.js` has ever recorded Case Study/CBA content. Documented as the established
+"unconfirmed navigation target" category rather than guessed at.
+
+### Whiteboard -- 9/9 leftovers done (5 new live tests written + run this session)
+- **CWR-I288 (Gallery image not added to whiteboard) -- FIXED.** Reused
+  `tests/gallery/gallery.spec.js`'s own `countCanvasImageCandidates()` probe. Needed a retry click on
+  the Gallery tab (known ~30-50% picker flakiness), but once open the image landed cleanly (0->1 via
+  two independent selectors).
+- **TCN-I15917 (eraser distorts remaining shape) -- FIXED.** Objective proxy: drew a 45-degree
+  diagonal stroke (height/width ratio 1.0), erased a small section near one end -- remaining stroke
+  shrank proportionally with the ratio staying exactly 1.0, path count unchanged.
+- **TCN-I15837 (strokes break while drawing) -- FIXED.** Objective proxy: one continuous
+  pointer-down/move x60/up gesture drawing a full circle registered as exactly 1 path element, not
+  multiple.
+- **CWR-I274 (whiteboard asset 404) -- FIXED** (also already marked Invalid in Zoho itself).
+  Monitored real network responses during normal whiteboard use: zero 404s.
+- **TCN-I15392 (text popup missing under heavy content) -- FIXED.** Reused
+  `tests/toolbar/text.spec.js`'s own proven `placeText()`/Select-tool pattern (TB-TXT-03), built up 8
+  strokes + 3 text boxes first -- the formatting popup still opened correctly.
+- Plus the 4 already documented earlier this session: TCN-I15771/TCN-I16038 (offline server setup
+  not available), TCN-I16705/TCN-I16706 (need the V8 client, different build than installed here).
+
+**Lesson reinforced again this session**: when a claimed bug has no existing test coverage at all,
+a short throwaway diagnostic test (dump `outerHTML`, computed style, or body text via
+`page.evaluate()`) to see the REAL DOM/state before writing assertions is far faster and more
+reliable than guessing selectors from the bug description alone -- this resolved Compass's whole
+cluster and avoided several dead-end assumptions.
+
+### Still pending: the 56 reassignment-stub bugs
+Discovered this session: 56 of the 304 previously-counted "not automated" bugs are actually just
+bookkeeping stubs ("Reassigned from X to Y (mis-tagged in the original import)") with NO real
+automate/not-automate decision ever made in their corrected module. These are real, undone work, not
+resolved bugs -- concentrated in: Toolbar (17), Players Quiz (11), Players Ebook (5), Add Resource
+(4), Grade/Subject/Division (4), Minimap (3), User Profile (3), Authentication (2), AI Homework (2),
+Whiteboard (2), Players Code Editor (2), Players Worksheet (1). Not yet started.
+
+### Also still pending: Players Code Editor (12, not yet read) and the session-timeout tests
+Per explicit user instruction, the session-timeout bugs (CWR-I317, TCN-I15445, TCN-I16210) are
+queued as a SEPARATE final phase, after all other pending work (the 12 + 56 above) is done -- NOT to
+be done next just because they're well-understood. The "impractical" framing in their existing notes
+is likely overcautious: `tests/players/cross-cutting.spec.js`'s `PLR-EXP-17` already proves a real
+~150s `test.setTimeout()` + long wait works in this suite, and confirms the app's REAL inactivity
+window is ~60-120s, not the 5/15/30 minutes these bug titles claim.
+
 ## User's standing instructions for this effort
 
 - Keep going through all 620 in the original priority order regardless of how long it takes

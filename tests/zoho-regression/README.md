@@ -38,5 +38,5 @@ Teach Mode) and are not counted below.
 | Toolbar | [toolbar.spec.js](./toolbar.spec.js) | 33 | 1 | 5 | 28 |
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 1 | 3 |
-| Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 33 | 21 |
-| **Total** | | **620** | **64** | **293** | **327** |
+| Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 38 | 16 |
+| **Total** | | **620** | **64** | **298** | **322** |

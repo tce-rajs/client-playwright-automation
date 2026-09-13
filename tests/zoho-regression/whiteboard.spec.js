@@ -30,6 +30,8 @@ const { NavigationPage } = require('../../pages/navigation.page');
 const { AccountManagementPage } = require('../../pages/account-management.page');
 const { ToolbarPage } = require('../../pages/toolbar.page');
 const { WhiteboardPage } = require('../../pages/whiteboard.page');
+const { PlaylistPage } = require('../../pages/playlist.page');
+const { AddResourcePage } = require('../../pages/add-resource.page');
 
 test.use({ viewport: { width: 1920, height: 1080 } });
 
@@ -551,5 +553,273 @@ test(
       `CONFIRMED (matches Zoho TCN-I16308): app did not resume the last-accessed topic after a real sign-out/sign-in. Before: "${chapterTopicBefore}" | After re-login: "${chapterTopicAfter}"`
     );
     expect(chapterTopicAfter).toBe(chapterTopicBefore);
+  }
+);
+
+async function countCanvasImageCandidates(page) {
+  // Same multi-selector probe already established (and proven) in
+  // tests/gallery/gallery.spec.js's GAL-ASSET-01 -- reused here rather than duplicated logic.
+  const selectors = ['svg image', '[data-qa-id="wb-drawing-container"] image', 'image.draggable', '[class*="image-element"]'];
+  const counts = {};
+  for (const sel of selectors) {
+    counts[sel] = await page.locator(sel).count().catch(() => -1);
+  }
+  return counts;
+}
+
+test(
+  'CWR-I288: Adding a Gallery image to the whiteboard actually adds it (or shows an error if it fails)',
+  { tag: '@historical-regression' },
+  async ({ page }, testInfo) => {
+    // Zoho CWR-I288 -- selecting a Gallery image completes with no error/feedback, but the image
+    // never appears on the whiteboard canvas.
+    testInfo.setTimeout(60000);
+    const pl = new PlaylistPage(page);
+    const ar = new AddResourcePage(page);
+    await pl.ensureResourcesPresent();
+    const { stillStuck } = await ar.openPickerReliably(ar.actions.gallery);
+    if (!stillStuck) await ar.actions.gallery.click({ force: true });
+    await page.waitForTimeout(1000);
+    let pickerOpen = await ar.galleryImageCards.first().isVisible({ timeout: 10000 }).catch(() => false);
+    if (!pickerOpen) {
+      // One retry: the Add Resources trigger/gallery tab can need a second attempt (same class of
+      // flakiness as the documented pointer-events:none picker issue elsewhere in this suite).
+      await ar.actions.gallery.click({ force: true }).catch(() => {});
+      await page.waitForTimeout(1500);
+      pickerOpen = await ar.galleryImageCards.first().isVisible({ timeout: 8000 }).catch(() => false);
+    }
+    console.log('openPickerReliably stillStuck:', stillStuck, '| picker open (galleryImageCards visible):', pickerOpen);
+    test.fail(!pickerOpen, 'The Gallery picker did not open reliably this pass');
+    if (!pickerOpen) {
+      expect(pickerOpen).toBe(true);
+      return;
+    }
+    const beforeCanvas = await countCanvasImageCandidates(page);
+    await ar.galleryImageCards.first().click({ force: true });
+    await page.waitForTimeout(1500);
+    const afterCanvas = await countCanvasImageCandidates(page);
+    console.log('Canvas image-candidate counts before:', JSON.stringify(beforeCanvas), '| after:', JSON.stringify(afterCanvas));
+    const anyCanvasIncrease = Object.keys(afterCanvas).some((sel) => afterCanvas[sel] > (beforeCanvas[sel] ?? -1));
+    // No error/feedback message of any kind is also part of the original complaint -- capture it
+    // either way for context, but the real signal is whether the image actually landed.
+    const anyErrorVisible = await page.getByText(/error|failed|something went wrong/i).isVisible({ timeout: 2000 }).catch(() => false);
+    console.log('Any error/failure message shown:', anyErrorVisible);
+
+    test.fail(
+      !anyCanvasIncrease,
+      'CONFIRMED (matches Zoho CWR-I288): selecting a Gallery image did not add it to the whiteboard canvas (no increase detected via any probed selector), and no error/feedback was shown either'
+    );
+    expect(anyCanvasIncrease).toBe(true);
+  }
+);
+
+test(
+  'TCN-I15917: Erasing a small portion of an annotation does not distort/reshape the rest of it',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15917 -- using the Eraser on a small part of a drawn annotation changes the shape
+    // of the REMAINING (non-erased) part of it. Objective proxy for "distorted": draw a straight
+    // diagonal stroke (a known, simple bounding-box aspect ratio), erase only a small section near
+    // one end, then confirm the remaining stroke's aspect ratio is still consistent with a
+    // proportionally-shortened version of the same line -- not warped into a different shape.
+    const tb = new ToolbarPage(page);
+    await tb.waitForBoardToSettle();
+    await tb.selectTool('gtPen');
+    const start = { x: 300, y: 300 };
+    const end = { x: 600, y: 600 }; // 45-degree diagonal, ~424px
+    await tb.drawStroke(start, end);
+    const strokeLocator = tb.paths.last();
+    const boxBefore = await strokeLocator.boundingBox().catch(() => null);
+    test.fail(!boxBefore, 'Could not measure the drawn stroke this pass');
+    if (!boxBefore) {
+      expect(boxBefore).toBeTruthy();
+      return;
+    }
+    const ratioBefore = boxBefore.height / boxBefore.width;
+    console.log('Stroke box before erasing:', JSON.stringify(boxBefore), '| height/width ratio:', ratioBefore);
+
+    await tb.selectTool('gtErase');
+    const wbBox = await tb.wbSvg.boundingBox();
+    // Erase only a SMALL section near the end point (not the whole stroke).
+    const eraseFrom = { x: end.x - 40, y: end.y - 40 };
+    const eraseTo = { x: end.x + 10, y: end.y + 10 };
+    await page.mouse.move(wbBox.x + eraseFrom.x, wbBox.y + eraseFrom.y);
+    await page.mouse.down();
+    for (let i = 0; i <= 6; i++) {
+      const t = i / 6;
+      await page.mouse.move(
+        wbBox.x + eraseFrom.x + (eraseTo.x - eraseFrom.x) * t,
+        wbBox.y + eraseFrom.y + (eraseTo.y - eraseFrom.y) * t
+      );
+    }
+    await page.mouse.up();
+    await page.waitForTimeout(800);
+
+    const remainingCount = await tb.pathCount();
+    // After a small partial erase, the remaining portion of THIS stroke is whichever path(s) are
+    // left near the original stroke's location -- take the union bounding box of all paths that
+    // still overlap the original stroke's area.
+    const allBoxes = [];
+    for (let i = 0; i < remainingCount; i++) {
+      const b = await tb.paths.nth(i).boundingBox().catch(() => null);
+      if (b) allBoxes.push(b);
+    }
+    const relevant = allBoxes.filter(
+      (b) => b.x < boxBefore.x + boxBefore.width + 5 && b.x + b.width > boxBefore.x - 5 &&
+             b.y < boxBefore.y + boxBefore.height + 5 && b.y + b.height > boxBefore.y - 5
+    );
+    test.fail(relevant.length === 0, 'No remaining stroke found near the original location after the partial erase');
+    if (relevant.length === 0) {
+      expect(relevant.length).toBeGreaterThan(0);
+      return;
+    }
+    const unionBox = relevant.reduce(
+      (acc, b) => ({
+        x: Math.min(acc.x, b.x),
+        y: Math.min(acc.y, b.y),
+        right: Math.max(acc.x + acc.width, b.x + b.width),
+        bottom: Math.max(acc.y + acc.height, b.y + b.height),
+        width: 0,
+        height: 0,
+      }),
+      { x: relevant[0].x, y: relevant[0].y, width: 0, height: 0 }
+    );
+    const afterWidth = unionBox.right - unionBox.x;
+    const afterHeight = unionBox.bottom - unionBox.y;
+    const ratioAfter = afterHeight / afterWidth;
+    console.log('Remaining stroke union box after erasing:', JSON.stringify({ width: afterWidth, height: afterHeight }), '| height/width ratio:', ratioAfter, '| path count after erase:', remainingCount);
+
+    // A proportionally-shortened 45-degree diagonal keeps roughly the same height/width ratio
+    // (~1.0 here). A ratio that's changed by more than 30% indicates the remaining shape warped.
+    const ratioChangedSignificantly = Math.abs(ratioAfter - ratioBefore) / ratioBefore > 0.3;
+    test.fail(
+      ratioChangedSignificantly,
+      `CONFIRMED (matches Zoho TCN-I15917): erasing a small portion distorted the remaining annotation's shape (height/width ratio went from ${ratioBefore.toFixed(2)} to ${ratioAfter.toFixed(2)})`
+    );
+    expect(ratioChangedSignificantly).toBe(false);
+  }
+);
+
+test(
+  'TCN-I15837: A continuous curved drawing gesture does not break into multiple disconnected strokes',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15837 -- annotation strokes intermittently break during continuous drawing,
+    // producing discontinuous lines instead of one smooth stroke. Objective proxy: one real
+    // continuous pointer-down/move/move/.../up gesture along a curve should register as ONE path
+    // element, not multiple -- a break would show up as extra path elements from the same gesture.
+    const tb = new ToolbarPage(page);
+    await tb.waitForBoardToSettle();
+    await tb.selectTool('gtPen');
+    const countBefore = await tb.pathCount();
+    const wbBox = await tb.wbSvg.boundingBox();
+    const cx = 400, cy = 400, r = 100;
+    // Draw a full circle via many small steps in ONE continuous down/move/up gesture.
+    await page.mouse.move(wbBox.x + cx + r, wbBox.y + cy);
+    await page.mouse.down();
+    const steps = 60;
+    for (let i = 1; i <= steps; i++) {
+      const angle = (i / steps) * Math.PI * 2;
+      await page.mouse.move(wbBox.x + cx + r * Math.cos(angle), wbBox.y + cy + r * Math.sin(angle));
+    }
+    await page.mouse.up();
+    await page.waitForTimeout(800);
+    const countAfter = await tb.pathCount();
+    const newPaths = countAfter - countBefore;
+    console.log('Path count before:', countBefore, '| after one continuous curved gesture:', countAfter, '| new paths created:', newPaths);
+
+    test.fail(
+      newPaths > 1,
+      `CONFIRMED (matches Zoho TCN-I15837): one continuous curved drawing gesture created ${newPaths} separate path elements instead of 1 -- the stroke broke apart while drawing`
+    );
+    expect(newPaths).toBeLessThanOrEqual(1);
+  }
+);
+
+test(
+  'CWR-I274: No "Not Found" (404) network errors occur loading whiteboard/browser-based assets during normal navigation',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I274 -- browser-based assets (e.g., whiteboards) fail to load with a server-side
+    // "Not Found" error on their URL. Objective proxy: monitor real network responses during normal
+    // whiteboard use (initial load already happened via beforeEach; also switch topic and reopen
+    // the chapters popup, both of which re-fetch whiteboard-related assets) and flag any 404s.
+    const nav = new NavigationPage(page);
+    const notFoundResponses = [];
+    page.on('response', (res) => {
+      if (res.status() === 404) notFoundResponses.push(res.url());
+    });
+    const tb = new ToolbarPage(page);
+    await tb.waitForBoardToSettle();
+    await nav.openChaptersPopup();
+    await page.waitForTimeout(1500);
+    await nav._closeChaptersPopupIfOpen();
+    await page.waitForTimeout(1000);
+
+    console.log('404 responses observed during normal whiteboard navigation:', JSON.stringify(notFoundResponses));
+    test.fail(
+      notFoundResponses.length > 0,
+      `CONFIRMED (matches Zoho CWR-I274): ${notFoundResponses.length} real "Not Found" (404) network response(s) occurred during normal whiteboard navigation: ${JSON.stringify(notFoundResponses.slice(0, 5))}`
+    );
+    expect(notFoundResponses.length).toBe(0);
+  }
+);
+
+test(
+  'TCN-I15392: Selecting a text box still opens its edit popup even with a large amount of prior canvas content',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15392 -- with a large amount of annotations/images/text already on the whiteboard,
+    // selecting an existing text box no longer opens the text-editing popup. Reuses the proven
+    // placeText()/Select-tool pattern from tests/toolbar/text.spec.js's TB-TXT-03 (already confirmed
+    // to work under normal/light content) but first builds up real heavy content to match this
+    // bug's specific claim.
+    const tb = new ToolbarPage(page);
+    await tb.waitForBoardToSettle();
+    const wbBox = await tb.wbSvg.boundingBox();
+    const OFFSET_X = Math.floor(Math.random() * 200) - 100;
+    const OFFSET_Y = Math.floor(Math.random() * 200) - 100;
+
+    // Build up "heavy" content: 8 pen strokes + 3 text boxes.
+    await tb.selectTool('gtPen');
+    for (let i = 0; i < 8; i++) {
+      await tb.drawStroke(
+        { x: 50 + OFFSET_X + i * 5, y: 50 + OFFSET_Y + i * 40 },
+        { x: 700 + OFFSET_X, y: 90 + OFFSET_Y + i * 40 }
+      );
+    }
+    async function placeText(point, text) {
+      await tb.selectTool('gtInserttext');
+      await page.mouse.click(wbBox.x + point.x, wbBox.y + point.y);
+      await page.waitForTimeout(800);
+      const opened = await tb.textEditor.isVisible({ timeout: 3000 }).catch(() => false);
+      if (!opened) return false;
+      await page.keyboard.type(text);
+      await page.mouse.click(wbBox.x + point.x + 500, wbBox.y + point.y + 350);
+      await page.waitForTimeout(600);
+      return true;
+    }
+    for (let i = 0; i < 3; i++) {
+      await placeText({ x: 850 + OFFSET_X, y: 100 + OFFSET_Y + i * 60 }, `QA heavy-content filler text ${i}`);
+    }
+    const finalPoint = { x: 850 + OFFSET_X, y: 400 + OFFSET_Y };
+    const finalPlaced = await placeText(finalPoint, 'QA TCN-I15392 target text box');
+    test.fail(!finalPlaced, 'Could not place the target text box this pass');
+    if (!finalPlaced) {
+      expect(finalPlaced).toBe(true);
+      return;
+    }
+
+    await tb.selectTool('gtSelect');
+    await page.mouse.click(wbBox.x + finalPoint.x + 20, wbBox.y + finalPoint.y + 10);
+    await page.waitForTimeout(1000);
+    const formattingPanelVisible = await tb.textMenuFontSlider.isVisible({ timeout: 5000 }).catch(() => false);
+    console.log('Text formatting/edit popup visible after selecting the text box under heavy content:', formattingPanelVisible);
+
+    test.fail(
+      !formattingPanelVisible,
+      'CONFIRMED (matches Zoho TCN-I15392): the text edit popup did not appear after selecting a text box once heavy canvas content (8 strokes, 3 other text boxes) was present'
+    );
+    expect(formattingPanelVisible).toBe(true);
   }
 );

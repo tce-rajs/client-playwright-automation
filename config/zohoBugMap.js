@@ -3462,7 +3462,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED (2026-09-13, checked live): no Case Study/CBA content found in this account. Checked two locations live -- the "playersDefault" combo (11 real resource cards, zero matching Exercise/CBA/Case Study/Assertion) and the "quiz" combo (the one location previously confirmed to have SOME Exercise-type resource, per TCN-I15680 -- but a fresh check found no Exercise card there now either, content may have changed). No combo anywhere in config/moduleClassMap.js has ever recorded Case Study/CBA content. Same "unconfirmed navigation target" category as other content-specific bugs in this suite.',
   },
   {
     id: 'TCN-I16675',
@@ -3471,7 +3471,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: same "no Case Study/CBA content confirmed anywhere in this account" gap as TCN-I16307 -- see that entry for the full live-check detail.',
   },
   {
     id: 'TCN-I16676',
@@ -3480,7 +3480,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: same "no Case Study/CBA content confirmed anywhere in this account" gap as TCN-I16307 -- see that entry for the full live-check detail.',
   },
   {
     id: 'TCN-I16557',
@@ -3489,7 +3489,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: same "no Case Study/CBA content confirmed anywhere in this account" gap as TCN-I16307 -- see that entry for the full live-check detail.',
   },
   {
     id: 'TCN-I16560',
@@ -3498,7 +3498,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: same "no Case Study/CBA content confirmed anywhere in this account" gap as TCN-I16307 -- see that entry for the full live-check detail.',
   },
   {
     id: 'CWR-I1547',
@@ -5263,8 +5263,8 @@ const TEACH_MODE_BUGS = [
     title: 'Annotation Strokes Break Intermittently While Drawing',
     priority: 'Highest',
     status: 'Ready for Testing',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I15837 (tests/zoho-regression/whiteboard.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- objective proxy test: one continuous pointer-down/move x60/up gesture drawing a full circle registered as exactly 1 path element (0 -> 1), not multiple -- no breaking detected.',
   },
   {
     id: 'TCN-I16017',
@@ -5516,8 +5516,8 @@ const TEACH_MODE_BUGS = [
     title: 'Browser assets fail to load – "Not Found" error on accessing whiteboard URLs',
     priority: 'High',
     status: 'Invalid',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'CWR-I274 (tests/zoho-regression/whiteboard.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED (also already marked Invalid in Zoho) -- monitored real network responses during normal whiteboard use (settle, open/close chapters popup): zero 404 responses observed.',
   },
   {
     id: 'CWR-I288',
@@ -5525,8 +5525,8 @@ const TEACH_MODE_BUGS = [
     title: 'Unable to add gallery images to whiteboard',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'CWR-I288 (tests/zoho-regression/whiteboard.spec.js)',
+    notes: "RESULT (2026-09-13, live): FIXED -- reused tests/gallery/gallery.spec.js's own established countCanvasImageCandidates() probe. Clicking a Gallery image card took a retry to open reliably (same known ~30-50% picker flakiness documented elsewhere), but once open, the image landed on canvas cleanly: 0->1 detected via two independent selectors (svg image, wb-drawing-container image), no error shown.",
   },
   {
     id: 'CWR-I755',
@@ -5579,8 +5579,8 @@ const TEACH_MODE_BUGS = [
     title: 'Text Editing Popup Not Appearing After Selecting Text Box on Large Whiteboard Content',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I15392 (tests/zoho-regression/whiteboard.spec.js)',
+    notes: "RESULT (2026-09-13, live): FIXED -- reused tests/toolbar/text.spec.js's own proven placeText()/Select-tool pattern (TB-TXT-03), but first built up heavy content (8 pen strokes + 3 other text boxes). The formatting/edit popup still opened correctly after selecting the target text box.",
   },
   {
     id: 'TCN-I15917',
@@ -5588,8 +5588,8 @@ const TEACH_MODE_BUGS = [
     title: 'Whiteboard: Annotation shape changes after using Eraser',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I15917 (tests/zoho-regression/whiteboard.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- objective proxy test: drew a 45-degree diagonal stroke (height/width ratio 1.0), erased a small section near one end, remaining stroke shrank proportionally (300.75px -> 256.25px) with the ratio staying exactly 1.0 and path count unchanged (1) -- no distortion detected.',
   },
   {
     id: 'TCN-I15346',
