@@ -1162,7 +1162,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Players (Quiz).',
+    notes: 'NOT AUTOMATED: needs interaction with an actual loaded quiz QUESTION (an answer dropdown), which is behind the "Launch AIR Card" real-camera-hardware gate (PLR-QZ-RECONCILE-01 in tests/players/quiz.spec.js) -- the same structural blocker already covering 59 other Players (Quiz) bugs.',
   },
   {
     id: 'TCN-I16210',
@@ -3542,8 +3542,8 @@ const TEACH_MODE_BUGS = [
     title: 'CEP Web V2: Quiz Opens Instead of Deleting from Playlist.',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    matchedTestId: 'CWR-I332 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- reused the established Edit-mode remove-resource pattern from tests/playlist/cross-cutting.spec.js. The real remove-confirmation dialog appeared correctly; the quiz did not open instead.',
   },
   {
     id: 'CWR-I333',
@@ -3659,8 +3659,8 @@ const TEACH_MODE_BUGS = [
     title: 'Error "No Valid Question Found" displayed when opening Exercise from Playlist (Grade 10A Math 10.2)',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    matchedTestId: 'TCN-I15680 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'Already covered: identical error text/root cause to TCN-I15680 ("No Valid Question Found" is confirmed still shown for an Exercise-type resource, live-verified this session), just a different specific reported location (Grade 10A Math 10.2, not in this project\'s confirmed combos).',
   },
   {
     id: 'TCN-I15835',
@@ -3714,7 +3714,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'Invalid',
     matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    notes: 'NOT AUTOMATED (already Invalid in Zoho): requires waiting a real 1+ hour of idle time -- unlike the proven ~150s pattern for the confirmed ~60-120s inactivity window (PLR-EXP-17), a full hour is genuinely impractical to run as part of this suite.',
   },
   {
     id: 'TCN-I16110',
@@ -3822,7 +3822,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    notes: 'NOT AUTOMATED: names a specific Chapter/Topic ("A square and A Cube" / "Squares and Square Roots") not in this project\'s confirmed combos, and needs an Exercise confirmed to contain ONLY open-ended questions specifically -- not verifiable without that exact content.',
   },
   {
     id: 'TCN-I16321',
@@ -3912,7 +3912,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    notes: 'NOT AUTOMATED: needs actually progressing through loaded quiz QUESTIONS ("next question" flow), which is behind the "Launch AIR Card" real-camera-hardware gate (PLR-QZ-RECONCILE-01) -- same structural blocker already covering 59 other Players (Quiz) bugs.',
   },
   {
     id: 'TCN-I16702',
@@ -4029,8 +4029,8 @@ const TEACH_MODE_BUGS = [
     title: 'Quiz is not removed after clicking “X” button (Delete/Remove action not working)',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    matchedTestId: 'CWR-I332 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'Same underlying claim as CWR-I332 (both about the quiz "X"/delete button) -- RESULT (2026-09-13, live): FIXED, see CWR-I332\'s notes.',
   },
   {
     id: 'CWR-I548',
@@ -4083,8 +4083,8 @@ const TEACH_MODE_BUGS = [
     title: '“Unknown Question Type” Displayed on Accessing Exercise File in Chapter Resources',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    matchedTestId: 'CWR-I630 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED -- no Exercise-type resource is currently reachable at the confirmed "quiz" combo location (consistent with the same finding this session for Players Worksheet\'s CBA content check -- content availability appears to have changed since TCN-I15680 last confirmed one there).',
   },
   {
     id: 'CWR-I656',
@@ -4218,8 +4218,8 @@ const TEACH_MODE_BUGS = [
     title: 'Custom Quiz Does Not Close When Clicking the Close (×) Button',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Playlist (mis-tagged in the original import) to Players (Quiz).',
+    matchedTestId: 'TCN-I16028 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- opening a quiz card lands on the pre-camera-gate launch screen (not directly on gameplay); clicking its Close control cleanly closed it, confirmed via quizLaunchScreenBtn/quizClassStrengthStartBtn/closeIcon all becoming not-visible afterward.',
   },
   {
     id: 'TCN-I16286',
@@ -4704,8 +4704,8 @@ const TEACH_MODE_BUGS = [
     title: 'Exercise questions not displayed – “No valid question found” error shown on access',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Players (Quiz).',
+    matchedTestId: 'TCN-I15680 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'Already covered: identical error text/root cause to TCN-I15680 ("No Valid Question Found" is confirmed still shown for an Exercise-type resource, live-verified this session).',
   },
   {
     id: 'TCN-I15378',
@@ -5083,8 +5083,8 @@ const TEACH_MODE_BUGS = [
     title: 'Incorrect Question Displayed and Repeated Across All Exercises',
     priority: 'Medium',
     status: 'To do',
-    matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Players (Quiz).',
+    matchedTestId: 'TCN-I15329 (tests/zoho-regression/players-quiz.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED -- no Exercise-type resource is currently reachable at the confirmed "quiz" combo location, same as CWR-I630 this session.',
   },
   {
     id: 'TCN-I15332',

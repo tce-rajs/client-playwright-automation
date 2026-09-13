@@ -279,3 +279,160 @@ test(
   }
 );
 
+test(
+  'CWR-I332 / CWR-I533: Clicking the quiz "X" removes it from the Playlist (not opens it / not a no-op)',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I332 -- clicking the delete "X" on a quiz opens it instead of deleting.
+    // Zoho CWR-I533 -- clicking the delete "X" on a quiz does nothing at all.
+    // Reuses the established remove-resource pattern from tests/playlist/cross-cutting.spec.js
+    // (PL-STATE-02/03) -- Edit mode must be active for the per-card remove icon to render at all,
+    // and playlist.page.js's resourceRemoveBtn already matches the quiz-specific
+    // playlist-quiz-remove-btn variant.
+    const pl = new PlaylistPage(page);
+    const plr = new PlayerPage(page);
+    await expect(plr.quizCards.first()).toBeAttached({ timeout: 10000 });
+    await pl.openOptionsMenu();
+    await pl.filterEditBtn.click();
+    await page.locator('button', { hasText: /finish editing/i }).waitFor({ state: 'visible', timeout: 5000 });
+    await plr.quizCards.first().hover();
+    await pl.resourceRemoveBtn.first().click({ force: true });
+    await page.waitForTimeout(1000);
+    const confirmDialogVisible = await page
+      .getByText(/are you sure you'd like to remove this resource/i)
+      .filter({ visible: true })
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    const quizOpenedInstead = await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)
+      || await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false);
+    console.log('Remove-confirmation dialog appeared:', confirmDialogVisible, '| quiz opened instead:', quizOpenedInstead);
+
+    if (confirmDialogVisible) {
+      // Cancel rather than actually deleting shared QA playlist data.
+      await pl.resourceRemoveCancelBtn.first().click().catch(() => {});
+    }
+    await page.locator('button', { hasText: /finish editing/i }).click().catch(() => {});
+
+    const bugReproduces = quizOpenedInstead || !confirmDialogVisible;
+    test.fail(
+      bugReproduces,
+      `CONFIRMED (matches Zoho CWR-I332/CWR-I533): clicking the quiz "X" ${quizOpenedInstead ? 'opened the quiz instead of removing it' : 'did nothing -- no remove-confirmation dialog appeared'}`
+    );
+    expect(bugReproduces).toBe(false);
+  }
+);
+
+test(
+  'TCN-I16028: Clicking Close (X) on a Custom Quiz actually closes it',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I16028 -- Close (X) button on a Custom Quiz does not close it.
+    // CONFIRMED LIVE (this pass): opening a quiz card via openResourceCard() lands on the
+    // pre-camera-gate LAUNCH SCREEN (quizLaunchScreenBtn/quizClassStrengthStartBtn), not directly
+    // into gameplay with plr.closeIcon -- same reachable-pre-gate surface already used by
+    // TCN-I15386 above. Test the close control available on THAT screen instead.
+    const plr = new PlayerPage(page);
+    await expect(plr.quizCards.first()).toBeAttached({ timeout: 10000 });
+    await plr.openResourceCard(plr.quizCards);
+    await page.waitForTimeout(1500);
+    const onLaunchScreen =
+      (await plr.quizLaunchScreenBtn.isVisible({ timeout: 4000 }).catch(() => false)) ||
+      (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false));
+    const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
+    const opened = onLaunchScreen || closeIconVisible;
+    console.log('On launch screen:', onLaunchScreen, '| closeIcon visible:', closeIconVisible);
+    test.fail(!opened, 'The quiz did not open (neither launch screen nor closeIcon appeared) this pass -- cannot test the close button');
+    if (!opened) {
+      expect(opened).toBe(true);
+      return;
+    }
+    const closeBtn = onLaunchScreen ? plr.quizCloseBtn : plr.closeIcon.first();
+    await closeBtn.click({ force: true });
+    await page.waitForTimeout(1500);
+    const stillOpen =
+      (await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
+      (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
+      (await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false));
+    console.log('Quiz still open after clicking Close (X):', stillOpen);
+
+    test.fail(
+      stillOpen,
+      'CONFIRMED (matches Zoho TCN-I16028): clicking Close (X) did not close the quiz -- it remains open'
+    );
+    expect(stillOpen).toBe(false);
+  }
+);
+
+test(
+  'CWR-I630: Accessing an Exercise File shows the real question type, not "Unknown Question Type"',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I630 -- accessing an Exercise File under Chapter Resources shows "Unknown Question
+    // Type" instead of the real question type. Reuses the same confirmed Exercise-resource access
+    // pattern as TCN-I15680 above.
+    const pl = new PlaylistPage(page);
+    const count = await pl.resourceCards.count();
+    test.fail(count === 0, 'No playlist resources available this pass');
+    if (count === 0) {
+      expect(count).toBeGreaterThan(0);
+      return;
+    }
+    const exerciseCard = pl.resourceCards.filter({ hasText: /exercise/i }).first();
+    const hasExercise = await exerciseCard.count();
+    test.fail(hasExercise === 0, 'No Exercise-type resource available this pass');
+    if (!hasExercise) {
+      expect(hasExercise).toBeGreaterThan(0);
+      return;
+    }
+    const plr = new PlayerPage(page);
+    await plr.openResourceCard(exerciseCard);
+    await page.waitForTimeout(2000);
+    const unknownTypeVisible = await page.getByText(/unknown question type/i).isVisible({ timeout: 5000 }).catch(() => false);
+    console.log('"Unknown Question Type" shown for this Exercise:', unknownTypeVisible);
+
+    test.fail(
+      unknownTypeVisible,
+      'CONFIRMED (matches Zoho CWR-I630): "Unknown Question Type" is shown for this Exercise-type resource'
+    );
+    expect(unknownTypeVisible).toBe(false);
+  }
+);
+
+test(
+  'TCN-I15329: Exercise questions render the degree symbol correctly and are not repeated identically',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15329 -- angle symbols render as the literal text "#176" instead of the degree
+    // symbol "°", and the same incorrect question repeats across all exercises. Reuses the same
+    // confirmed Exercise-resource access pattern as TCN-I15680/CWR-I630 above.
+    const pl = new PlaylistPage(page);
+    const exerciseCards = pl.resourceCards.filter({ hasText: /exercise/i });
+    const exerciseCount = await exerciseCards.count();
+    test.fail(exerciseCount === 0, 'No Exercise-type resources available this pass');
+    if (exerciseCount === 0) {
+      expect(exerciseCount).toBeGreaterThan(0);
+      return;
+    }
+    const plr = new PlayerPage(page);
+    const questionTexts = [];
+    for (let i = 0; i < Math.min(exerciseCount, 3); i++) {
+      await plr.openResourceCard(exerciseCards.nth(i));
+      await page.waitForTimeout(1800);
+      const text = await page.evaluate(() => document.body.innerText.slice(0, 500));
+      questionTexts.push(text);
+      await plr.closeIcon.first().click({ force: true }).catch(() => {});
+      await page.waitForTimeout(800);
+    }
+    const anyLiteralHashCode = questionTexts.some((t) => /#176/.test(t));
+    const allIdentical = questionTexts.length > 1 && questionTexts.every((t) => t === questionTexts[0]);
+    console.log('Checked', questionTexts.length, 'Exercise(s) | literal "#176" found:', anyLiteralHashCode, '| all identical text:', allIdentical);
+
+    const bugReproduces = anyLiteralHashCode || allIdentical;
+    test.fail(
+      bugReproduces,
+      `CONFIRMED (matches Zoho TCN-I15329): ${anyLiteralHashCode ? 'the literal "#176" appears instead of the degree symbol' : ''}${anyLiteralHashCode && allIdentical ? ' and ' : ''}${allIdentical ? 'the same question text repeats identically across different Exercises' : ''}`
+    );
+    expect(bugReproduces).toBe(false);
+  }
+);
+
