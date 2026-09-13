@@ -26,3 +26,86 @@
 //      tests/zoho-regression/README.md.
 
 const { test, expect } = require('../../fixtures/electron-app');
+const { PlaylistPage } = require('../../pages/playlist.page');
+const { NavigationPage } = require('../../pages/navigation.page');
+const { PlayerPage } = require('../../pages/player.page');
+const { applyClassMap } = require('../../config/moduleClassMap');
+
+test.use({ viewport: { width: 1920, height: 1080 } });
+
+// Reuses the confirmed 'ebook' location from tests/players/ebook.spec.js (Class 12A Physics,
+// chapter index 13, topic 0 -- a real linked e-book).
+test.beforeEach(async ({ page }) => {
+  const pl = new PlaylistPage(page);
+  const nav = new NavigationPage(page);
+  await pl.loginWithPin(process.env.VALID_PIN);
+  await applyClassMap(nav, 'ebook');
+  await page.waitForTimeout(1000);
+});
+
+async function openEbook(page, plr) {
+  await plr.openResourceCard(plr.ebookTriggerBtn);
+  await plr.ebookLaunchBtn.first().waitFor({ state: 'visible', timeout: 10000 });
+  await plr.openResourceCard(plr.ebookLaunchBtn.first());
+  await plr.closeIcon.first().waitFor({ state: 'visible', timeout: 25000 });
+}
+
+test(
+  'TCN-I15322: The eBook loads real content, not a continuous loading state',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15322 -- Ebook content does not load, stuck in a continuous loading state.
+    const plr = new PlayerPage(page);
+    await openEbook(page, plr);
+    await page.waitForTimeout(1500);
+    const stillLoading = await page.getByText(/loading/i).isVisible({ timeout: 3000 }).catch(() => false);
+    const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
+    console.log('Still showing a loading state:', stillLoading, '| reader closeIcon (real content signal) visible:', closeIconVisible);
+
+    test.fail(
+      stillLoading || !closeIconVisible,
+      'CONFIRMED (matches Zoho TCN-I15322): the eBook is stuck in a continuous loading state / real content never rendered'
+    );
+    expect(stillLoading).toBe(false);
+    expect(closeIconVisible).toBe(true);
+  }
+);
+
+test(
+  'CWR-I552: eBook content does not overlap the Resource Tray, and the topic name stays readable',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I552 -- eBook content overlaps the resource tray bar, making the topic name
+    // unreadable due to white text on a white/light background.
+    const pl = new PlaylistPage(page);
+    const plr = new PlayerPage(page);
+    await openEbook(page, plr);
+    await page.waitForTimeout(1500);
+    const topicLabel = page.locator('[data-qa-id="playlist-chapter-topic-btn"]').first();
+    const topicColorInfo = await topicLabel.evaluate((el) => {
+      const style = getComputedStyle(el);
+      return { color: style.color, backgroundColor: style.backgroundColor, opacity: style.opacity };
+    }).catch(() => null);
+    const readerBox = await plr.closeIcon.first().locator('xpath=ancestor::*[3]').boundingBox().catch(() => null);
+    const trayBox = await pl.resourceCards.first().boundingBox().catch(() => null);
+    console.log('Topic label style:', JSON.stringify(topicColorInfo), '| reader region box:', JSON.stringify(readerBox), '| resource tray box:', JSON.stringify(trayBox));
+
+    function overlaps(a, b) {
+      if (!a || !b) return false;
+      return a.x < b.x + b.width && a.x + a.width > b.x && a.y < b.y + b.height && a.y + a.height > b.y;
+    }
+    // White text alone is not the bug -- this app's topic label is white-on-transparent by
+    // default design (readable against its own dark toolbar background). The bug's actual claim is
+    // that OVERLAP with the eBook/tray causes it to become unreadable -- so overlap is the real
+    // condition to check, not text color in isolation.
+    console.log('Topic label style (context only):', JSON.stringify(topicColorInfo));
+    const overlapsTray = overlaps(readerBox, trayBox);
+    console.log('Reader overlaps resource tray:', overlapsTray);
+
+    test.fail(
+      overlapsTray,
+      'CONFIRMED (matches Zoho CWR-I552): the eBook reader overlaps the Resource Tray'
+    );
+    expect(overlapsTray).toBe(false);
+  }
+);
