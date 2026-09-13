@@ -113,24 +113,18 @@ module.exports = defineConfig({
     video: 'retain-on-failure',
   },
 
+  // REMOVED (2026-09-14): this used to be 3 projects -- chromium, plus firefox/webkit scoped to
+  // just RESP-05 for a real cross-browser check. Since the switch to desktop client mode, EVERY
+  // spec (including responsive.spec.js's RESP-05) imports from fixtures/electron-app.js, which
+  // always launches the real Tata ClassEdge School.exe regardless of a project's `use.browserName`
+  // -- so the firefox/webkit projects never actually drove Firefox or WebKit, they just reran
+  // RESP-05 two more times through the SAME Electron client under a misleading label. Confirmed
+  // live: no real browser has ever launched in this suite's default run. Down to a single project
+  // so the reporter's [chromium] label doesn't imply browser testing that isn't happening.
   projects: [
     {
       name: 'chromium',
       use: { ...devices['Desktop Chrome'] },
-    },
-    // These two only run the RESP-05 cross-browser-consistency case —
-    // every other test only needs to run once, on chromium, so there's no
-    // point tripling the whole suite's runtime for tests that don't care
-    // which engine they run under.
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      grep: /RESP-05/,
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-      grep: /RESP-05/,
     },
   ],
 });
