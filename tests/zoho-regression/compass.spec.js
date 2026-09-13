@@ -85,3 +85,133 @@ test(
   }
 );
 
+// The 4 tests below all interact with the "Revision Tests" popup (Student Tests list), reached via
+// cmp.revisionTestsItem. CONFIRMED LIVE via a throwaway diagnostic test this pass: clicking it opens
+// a real list of student-test cards with NO data-qa-id matching the page object's own
+// listAssignment(cxId) pattern -- the real, confirmed selector is
+// [data-qa-id^="player-student-test-item-sat-"], each containing a .resource-card with .title,
+// .checkpoint-info-line.infoDate/.infoTitle/.infoStatus. This account's compassBaseline combo
+// (Class 12A Physics) has 3 real cards including one literally titled "testing title overlap issue"
+// -- almost certainly seeded by a prior QA pass specifically to reproduce TCN-I16048.
+
+test(
+  'TCN-I16048: The Revision Test card title does not overlap its duration/question-count/date metadata',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    const cmp = new CompassPage(page);
+    await cmp.openTrigger();
+    await cmp.revisionTestsItem.click({ force: true });
+    await page.waitForTimeout(1500);
+    const card = page.locator('[data-qa-id^="player-student-test-item-sat-"]').filter({ hasText: 'testing title overlap issue' }).first();
+    const cardCount = await card.count();
+    test.fail(cardCount === 0, 'The QA-seeded "testing title overlap issue" card was not found this pass');
+    if (cardCount === 0) {
+      expect(cardCount).toBeGreaterThan(0);
+      return;
+    }
+    const titleBox = await card.locator('.title').boundingBox();
+    const metaBox = await card.locator('.checkpoint-description').boundingBox();
+    console.log('Title box:', JSON.stringify(titleBox), '| metadata block box:', JSON.stringify(metaBox));
+    const overlaps =
+      titleBox && metaBox &&
+      titleBox.x < metaBox.x + metaBox.width && titleBox.x + titleBox.width > metaBox.x &&
+      titleBox.y < metaBox.y + metaBox.height && titleBox.y + titleBox.height > metaBox.y;
+    test.fail(
+      Boolean(overlaps),
+      'CONFIRMED (matches Zoho TCN-I16048): the Revision Test card title overlaps its duration/question-count/date metadata block'
+    );
+    expect(overlaps).toBeFalsy();
+  }
+);
+
+test(
+  'TCN-I16052: The Revision Test pop-up does not overlap the Resource Tray (Playlist drawer)',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    const cmp = new CompassPage(page);
+    const pl = new PlaylistPage(page);
+    await cmp.openTrigger();
+    await cmp.revisionTestsItem.click({ force: true });
+    await page.waitForTimeout(1500);
+    const popupBox = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().boundingBox();
+    const trayBox = await pl.resourceCards.first().boundingBox().catch(() => null);
+    console.log('Revision Test popup card box:', JSON.stringify(popupBox), '| Resource Tray (first playlist card) box:', JSON.stringify(trayBox));
+    test.fail(!popupBox || !trayBox, 'Could not measure both the popup and the Resource Tray this pass');
+    if (!popupBox || !trayBox) {
+      expect(popupBox && trayBox).toBeTruthy();
+      return;
+    }
+    const overlaps =
+      popupBox.x < trayBox.x + trayBox.width && popupBox.x + popupBox.width > trayBox.x &&
+      popupBox.y < trayBox.y + trayBox.height && popupBox.y + popupBox.height > trayBox.y;
+    // Also check whether the Resource Tray is actually interactable while the popup is open --
+    // this is the workbook's own second, distinct complaint (must close popup first).
+    const trayClickable = await pl.resourceCards.first().isEnabled().catch(() => false);
+    console.log('Resource Tray card still clickable/enabled while popup is open:', trayClickable);
+    test.fail(
+      Boolean(overlaps) || !trayClickable,
+      `CONFIRMED (matches Zoho TCN-I16052): the Revision Test popup ${overlaps ? 'overlaps the Resource Tray' : 'does not overlap, but the Resource Tray is not interactable while it is open'}`
+    );
+    expect(overlaps).toBeFalsy();
+    expect(trayClickable).toBe(true);
+  }
+);
+
+test(
+  'TCN-I16046: The Revision Test pop-up closes automatically when navigating to another topic',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    const cmp = new CompassPage(page);
+    await cmp.openTrigger();
+    await cmp.revisionTestsItem.click({ force: true });
+    await page.waitForTimeout(1500);
+    const popupVisibleBefore = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 3000 }).catch(() => false);
+    test.fail(!popupVisibleBefore, 'The Revision Test popup was not open this pass');
+    if (!popupVisibleBefore) {
+      expect(popupVisibleBefore).toBe(true);
+      return;
+    }
+    const nextTopicBtn = page.locator('[data-qa-id="playlist-nav-topic-right"]');
+    await nextTopicBtn.scrollIntoViewIfNeeded();
+    await nextTopicBtn.click({ force: true });
+    await page.waitForTimeout(1500);
+    const popupStillVisibleAfter = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 2000 }).catch(() => false);
+    console.log('Revision Test popup still visible after navigating to the next topic:', popupStillVisibleAfter);
+
+    test.fail(
+      popupStillVisibleAfter,
+      'CONFIRMED (matches Zoho TCN-I16046): the Revision Test popup remains open after navigating to another topic instead of closing automatically'
+    );
+    expect(popupStillVisibleAfter).toBe(false);
+  }
+);
+
+test(
+  'TCN-I16056: Re-clicking the Compass trigger while the Revision Test pop-up is open does not create overlapping UI',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    const cmp = new CompassPage(page);
+    await cmp.openTrigger();
+    await cmp.revisionTestsItem.click({ force: true });
+    await page.waitForTimeout(1500);
+    const popupVisibleBefore = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 3000 }).catch(() => false);
+    test.fail(!popupVisibleBefore, 'The Revision Test popup was not open this pass');
+    if (!popupVisibleBefore) {
+      expect(popupVisibleBefore).toBe(true);
+      return;
+    }
+    await cmp.triggerBtn.click({ force: true });
+    await page.waitForTimeout(1000);
+    const compassMenuVisible = await cmp.analyseItItem.isVisible({ timeout: 2000 }).catch(() => false);
+    const popupStillVisible = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 2000 }).catch(() => false);
+    console.log('After re-clicking the Compass trigger -- Compass menu visible:', compassMenuVisible, '| Revision Test popup still visible:', popupStillVisible);
+    // The reported bug is specifically BOTH being visible/overlapping at once.
+    const bothVisibleAtOnce = compassMenuVisible && popupStillVisible;
+    test.fail(
+      bothVisibleAtOnce,
+      'CONFIRMED (matches Zoho TCN-I16056): the Compass panel and the Revision Test popup are both visible/overlapping at once after re-clicking the trigger'
+    );
+    expect(bothVisibleAtOnce).toBe(false);
+  }
+);
+

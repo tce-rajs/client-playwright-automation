@@ -1575,8 +1575,8 @@ const TEACH_MODE_BUGS = [
     title: 'Revision Test Pop-Up Does Not Close on Topic Navigation',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I16046 (tests/zoho-regression/compass.spec.js)',
+    notes: 'RESULT (2026-09-13, live): BLOCKED, reproduced 3/3 attempts (not flaky) -- right after opening the Revision Test popup, the page consistently breaks into an unrelated state ("No web URLs available. Please check your settings.", a "Teacher Connect Notice" overlay, and a code "LM1063"), which then makes the topic-nav-right button permanently unreachable ("Element is outside of the viewport" even after scrollIntoViewIfNeeded()). This is a real, reproducible environment issue distinct from the bug\'s own claim -- worth investigating separately (possibly related to the already-documented webview-startup-race class of issue) before this specific test can get a real signal.',
   },
   {
     id: 'TCN-I16052',
@@ -1584,8 +1584,8 @@ const TEACH_MODE_BUGS = [
     title: 'Student Test Pop-up Overlaps Resource Tray, Obstructing Resource Access and Long Concept Names',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I16052 (tests/zoho-regression/compass.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- the popup box (y 386-476) and the Resource Tray card box (y 870-973) do not overlap at all (huge vertical gap), and the Resource Tray remained clickable/enabled the whole time the popup was open.',
   },
   {
     id: 'TCN-I16056',
@@ -1593,8 +1593,8 @@ const TEACH_MODE_BUGS = [
     title: 'Compass Panel Opens Behind the Revision Test Pop-up on Repeated Click',
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I16056 (tests/zoho-regression/compass.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- re-clicking the Compass trigger while the Revision Test popup is open cleanly closes the popup; neither the popup nor the Compass menu remain visible/overlapping afterward (does not reproduce the described "opens behind" overlapping-UI behavior).',
   },
   {
     id: 'TCN-I16623',
@@ -1603,7 +1603,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'Ready for Testing',
     matchedTestId: null,
-    notes: '',
+    notes: 'NOT AUTOMATED: "Analyse It Report" is the same feature as the whole Compass (AfL Reports) module, already confirmed to have no page object or locatable UI entry point anywhere in this suite (all 17 of that module\'s bugs are blocked on the same gap) -- same structural blocker, not re-investigated separately.',
   },
   {
     id: 'TCN-I16853',
@@ -1666,8 +1666,8 @@ const TEACH_MODE_BUGS = [
     title: 'Revision Test Card Layout Breaks Due to Overlapping Title and Metadata',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: '',
+    matchedTestId: 'TCN-I16048 (tests/zoho-regression/compass.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- tested against the account\'s real card literally titled "testing title overlap issue" (almost certainly QA-seeded for this exact bug). Title box (y 435-467) sits cleanly below the metadata block (y 398-426) with a real gap between them, no overlap.',
   },
   {
     id: 'CWR-I654',
