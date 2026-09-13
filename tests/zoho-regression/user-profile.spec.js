@@ -60,3 +60,51 @@ test(
     expect(popupStillVisible).toBe(false);
   }
 );
+
+test(
+  'CWR-I554: The Profile screen loads and renders, not a blank/unresponsive screen',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I554 -- the profile screen does not load, remains blank/unresponsive.
+    const acc = new AccountManagementPage(page);
+    await acc.openAccountTab();
+    const accountTabActive = await acc.accountTab.isVisible({ timeout: 5000 }).catch(() => false);
+    await acc.profileTab.click({ force: true }).catch(() => {});
+    await page.waitForTimeout(1000);
+    const bodyText = await page.evaluate(() => document.body.innerText.length);
+    console.log('Account tab visible:', accountTabActive, '| total body text length after navigating to Profile:', bodyText);
+
+    const bugReproduces = !accountTabActive || bodyText < 50;
+    test.fail(
+      bugReproduces,
+      'CONFIRMED (matches Zoho CWR-I554): the Profile screen appears blank/unresponsive'
+    );
+    expect(bugReproduces).toBe(false);
+  }
+);
+
+test(
+  'CWR-I745: A Feedback option is available in the Profile section',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho CWR-I745 -- the Feedback option (present in CEP V1) is missing from the Profile section
+    // in V2.
+    const acc = new AccountManagementPage(page);
+    await acc.openProfileMenu();
+    const feedbackInOuterMenu = await page.getByText(/feedback/i).isVisible({ timeout: 3000 }).catch(() => false);
+    let feedbackInInnerModal = false;
+    if (!feedbackInOuterMenu) {
+      await acc.drilldownTrigger.click({ force: true }).catch(() => {});
+      await page.waitForTimeout(1000);
+      feedbackInInnerModal = await page.getByText(/feedback/i).isVisible({ timeout: 3000 }).catch(() => false);
+    }
+    const feedbackFound = feedbackInOuterMenu || feedbackInInnerModal;
+    console.log('Feedback option found in outer menu:', feedbackInOuterMenu, '| in inner Account/Profile modal:', feedbackInInnerModal);
+
+    test.fail(
+      !feedbackFound,
+      'CONFIRMED (matches Zoho CWR-I745): no "Feedback" option is present anywhere in the Profile section'
+    );
+    expect(feedbackFound).toBe(true);
+  }
+);

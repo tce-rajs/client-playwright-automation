@@ -1126,7 +1126,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to User Profile.',
+    notes: 'NOT AUTOMATED: repro steps require the separate Admin Portal (School Admin login, Manage -> Academic Details) -- a different application entirely, out of scope for this Teach Mode-only suite.',
   },
   {
     id: 'TCN-I15985',
@@ -1377,8 +1377,8 @@ const TEACH_MODE_BUGS = [
     title: 'Feedback option missing in Profile section in CEP V2',
     priority: 'High',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to User Profile.',
+    matchedTestId: 'CWR-I745 (tests/zoho-regression/user-profile.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- a "Feedback" option is present in the outer profile menu (avatar click).',
   },
   {
     id: 'CWR-I767',
@@ -1449,8 +1449,8 @@ const TEACH_MODE_BUGS = [
     title: 'Profile screen not loading',
     priority: 'Medium',
     status: 'QA  Sign off/Closed',
-    matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to User Profile.',
+    matchedTestId: 'CWR-I554 (tests/zoho-regression/user-profile.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- the Account tab rendered with real content (874 chars of body text), not blank.',
   },
   {
     id: 'CWR-I696',
