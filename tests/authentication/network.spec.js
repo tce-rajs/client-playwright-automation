@@ -28,7 +28,11 @@ test('NET-01: Submit login while offline', { tag: '@boundary' }, async ({ page, 
 test('NET-02: Backend 5xx error on login request', { tag: '@boundary' }, async ({ page }) => {
   const login = new LoginPage(page);
   await page.route('**/sso/pin/**', (route) => {
-    route.fulfill({ status: 500, contentType: 'application/json', body: JSON.stringify({ error: 'Internal Server Error' }) });
+    route.fulfill({
+      status: 500,
+      contentType: 'application/json',
+      body: JSON.stringify({ error: 'Internal Server Error' }),
+    });
   });
 
   await login.enterPin(process.env.VALID_PIN);

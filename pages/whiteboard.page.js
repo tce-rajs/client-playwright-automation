@@ -65,7 +65,10 @@ class WhiteboardPage {
   async innerPanGroupTransform() {
     const count = await this.panGroup.count();
     if (count === 0) return null;
-    return this.panGroup.first().getAttribute('transform').catch(() => null);
+    return this.panGroup
+      .first()
+      .getAttribute('transform')
+      .catch(() => null);
   }
 
   /** Insert a text object via the Insert Text tool, click at a canvas point,
@@ -84,7 +87,7 @@ class WhiteboardPage {
       const box = await this.wbSvg.boundingBox();
       await this.page.mouse.click(box.x + x, box.y + y);
       await this.page.waitForTimeout(700);
-      if (await this.textObjects.count() > before) break;
+      if ((await this.textObjects.count()) > before) break;
       await this.page.waitForTimeout(500);
     }
     return this.textObjects.last();
@@ -103,7 +106,10 @@ class WhiteboardPage {
       return !!(active && active.closest && active.closest('.text-input-container[contenteditable="true"]'));
     });
     if (!alreadyFocused) {
-      await textObj.locator('.text-input-container[contenteditable="true"]').click({ timeout: 5000 }).catch(() => {});
+      await textObj
+        .locator('.text-input-container[contenteditable="true"]')
+        .click({ timeout: 5000 })
+        .catch(() => {});
     }
     await this.page.keyboard.type(text);
     return textObj;
@@ -121,28 +127,40 @@ class WhiteboardPage {
    * confirmed no-op, while the INNER <svg> registers a real stroke -- see
    * WB-DISPATCH-01. */
   async dispatchFullPointerSequence(selector, x1, y1, x2, y2, steps = 14) {
-    return this.page.evaluate(({ sel, x1, y1, x2, y2, steps }) => {
-      const el = document.querySelector(sel);
-      if (!el) return 'MISSING';
-      const rect = el.getBoundingClientRect();
-      const fire = (types, x, y) => {
-        types.forEach((type) => {
-          const Ctor = type.startsWith('pointer') ? PointerEvent : MouseEvent;
-          el.dispatchEvent(new Ctor(type, {
-            bubbles: true, cancelable: true, composed: true,
-            clientX: rect.left + x, clientY: rect.top + y,
-            buttons: 1, button: 0, pointerId: 1, pointerType: 'mouse', isPrimary: true,
-          }));
-        });
-      };
-      fire(['pointerover', 'pointerenter', 'pointerdown', 'mousedown'], x1, y1);
-      for (let i = 1; i <= steps; i++) {
-        const t = i / steps;
-        fire(['pointermove', 'mousemove'], x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
-      }
-      fire(['pointerup', 'mouseup'], x2, y2);
-      return 'OK';
-    }, { sel: selector, x1, y1, x2, y2, steps });
+    return this.page.evaluate(
+      ({ sel, x1, y1, x2, y2, steps }) => {
+        const el = document.querySelector(sel);
+        if (!el) return 'MISSING';
+        const rect = el.getBoundingClientRect();
+        const fire = (types, x, y) => {
+          types.forEach((type) => {
+            const Ctor = type.startsWith('pointer') ? PointerEvent : MouseEvent;
+            el.dispatchEvent(
+              new Ctor(type, {
+                bubbles: true,
+                cancelable: true,
+                composed: true,
+                clientX: rect.left + x,
+                clientY: rect.top + y,
+                buttons: 1,
+                button: 0,
+                pointerId: 1,
+                pointerType: 'mouse',
+                isPrimary: true,
+              })
+            );
+          });
+        };
+        fire(['pointerover', 'pointerenter', 'pointerdown', 'mousedown'], x1, y1);
+        for (let i = 1; i <= steps; i++) {
+          const t = i / steps;
+          fire(['pointermove', 'mousemove'], x1 + (x2 - x1) * t, y1 + (y2 - y1) * t);
+        }
+        fire(['pointerup', 'mouseup'], x2, y2);
+        return 'OK';
+      },
+      { sel: selector, x1, y1, x2, y2, steps }
+    );
   }
 
   async openClearWhiteboardConfirm() {

@@ -41,7 +41,7 @@ npx playwright test --grep "@security"
 npx playwright test --grep-invert "@positive"   # everything except positive
 ```
 
-`npm run report` always opens the *latest* run's report from
+`npm run report` always opens the _latest_ run's report from
 `playwright-report/`, which gets overwritten every run. Every run also
 gets an untouched, timestamped copy saved to
 `playwright-report-archive/report_<date>_<time>/`, so older reports are

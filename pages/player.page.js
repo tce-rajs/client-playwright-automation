@@ -13,7 +13,9 @@ class PlayerPage {
     this.page = page;
 
     // --- Generic player chrome (shared across most sub-types) ---
-    this.closeIcon = page.locator('img[alt="close-btn"], img[src*="closeIcon.png"], button.closeIcon').filter({ visible: true });
+    this.closeIcon = page
+      .locator('img[alt="close-btn"], img[src*="closeIcon.png"], button.closeIcon')
+      .filter({ visible: true });
 
     // --- Quiz ---
     // Confirmed (cross-checked against automation-cep-cypress's own
@@ -51,7 +53,9 @@ class PlayerPage {
     // Confirmed (cross-checked against VideoPlayerPage.js): identify Video
     // resources by their type-icon, not the Playlist's own "Video" filter
     // (per the workbook's PLR-VID-12, that filter can silently no-op).
-    this.videoCards = page.locator('[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="ic.AVMediaVideo.svg"]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="ic.AVMediaVideo.svg"])');
+    this.videoCards = page.locator(
+      '[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="ic.AVMediaVideo.svg"]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="ic.AVMediaVideo.svg"])'
+    );
     this.videoFrame = page.locator('iframe').first();
     this.videoPlayToggle = page.locator('.vjs-play-control');
     this.videoProgressBar = page.locator('.vjs-progress-control .vjs-progress-holder');
@@ -63,7 +67,9 @@ class PlayerPage {
     // resources. Caught via page.on('pageerror') in the spec, not a locator.
 
     // --- Worksheet (PDF) ---
-    this.worksheetCards = page.locator('[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="ic.Worksheet.svg"]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="ic.Worksheet.svg"])');
+    this.worksheetCards = page.locator(
+      '[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="ic.Worksheet.svg"]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="ic.Worksheet.svg"])'
+    );
     this.worksheetHeader = page.locator('.pdf-header, .worksheet-header').first();
     this.worksheetPrevPage = page.locator('li.page-item.previous-item .mypage-link, .previous-item');
     this.worksheetNextPage = page.locator('li.page-item.next-item .mypage-link, .pagination-next .mypage-link');
@@ -77,17 +83,23 @@ class PlayerPage {
     this.worksheetAnnotationLayer = page.locator('svg.annotation-layer, .annotation-layer');
 
     // --- Image ---
-    this.imageCards = page.locator('[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="ic.image" i]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="ic.image" i])');
+    this.imageCards = page.locator(
+      '[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="ic.image" i]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="ic.image" i])'
+    );
     this.imageWrapper = page.locator('.player.image-player');
     this.imageGalleryImg = page.locator('.image-gallery img.g-image-item');
     this.imageCloseBtn = page.locator(".image-close-btn img, img[alt='close-btn']").filter({ visible: true });
 
     // --- Weblink ---
-    this.weblinkCards = page.locator('[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="weblink" i]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="weblink" i])');
+    this.weblinkCards = page.locator(
+      '[data-qa-id="playlist-resource-card"]:has(img.type-icon[src*="weblink" i]), [data-qa-id="playlist-asset-card"]:has(img.type-icon[src*="weblink" i])'
+    );
     this.weblinkWrapper = page.locator('.player.weblink-player');
     this.weblinkIframe = page.locator('.weblink-wrapper iframe');
     this.weblinkCloseBtn = page.locator(".weblink-close-btn, img[alt='close-btn']").filter({ visible: true });
-    this.weblinkPlayIconOverlay = this.weblinkWrapper.locator('[class*="play-icon" i], [class*="play-overlay" i]').first();
+    this.weblinkPlayIconOverlay = this.weblinkWrapper
+      .locator('[class*="play-icon" i], [class*="play-overlay" i]')
+      .first();
     // CONFIRMED LIVE (verifier pass): "Watch on YouTube" is rendered
     // INSIDE the cross-origin YouTube embed iframe itself (YouTube's own
     // native embed chrome), NOT the app's own DOM -- confirmed via
@@ -120,7 +132,9 @@ class PlayerPage {
     this.ebookSelectedChapter = page.locator('[data-qa-id^="player-ebook-chapter-"].selected');
     this.ebookChapterDrawerToggle = page.locator('[data-qa-id="player-ebook-chapter-drawer-toggle"]');
     this.ebookResourceDrawerToggle = page.locator('[data-qa-id="player-ebook-resource-drawer-toggle"]');
-    this.ebookResourceCards = page.locator('.resources_list_right [data-qa-id="playlist-resource-card"], .resources_list_right [data-qa-id="playlist-asset-card"], .resources_list_right [data-qa-id="playlist-quiz-card"]');
+    this.ebookResourceCards = page.locator(
+      '.resources_list_right [data-qa-id="playlist-resource-card"], .resources_list_right [data-qa-id="playlist-asset-card"], .resources_list_right [data-qa-id="playlist-quiz-card"]'
+    );
     this.ebookScrollUpBtn = page.locator('[data-qa-id="player-ebook-resource-scroll-up"]');
     this.ebookScrollDownBtn = page.locator('[data-qa-id="player-ebook-resource-scroll-down"]');
     this.ebookNoResourcesMsg = page.getByText('No resources found!');
@@ -156,14 +170,26 @@ class PlayerPage {
    * which settles/waits for actionability on its own, if not. */
   async closePlayer() {
     for (let attempt = 0; attempt < 3; attempt++) {
-      const stillOpenBefore = await this.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
+      const stillOpenBefore = await this.closeIcon
+        .first()
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
       if (!stillOpenBefore) return;
-      await this.closeIcon.first().click({ force: true, timeout: 5000 }).catch(() => {});
+      await this.closeIcon
+        .first()
+        .click({ force: true, timeout: 5000 })
+        .catch(() => {});
       await this.page.waitForTimeout(1000);
-      const closedNow = !(await this.closeIcon.first().isVisible({ timeout: 1500 }).catch(() => false));
+      const closedNow = !(await this.closeIcon
+        .first()
+        .isVisible({ timeout: 1500 })
+        .catch(() => false));
       if (closedNow) return;
       // Retry with a plain click (confirmed more reliable live) before giving up.
-      await this.closeIcon.first().click({ timeout: 5000 }).catch(() => {});
+      await this.closeIcon
+        .first()
+        .click({ timeout: 5000 })
+        .catch(() => {});
       await this.page.waitForTimeout(1000);
     }
   }
@@ -182,7 +208,10 @@ class PlayerPage {
   }
 
   async isPlayerOpen(timeout = 15000) {
-    return this.closeIcon.first().isVisible({ timeout }).catch(() => false);
+    return this.closeIcon
+      .first()
+      .isVisible({ timeout })
+      .catch(() => false);
   }
 
   /** Confirmed live: clicking a resource card can silently fail to open the
@@ -191,7 +220,10 @@ class PlayerPage {
    * actually mounted and retry the card click once if not. */
   async openCodeEditorCard(cardLocator) {
     await this.openResourceCard(cardLocator);
-    const mounted = await this.monacoEditor.waitFor({ state: 'visible', timeout: 8000 }).then(() => true).catch(() => false);
+    const mounted = await this.monacoEditor
+      .waitFor({ state: 'visible', timeout: 8000 })
+      .then(() => true)
+      .catch(() => false);
     if (!mounted) {
       await this.openResourceCard(cardLocator);
       await this.monacoEditor.waitFor({ state: 'visible', timeout: 15000 });

@@ -65,7 +65,10 @@ class AiNoticesPage {
     this.grammarBtn = page.locator('[data-qa-id="ai-notices-grammar-btn"], [class*="grammar-btn"]').first();
     this.recaptureBtn = page.getByText('Recapture', { exact: false });
     this.closeBtn = page.getByText('Close', { exact: true }).first();
-    this.sendBtn = page.locator('[data-qa-id="ai-notices-send-btn"], [class*="send-btn"]').first().or(page.getByText('Ready to Send', { exact: false }));
+    this.sendBtn = page
+      .locator('[data-qa-id="ai-notices-send-btn"], [class*="send-btn"]')
+      .first()
+      .or(page.getByText('Ready to Send', { exact: false }));
 
     // --- Share with... class targeting ---
     this.shareClassCheckbox = (label) => page.locator('input[type="checkbox"]').filter({ hasText: label }).first();
@@ -134,7 +137,10 @@ class AiNoticesPage {
     // isVisible({timeout: N}) calls does NOT accumulate N*iterations of real
     // wall-clock waiting (confirmed live: a "15-iteration x 2s timeout" loop
     // finished in under 2s total). Use waitFor(), which genuinely polls.
-    return this.titleInput.waitFor({ state: 'visible', timeout: 20000 }).then(() => true).catch(() => false);
+    return this.titleInput
+      .waitFor({ state: 'visible', timeout: 20000 })
+      .then(() => true)
+      .catch(() => false);
   }
 }
 

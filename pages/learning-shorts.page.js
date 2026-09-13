@@ -26,10 +26,13 @@ class LearningShortsPage {
     // independently confirmed live this pass -- falling back to a text
     // match alongside the pattern already confirmed for Attendance
     // ([data-qa-id="toolbar-magnet-gtAttendance"]).
-    this.magnetLearningShortsItem = page.locator('[data-qa-id="toolbar-magnet-gtLearningShorts"], [data-qa-id="toolbar-magnet-gtLearningshorts"]')
+    this.magnetLearningShortsItem = page
+      .locator('[data-qa-id="toolbar-magnet-gtLearningShorts"], [data-qa-id="toolbar-magnet-gtLearningshorts"]')
       .or(page.locator('.magnet-submenu, [class*="magnet"]').getByText('Learning Shorts', { exact: false }));
     // Recording panel controls (per workbook: camera icon = Record Start, X = Exit).
-    this.recordStartBtn = page.locator('[data-qa-id="learning-shorts-record-btn"], .camera-icon, [class*="record"]').first();
+    this.recordStartBtn = page
+      .locator('[data-qa-id="learning-shorts-record-btn"], .camera-icon, [class*="record"]')
+      .first();
     this.exitBtn = page.locator('[data-qa-id="exitBtn"]');
 
     // --- Alternate, camera-free entry: owned Video asset -> overflow -> Send ---
@@ -64,10 +67,12 @@ class LearningShortsPage {
     const count = Math.min(await cards.count(), maxCards);
     for (let i = 0; i < count; i++) {
       const card = cards.nth(i);
-      const isVideoType = await card.evaluate((el) => {
-        const html = el.outerHTML.toLowerCase();
-        return html.includes('video') && !html.includes('worksheet') && !html.includes('pdf');
-      }).catch(() => false);
+      const isVideoType = await card
+        .evaluate((el) => {
+          const html = el.outerHTML.toLowerCase();
+          return html.includes('video') && !html.includes('worksheet') && !html.includes('pdf');
+        })
+        .catch(() => false);
       if (isVideoType) return card;
     }
     return null;
@@ -84,7 +89,10 @@ class LearningShortsPage {
 
     const { stillStuck } = await addResourcePage.openPickerReliably(addResourcePage.actions.aiAssist);
     if (!stillStuck) await addResourcePage.actions.aiAssist.click({ force: true });
-    const opened = await this.page.getByText('AI Assist', { exact: true }).isVisible({ timeout: 20000 }).catch(() => false);
+    const opened = await this.page
+      .getByText('AI Assist', { exact: true })
+      .isVisible({ timeout: 20000 })
+      .catch(() => false);
     if (!opened) return false;
     await this.page.waitForTimeout(1500);
 
@@ -100,7 +108,9 @@ class LearningShortsPage {
     }
     await addResourcePage.aiAssistVideoThumbs.first().click({ force: true });
     await this.page.waitForTimeout(800);
-    const addBtnVisible = await addResourcePage.aiAssistAddToPlaylistBtn.isVisible({ timeout: 3000 }).catch(() => false);
+    const addBtnVisible = await addResourcePage.aiAssistAddToPlaylistBtn
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     if (addBtnVisible) {
       await addResourcePage.aiAssistAddToPlaylistBtn.click({ force: true });
       await this.page.waitForTimeout(1500);

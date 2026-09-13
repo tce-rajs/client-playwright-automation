@@ -64,22 +64,26 @@ test('ENT-06: Guest Mode content unaffected after opening/closing modal', { tag:
   await expect(login.guestModeText).toBeVisible();
 });
 
-test('ENT-07: Direct URL access to an authenticated route while logged out', { tag: ['@security', '@bug'] }, async ({ page, baseURL }) => {
-  // BUG FOUND: navigating straight to an unmatched/protected-looking route
-  // (there's no confirmed real "post-login" route name, so we probe a
-  // plausible one) throws an uncaught Angular Router error (NG04002 "no
-  // match"). The URL bar does correctly bounce back to the base path, but
-  // the app never renders anything after that -- not the whiteboard, not
-  // Guest Mode, just a permanent blank white page. Confirmed via a
-  // page-error listener catching the uncaught NG04002 exception. Expected
-  // behaviour per this test case is a graceful redirect into Guest Mode;
-  // instead protected content is avoided (good) but so is everything else
-  // (bad). Tracking as expected-to-fail rather than masking it.
-  test.fail(true, 'Direct nav to an unmatched route throws an uncaught NG04002 and leaves a permanent blank page');
+test(
+  'ENT-07: Direct URL access to an authenticated route while logged out',
+  { tag: ['@security', '@bug'] },
+  async ({ page, baseURL }) => {
+    // BUG FOUND: navigating straight to an unmatched/protected-looking route
+    // (there's no confirmed real "post-login" route name, so we probe a
+    // plausible one) throws an uncaught Angular Router error (NG04002 "no
+    // match"). The URL bar does correctly bounce back to the base path, but
+    // the app never renders anything after that -- not the whiteboard, not
+    // Guest Mode, just a permanent blank white page. Confirmed via a
+    // page-error listener catching the uncaught NG04002 exception. Expected
+    // behaviour per this test case is a graceful redirect into Guest Mode;
+    // instead protected content is avoided (good) but so is everything else
+    // (bad). Tracking as expected-to-fail rather than masking it.
+    test.fail(true, 'Direct nav to an unmatched route throws an uncaught NG04002 and leaves a permanent blank page');
 
-  await page.goto('./select-class');
-  await expect(page).toHaveURL(baseURL);
+    await page.goto('./select-class');
+    await expect(page).toHaveURL(baseURL);
 
-  const login = new LoginPage(page);
-  await expect(login.guestModeText).toBeVisible();
-});
+    const login = new LoginPage(page);
+    await expect(login.guestModeText).toBeVisible();
+  }
+);

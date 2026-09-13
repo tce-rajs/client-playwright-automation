@@ -83,7 +83,10 @@ class CompassPage {
     for (let attempt = 0; attempt < maxReloadAttempts; attempt++) {
       if (attempt > 0) {
         await this.page.reload();
-        await this.page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});
+        await this.page
+          .locator('[data-qa-id="toolbar-user-avatar"]')
+          .waitFor({ state: 'visible', timeout: 15000 })
+          .catch(() => {});
         await this.page.waitForTimeout(1000);
       }
       const triggerVisible = await this.triggerBtn.isVisible({ timeout: 5000 }).catch(() => false);
@@ -98,7 +101,10 @@ class CompassPage {
       // turning a "this class doesn't really have the trigger" finding into
       // a full test-timeout hang. Bound it explicitly and treat a timeout
       // here the same as "not visible" -- retry via reload instead.
-      const clicked = await this.triggerBtn.click({ force: true, timeout: 5000 }).then(() => true).catch(() => false);
+      const clicked = await this.triggerBtn
+        .click({ force: true, timeout: 5000 })
+        .then(() => true)
+        .catch(() => false);
       if (!clicked) continue;
       await this.page.waitForTimeout(800);
       const menu = this.page.locator('.compass-menu.open');
@@ -164,7 +170,10 @@ class CompassPage {
     // logout/relogin) reliably re-populates the sidebar -- do that once as
     // a bounded fallback so callers don't each need their own retry logic.
     if (switched) {
-      const gotSidebar = await this.questionBankNavItem.waitFor({ state: 'visible', timeout: 10000 }).then(() => true).catch(() => false);
+      const gotSidebar = await this.questionBankNavItem
+        .waitFor({ state: 'visible', timeout: 10000 })
+        .then(() => true)
+        .catch(() => false);
       if (!gotSidebar) {
         await this.page.reload().catch(() => {});
         await this.questionBankNavItem.waitFor({ state: 'visible', timeout: 15000 }).catch(() => {});

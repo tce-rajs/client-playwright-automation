@@ -136,30 +136,37 @@ test('PIN-13: Virtual keyboard opens on box click', { tag: '@positive' }, async 
   }
 });
 
-test('PIN-14: Virtual keyboard digit keys fill the boxes correctly', { tag: ['@positive', '@bug'] }, async ({ page }) => {
-  // CONFIRMED UNRELIABLE under browser automation — tried three different
-  // fixes (force-click, position-settle polling, outcome-verified retry
-  // with up to 4 attempts per key) across many repeated runs; none made
-  // this land consistently, sometimes failing every attempt in a run.
-  // This isn't a guess or a one-off flake, it's reproducible instability
-  // specific to clicking this control via Playwright. The functional
-  // capability itself (typing a PIN and having it register) is verified
-  // reliably through a different, stable input path: PIN-21
-  // (page.keyboard typing) logs in successfully with real digits.
-  test.fail(true, 'Virtual keypad key clicks are confirmed unreliable via automation even with retries — see PIN-21 for the same capability verified through a stable path');
+test(
+  'PIN-14: Virtual keyboard digit keys fill the boxes correctly',
+  { tag: ['@positive', '@bug'] },
+  async ({ page }) => {
+    // CONFIRMED UNRELIABLE under browser automation — tried three different
+    // fixes (force-click, position-settle polling, outcome-verified retry
+    // with up to 4 attempts per key) across many repeated runs; none made
+    // this land consistently, sometimes failing every attempt in a run.
+    // This isn't a guess or a one-off flake, it's reproducible instability
+    // specific to clicking this control via Playwright. The functional
+    // capability itself (typing a PIN and having it register) is verified
+    // reliably through a different, stable input path: PIN-21
+    // (page.keyboard typing) logs in successfully with real digits.
+    test.fail(
+      true,
+      'Virtual keypad key clicks are confirmed unreliable via automation even with retries — see PIN-21 for the same capability verified through a stable path'
+    );
 
-  const login = new LoginPage(page);
-  await login.pinDigitBox(0).click();
-  await expect(login.numericKeypad).toBeVisible();
+    const login = new LoginPage(page);
+    await login.pinDigitBox(0).click();
+    await expect(login.numericKeypad).toBeVisible();
 
-  const digits = ['1', '2', '3', '4', '5'];
-  for (let i = 0; i < digits.length; i++) {
-    await login.clickNumericKeyInto(digits[i], i);
+    const digits = ['1', '2', '3', '4', '5'];
+    for (let i = 0; i < digits.length; i++) {
+      await login.clickNumericKeyInto(digits[i], i);
+    }
+    for (let i = 0; i < digits.length; i++) {
+      await expect(login.pinDigitBox(i)).toHaveValue(digits[i]);
+    }
   }
-  for (let i = 0; i < digits.length; i++) {
-    await expect(login.pinDigitBox(i)).toHaveValue(digits[i]);
-  }
-});
+);
 
 test('PIN-15: Virtual keyboard Backspace/Enter keys function', { tag: ['@positive', '@bug'] }, async ({ page }) => {
   // Same confirmed automation unreliability as PIN-14 — see that test's

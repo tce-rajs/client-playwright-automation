@@ -71,7 +71,10 @@ class AccountManagementPage {
    * issue seen elsewhere in this app) -- retry once before giving up. */
   async openProfileMenu() {
     await this.avatarTrigger.click({ force: true });
-    const opened = await this.drilldownTrigger.waitFor({ state: 'visible', timeout: 5000 }).then(() => true).catch(() => false);
+    const opened = await this.drilldownTrigger
+      .waitFor({ state: 'visible', timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
     if (!opened) {
       await this.avatarTrigger.click({ force: true });
       await this.drilldownTrigger.waitFor({ state: 'visible', timeout: 10000 });

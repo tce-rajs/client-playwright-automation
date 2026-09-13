@@ -113,7 +113,10 @@ class NavigationPage {
    * the Chapters popup, leaving it open and intercepting clicks on the
    * Playlist strip underneath -- close it via its own toggle if so. */
   async _closeChaptersPopupIfOpen() {
-    const stillOpen = await this.chapterItems.first().isVisible().catch(() => false);
+    const stillOpen = await this.chapterItems
+      .first()
+      .isVisible()
+      .catch(() => false);
     if (stillOpen) {
       await this.currentChapterTopicBtn.click({ timeout: 5000 }).catch(() => {});
       await this.page.waitForTimeout(500);
@@ -172,7 +175,8 @@ class NavigationPage {
    * both and throws a strict-mode violation. Match the whole (trimmed)
    * label exactly by default; pass a RegExp directly to opt out. */
   subjectButton(label) {
-    const pattern = label instanceof RegExp ? label : new RegExp(`^\\s*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`);
+    const pattern =
+      label instanceof RegExp ? label : new RegExp(`^\\s*${label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\s*$`);
     return this.subjectButtons.filter({ hasText: pattern });
   }
 

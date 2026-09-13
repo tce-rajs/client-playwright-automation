@@ -16,20 +16,24 @@ test.beforeEach(async ({ page }) => {
   await new ToolbarPage(page).waitForBoardToSettle();
 });
 
-test('TB-SAVE-01: The whiteboard autosaves with a visible debounced status toast', { tag: '@ui-state' }, async ({ page }) => {
-  const tb = new ToolbarPage(page);
-  await tb.penStroke({ x: 300, y: 300 }, { x: 500, y: 400 });
-  // The countdown toast can already be mid-flight or have finished by the
-  // time control returns here (the pen-stroke retry check itself takes a
-  // moment) -- accept catching either state rather than racing the exact
-  // "Saving" -> "Saved" transition.
-  const sawEither = await Promise.race([
-    tb.savingToast.waitFor({ state: 'visible', timeout: 15000 }).then(() => 'saving'),
-    tb.savedToast.waitFor({ state: 'visible', timeout: 15000 }).then(() => 'saved'),
-  ]).catch(() => null);
-  expect(sawEither).not.toBeNull();
-  await expect(tb.savedToast).toBeVisible({ timeout: 15000 });
-});
+test(
+  'TB-SAVE-01: The whiteboard autosaves with a visible debounced status toast',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const tb = new ToolbarPage(page);
+    await tb.penStroke({ x: 300, y: 300 }, { x: 500, y: 400 });
+    // The countdown toast can already be mid-flight or have finished by the
+    // time control returns here (the pen-stroke retry check itself takes a
+    // moment) -- accept catching either state rather than racing the exact
+    // "Saving" -> "Saved" transition.
+    const sawEither = await Promise.race([
+      tb.savingToast.waitFor({ state: 'visible', timeout: 15000 }).then(() => 'saving'),
+      tb.savedToast.waitFor({ state: 'visible', timeout: 15000 }).then(() => 'saved'),
+    ]).catch(() => null);
+    expect(sawEither).not.toBeNull();
+    await expect(tb.savedToast).toBeVisible({ timeout: 15000 });
+  }
+);
 
 test('TB-SAVE-02: Autosave reflects a running stroke count', { tag: '@positive' }, async ({ page }) => {
   test.setTimeout(60000); // two full save cycles (up to ~15s each) exceed the default 30s
@@ -49,20 +53,35 @@ test('TB-SAVE-02: Autosave reflects a running stroke count', { tag: '@positive' 
   expect(secondCount).toBeGreaterThan(firstCount);
 });
 
-test('TB-SAVE-03: A failed autosave shows an explicit error, not a false success', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
-  test.setTimeout(45000); // needs the full ~15s countdown window to observe the (non-)outcome
-  // Real autosave endpoint confirmed live: POST **/serve/wb/delta.
-  const tb = new ToolbarPage(page);
-  await page.route('**/serve/wb/delta', (route) => route.fulfill({ status: 500, body: '{}' }));
+test(
+  'TB-SAVE-03: A failed autosave shows an explicit error, not a false success',
+  { tag: ['@cross-cutting', '@bug'] },
+  async ({ page }) => {
+    test.setTimeout(45000); // needs the full ~15s countdown window to observe the (non-)outcome
+    // Real autosave endpoint confirmed live: POST **/serve/wb/delta.
+    const tb = new ToolbarPage(page);
+    await page.route('**/serve/wb/delta', (route) => route.fulfill({ status: 500, body: '{}' }));
 
-  await tb.penStroke({ x: 300, y: 300 }, { x: 500, y: 400 });
-  await expect(tb.savingToast).toBeVisible({ timeout: 3000 });
-  await page.waitForTimeout(15000);
+    await tb.penStroke({ x: 300, y: 300 }, { x: 500, y: 400 });
+    await expect(tb.savingToast).toBeVisible({ timeout: 3000 });
+    await page.waitForTimeout(15000);
 
-  const savedToastShown = await tb.savedToast.isVisible().catch(() => false);
-  const errorShown = await page.getByText(/error|failed|not saved|try again/i).isVisible().catch(() => false);
-  console.log('"Whiteboard Saved!" shown despite the save request failing:', savedToastShown, '| error indicator shown:', errorShown);
+    const savedToastShown = await tb.savedToast.isVisible().catch(() => false);
+    const errorShown = await page
+      .getByText(/error|failed|not saved|try again/i)
+      .isVisible()
+      .catch(() => false);
+    console.log(
+      '"Whiteboard Saved!" shown despite the save request failing:',
+      savedToastShown,
+      '| error indicator shown:',
+      errorShown
+    );
 
-  test.fail(savedToastShown && !errorShown, 'A failed autosave request still shows the confident "Whiteboard Saved!" success toast, with no error indicator');
-  expect(savedToastShown && !errorShown).toBe(false);
-});
+    test.fail(
+      savedToastShown && !errorShown,
+      'A failed autosave request still shows the confident "Whiteboard Saved!" success toast, with no error indicator'
+    );
+    expect(savedToastShown && !errorShown).toBe(false);
+  }
+);

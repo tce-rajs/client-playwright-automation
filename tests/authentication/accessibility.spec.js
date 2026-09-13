@@ -17,7 +17,9 @@ test('A11Y-01: Full keyboard-only navigation through the modal', { tag: ['@ui-st
     await page.keyboard.press('Tab');
     const info = await page.evaluate(() => {
       const el = document.activeElement;
-      return el ? { tag: el.tagName, qaId: el.getAttribute('data-qa-id'), text: (el.textContent || '').trim().slice(0, 30) } : null;
+      return el
+        ? { tag: el.tagName, qaId: el.getAttribute('data-qa-id'), text: (el.textContent || '').trim().slice(0, 30) }
+        : null;
     });
     focusedSequence.push(info);
   }
@@ -31,7 +33,10 @@ test('A11Y-01: Full keyboard-only navigation through the modal', { tag: ['@ui-st
   // that gap is real and already tracked there. This test's own bar is
   // "reaches every field, the switch-method link, and Terms/Privacy links".
   expect(reachedPinBox).toBe(true);
-  test.fail(!reachedPasswordLink, 'The "Sign in with Password" link is unreachable via Tab (no href/tabindex) — see PIN-12');
+  test.fail(
+    !reachedPasswordLink,
+    'The "Sign in with Password" link is unreachable via Tab (no href/tabindex) — see PIN-12'
+  );
   expect(reachedPasswordLink).toBe(true);
 });
 
@@ -47,7 +52,10 @@ test('A11Y-02: Screen reader announces the error banner', { tag: ['@ui-state', '
 
   // FINDING (verified, not assumed): check what's actually there.
   const hasAnnouncementSemantics = ariaLive !== null || role === 'alert' || role === 'status';
-  test.fail(!hasAnnouncementSemantics, 'Error banner has no aria-live/role=alert — a screen reader would not announce it automatically');
+  test.fail(
+    !hasAnnouncementSemantics,
+    'Error banner has no aria-live/role=alert — a screen reader would not announce it automatically'
+  );
   expect(hasAnnouncementSemantics).toBe(true);
 });
 
@@ -126,7 +134,9 @@ test('A11Y-05: Interactive icons have accessible names', { tag: ['@ui-state', '@
 
   const missingNames = [];
   for (const [label, locator] of Object.entries(icons)) {
-    const accessibleName = await locator.evaluate((el) => (el.getAttribute('aria-label') || el.getAttribute('title') || el.textContent || '').trim());
+    const accessibleName = await locator.evaluate((el) =>
+      (el.getAttribute('aria-label') || el.getAttribute('title') || el.textContent || '').trim()
+    );
     console.log(`${label} accessible name:`, JSON.stringify(accessibleName));
     if (!accessibleName) missingNames.push(label);
   }

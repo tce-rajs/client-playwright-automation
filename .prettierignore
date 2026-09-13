@@ -1,0 +1,8 @@
+node_modules/
+playwright-report/
+playwright-report-archive/
+test-results/
+blob-report/
+playwright/.cache/
+.agents/
+CEP_TestCases/

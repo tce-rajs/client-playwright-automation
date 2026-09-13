@@ -78,32 +78,40 @@ test('TB-TXT-03: Selecting existing text opens a rich formatting panel', { tag: 
   await expect(tb.textMenuAlignRightBtn).toBeVisible();
 });
 
-test('TB-TXT-04: The text panel offers a full color palette plus a gradient picker', { tag: '@ui-state' }, async ({ page }) => {
-  const tb = new ToolbarPage(page);
-  await placeText(tb, page, at(700, 350), 'QA Color Test');
-  await tb.selectTool('gtSelect');
-  const box = await tb.wbSvg.boundingBox();
-  await page.mouse.click(box.x + at(720, 360).x, box.y + at(720, 360).y);
-  await page.waitForTimeout(1000);
+test(
+  'TB-TXT-04: The text panel offers a full color palette plus a gradient picker',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const tb = new ToolbarPage(page);
+    await placeText(tb, page, at(700, 350), 'QA Color Test');
+    await tb.selectTool('gtSelect');
+    const box = await tb.wbSvg.boundingBox();
+    await page.mouse.click(box.x + at(720, 360).x, box.y + at(720, 360).y);
+    await page.waitForTimeout(1000);
 
-  const swatchCount = await tb.textMenuColorSwatches.count();
-  console.log('Text color swatch count:', swatchCount);
-  expect(swatchCount).toBeGreaterThan(10);
-});
+    const swatchCount = await tb.textMenuColorSwatches.count();
+    console.log('Text color swatch count:', swatchCount);
+    expect(swatchCount).toBeGreaterThan(10);
+  }
+);
 
-test('TB-TXT-05: Text objects support To Front / To Back / Duplicate / Delete', { tag: '@positive' }, async ({ page }) => {
-  const tb = new ToolbarPage(page);
-  await placeText(tb, page, at(300, 550), 'QA Actions Test');
-  await tb.selectTool('gtSelect');
-  const box = await tb.wbSvg.boundingBox();
-  await page.mouse.click(box.x + at(320, 560).x, box.y + at(320, 560).y);
-  await page.waitForTimeout(1000);
+test(
+  'TB-TXT-05: Text objects support To Front / To Back / Duplicate / Delete',
+  { tag: '@positive' },
+  async ({ page }) => {
+    const tb = new ToolbarPage(page);
+    await placeText(tb, page, at(300, 550), 'QA Actions Test');
+    await tb.selectTool('gtSelect');
+    const box = await tb.wbSvg.boundingBox();
+    await page.mouse.click(box.x + at(320, 560).x, box.y + at(320, 560).y);
+    await page.waitForTimeout(1000);
 
-  await expect(tb.textMenuToFrontBtn).toBeVisible();
-  await expect(tb.textMenuToBackBtn).toBeVisible();
-  await expect(tb.textMenuDuplicateBtn).toBeVisible();
-  await expect(tb.textMenuDeleteBtn).toBeVisible();
-});
+    await expect(tb.textMenuToFrontBtn).toBeVisible();
+    await expect(tb.textMenuToBackBtn).toBeVisible();
+    await expect(tb.textMenuDuplicateBtn).toBeVisible();
+    await expect(tb.textMenuDeleteBtn).toBeVisible();
+  }
+);
 
 test('TB-TXT-06: Delete on a text object removes it cleanly', { tag: '@positive' }, async ({ page }) => {
   const tb = new ToolbarPage(page);

@@ -12,7 +12,8 @@ class ArchiveReadmeReporter {
 
   onEnd() {
     if (!this.outputFolder) return;
-    const readme = `# Archived test report\n\n` +
+    const readme =
+      `# Archived test report\n\n` +
       `This is a saved copy of one run's HTML report -- it is never\n` +
       `overwritten by later runs (see playwright.config.js).\n\n` +
       `## How to open it\n\n` +

@@ -31,7 +31,10 @@ class MinimapPage {
     const alreadyVisible = await this.container.evaluate((el) => el.classList.contains('visible')).catch(() => false);
     if (alreadyVisible) return true;
     await this.toolbar.openToolPanel('gtZoom');
-    const clicked = await this.zoomMinimapBtn.click({ force: true, timeout: 5000 }).then(() => true).catch(() => false);
+    const clicked = await this.zoomMinimapBtn
+      .click({ force: true, timeout: 5000 })
+      .then(() => true)
+      .catch(() => false);
     await this.page.waitForTimeout(700);
     return clicked;
   }

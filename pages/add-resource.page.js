@@ -132,7 +132,9 @@ class AddResourcePage {
       }
       await this.addResourcesTrigger.click({ force: true });
       await this.page.waitForTimeout(900);
-      const clickable = await actionLocator.evaluate((el) => getComputedStyle(el).pointerEvents !== 'none').catch(() => false);
+      const clickable = await actionLocator
+        .evaluate((el) => getComputedStyle(el).pointerEvents !== 'none')
+        .catch(() => false);
       if (clickable) return { reloadNeeded: attempt > 0 };
       await this.addResourcesTrigger.click({ force: true }).catch(() => {}); // close before reload/retry
       await this.page.waitForTimeout(400);

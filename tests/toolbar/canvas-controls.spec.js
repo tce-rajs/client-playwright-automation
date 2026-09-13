@@ -29,14 +29,21 @@ test('TB-ZOOM-01: The zoom control changes the canvas zoom level', { tag: '@posi
   await expect(tb.zoomSlider).toHaveAttribute('aria-valuetext', '100');
 });
 
-test('TB-TOGGLE-01: The toolbar-position toggle moves the toolbar to the opposite side of the screen', { tag: ['@positive', '@bug'] }, async ({ page }) => {
-  const tb = new ToolbarPage(page);
-  const sideClassBefore = (await tb.container.getAttribute('class')) || '';
-  console.log('Toolbar container class before:', sideClassBefore);
+test(
+  'TB-TOGGLE-01: The toolbar-position toggle moves the toolbar to the opposite side of the screen',
+  { tag: ['@positive', '@bug'] },
+  async ({ page }) => {
+    const tb = new ToolbarPage(page);
+    const sideClassBefore = (await tb.container.getAttribute('class')) || '';
+    console.log('Toolbar container class before:', sideClassBefore);
 
-  // No confirmed data-qa-id or selector for this toggle exists (neither
-  // this pass's own live search nor a Cypress reference project's e2e
-  // suite -- which explicitly skipped its own equivalent case -- found one).
-  test.fail(true, 'No confirmed selector exists for the toolbar-position toggle control (also unresolved in a Cypress reference project\'s own test suite)');
-  expect(true).toBe(false);
-});
+    // No confirmed data-qa-id or selector for this toggle exists (neither
+    // this pass's own live search nor a Cypress reference project's e2e
+    // suite -- which explicitly skipped its own equivalent case -- found one).
+    test.fail(
+      true,
+      "No confirmed selector exists for the toolbar-position toggle control (also unresolved in a Cypress reference project's own test suite)"
+    );
+    expect(true).toBe(false);
+  }
+);
