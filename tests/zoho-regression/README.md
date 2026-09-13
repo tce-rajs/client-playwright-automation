@@ -24,7 +24,7 @@ Teach Mode) and are not counted below.
 | Compass (AfL Reports) | [compass-afl-reports.spec.js](./compass-afl-reports.spec.js) | 17 | 3 | 0 | 17 |
 | Core UI | [core-ui.spec.js](./core-ui.spec.js) | 2 | 0 | 2 | 0 |
 | Drop It | [drop-it.spec.js](./drop-it.spec.js) | 3 | 2 | 3 | 0 |
-| Grade / Subject / Division | [grade-subject-division.spec.js](./grade-subject-division.spec.js) | 17 | 3 | 5 | 12 |
+| Grade / Subject / Division | [grade-subject-division.spec.js](./grade-subject-division.spec.js) | 17 | 3 | 6 | 11 |
 | Magnet (entry point -> Attendance/Homework/Notices/Learning Shorts) | [magnet.spec.js](./magnet.spec.js) | 26 | 0 | 10 | 16 |
 | Ops / Infra (non-UI) | [ops-infra.spec.js](./ops-infra.spec.js) | 26 | 3 | 12 | 14 |
 | Players (Checkpoint) | [players-checkpoint.spec.js](./players-checkpoint.spec.js) | 78 | 3 | 3 | 75 |
@@ -39,4 +39,4 @@ Teach Mode) and are not counted below.
 | Unclassified / Needs Review | [unclassified.spec.js](./unclassified.spec.js) | 21 | 8 | 8 | 13 |
 | User Profile | [user-profile.spec.js](./user-profile.spec.js) | 4 | 0 | 1 | 3 |
 | Whiteboard | [whiteboard.spec.js](./whiteboard.spec.js) | 54 | 9 | 38 | 16 |
-| **Total** | | **620** | **64** | **331** | **289** |
+| **Total** | | **620** | **64** | **332** | **288** |

@@ -973,7 +973,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Grade / Subject / Division.',
+    notes: "NOT AUTOMATED: same \"no Case Study/CBA content confirmed anywhere in this account\" gap already established this session for Players Worksheet's TCN-I16307 -- checked live at two locations, no CBA content found, and no combo in config/moduleClassMap.js has ever recorded it.",
   },
   {
     id: 'CWR-I355',
@@ -1288,7 +1288,7 @@ const TEACH_MODE_BUGS = [
     priority: 'Highest',
     status: 'To do',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Grade / Subject / Division.',
+    notes: 'NOT AUTOMATED: names a specific different school ("G. S. Residential School, Sasaram") not this project\'s confirmed QA account/school -- content availability is account-scoped, not reproducible here.',
   },
   {
     id: 'TCN-I17046',
@@ -1342,7 +1342,7 @@ const TEACH_MODE_BUGS = [
     priority: 'High',
     status: 'QA  Sign off/Closed',
     matchedTestId: null,
-    notes: 'Reassigned from Authentication/Sign-In (mis-tagged in the original import) to Grade / Subject / Division.',
+    notes: 'NOT AUTOMATED: repro names a different PIN ("PIN-40004") than this project\'s confirmed VALID_PIN/VALID_PIN_2, and no "Add Chapter"/create-custom-chapter selector exists anywhere in this suite\'s page objects -- would need dedicated exploration to build first.',
   },
   {
     id: 'CWR-I689',
@@ -5101,8 +5101,8 @@ const TEACH_MODE_BUGS = [
     title: 'Chapters panel appears automatically during session without user interaction',
     priority: 'Medium',
     status: 'To do',
-    matchedTestId: null,
-    notes: 'Reassigned from Unclassified/Needs Review to Grade / Subject / Division.',
+    matchedTestId: 'TCN-I15343 (tests/zoho-regression/grade-subject-division.spec.js)',
+    notes: 'RESULT (2026-09-13, live): FIXED -- observed normal session activity (opening/closing the class popup) and the Chapters panel/items never appeared as a side effect.',
   },
   {
     id: 'TCN-I15345',

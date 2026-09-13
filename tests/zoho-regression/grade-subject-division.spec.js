@@ -191,3 +191,33 @@ test(
   }
 );
 
+test(
+  'TCN-I15343: The Chapters panel does not open automatically without the user clicking it',
+  { tag: '@historical-regression' },
+  async ({ page }) => {
+    // Zoho TCN-I15343 -- the "Chapters" panel opens automatically during a session without the
+    // user clicking on it, interrupting the session.
+    const nav = new NavigationPage(page);
+    // Observe normal session activity (a real navigation action, not touching Chapters at all)
+    // and confirm the Chapters popup does not appear as an unrelated side effect.
+    await nav.currentClassBtn.click({ force: true });
+    await page.waitForTimeout(800);
+    await nav.currentClassBtn.click({ force: true }); // close it again
+    await page.waitForTimeout(1500);
+    const chaptersPopupVisible = await page
+      .locator('[data-qa-id="playlist-nav-toggle-chapter-tp-popup"]')
+      .locator('xpath=following::*[contains(@class,"chapter") or contains(@class,"Chapter")]')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    const chapterItemsVisible = await nav.chapterItems.first().isVisible({ timeout: 3000 }).catch(() => false);
+    console.log('Chapters popup/items visible without ever clicking the Chapters control:', chaptersPopupVisible || chapterItemsVisible);
+
+    test.fail(
+      chaptersPopupVisible || chapterItemsVisible,
+      'CONFIRMED (matches Zoho TCN-I15343): the Chapters panel opened automatically without the user clicking it'
+    );
+    expect(chaptersPopupVisible || chapterItemsVisible).toBe(false);
+  }
+);
+
