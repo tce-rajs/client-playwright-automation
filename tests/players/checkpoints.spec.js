@@ -3,6 +3,27 @@
 // project): Class 8R Mathematics, Chapter "Foundation Checkpoint", Topic 0
 // -- resource card "testR-25.08.26".
 //
+// Traceability to CEP_TestCases/Players_Module_Test_Cases_Final.xlsx's
+// "Checkpoints Player" section (12 rows, PLR-CHK-01..12):
+//   - PLR-CHK-04..12 (9 rows) are covered below by the matching-numbered
+//     PLR-CHK-04..12 tests, added in a later workbook-driven pass.
+//   - PLR-CHK-01/02/03 ("Checkpoints List shows all checkpoints for the
+//     current topic" / "Checkpoint Details shows a full assessment summary
+//     and resume control" / "Offline flow allows conducting a Checkpoint
+//     without live connectivity") remain genuinely unautomated -- a real
+//     gap, not just a naming mismatch (checked against every test in this
+//     file: none of them exercises the checkpoints LIST view, the
+//     Details/summary screen, or the offline-mode flow specifically).
+//   - PLR-CKP-FND-01..07 below are a separate, earlier pass written before
+//     the workbook rows above existed as a checked source -- they cover
+//     real, distinct ground (which screen `openCheckpoint()` lands on, the
+//     roster's Start control, the timer-hide UI bug, concept tags, the
+//     close-during-active-test Lock flow) but were never meant to number
+//     against PLR-CHK's own rows. Renamed from the original "PLR-CKP-01..07"
+//     (which visually collided with, but never actually covered, workbook
+//     rows PLR-CHK-01..07) to make that explicit -- see the audit ledger's
+//     AUD-10.
+//
 // CONFIRMED LIVE (2026-09-06): this shared resource's status changes as a
 // direct result of testing it (CREATED -> PAUSED -> LAUNCHED observed
 // across this pass alone), and which screen a click lands on depends on
@@ -76,7 +97,7 @@ async function reachRosterScreen(page, plr) {
 }
 
 test(
-  'PLR-CKP-01: Opening a Checkpoint resource shows a real, recognized screen',
+  'PLR-CKP-FND-01: Opening a Checkpoint resource shows a real, recognized screen',
   { tag: '@positive' },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -101,7 +122,7 @@ test(
 );
 
 test(
-  'PLR-CKP-02: Reaching the roster screen works from whichever state the resource is currently in',
+  'PLR-CKP-FND-02: Reaching the roster screen works from whichever state the resource is currently in',
   { tag: '@ui-state' },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -113,7 +134,7 @@ test(
 );
 
 test(
-  'PLR-CKP-03: The roster screen has a way to actually Start the checkpoint',
+  'PLR-CKP-FND-03: The roster screen has a way to actually Start the checkpoint',
   { tag: '@positive' },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -131,19 +152,23 @@ test(
   }
 );
 
-test('PLR-CKP-04: The roster screen shows a timer and the student roster', { tag: '@positive' }, async ({ page }) => {
-  const plr = new PlayerPage(page);
-  await openCheckpoint(page, plr);
-  await reachRosterScreen(page, plr);
+test(
+  'PLR-CKP-FND-04: The roster screen shows a timer and the student roster',
+  { tag: '@positive' },
+  async ({ page }) => {
+    const plr = new PlayerPage(page);
+    await openCheckpoint(page, plr);
+    await reachRosterScreen(page, plr);
 
-  const timerVisible = await plr.checkpointTimerBadge.isVisible().catch(() => false);
-  const studentCount = await plr.checkpointStudentRows.count();
-  console.log('Timer badge visible:', timerVisible, '| student rows:', studentCount);
-  expect(timerVisible).toBe(true);
-  expect(studentCount).toBeGreaterThan(0);
-});
+    const timerVisible = await plr.checkpointTimerBadge.isVisible().catch(() => false);
+    const studentCount = await plr.checkpointStudentRows.count();
+    console.log('Timer badge visible:', timerVisible, '| student rows:', studentCount);
+    expect(timerVisible).toBe(true);
+    expect(studentCount).toBeGreaterThan(0);
+  }
+);
 
-test('PLR-CKP-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
+test('PLR-CKP-FND-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -167,7 +192,7 @@ test('PLR-CKP-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }
   expect(hideBtnVisibleAfter).toBe(true);
 });
 
-test('PLR-CKP-06: Concept coverage tags are shown for the assessment', { tag: '@positive' }, async ({ page }) => {
+test('PLR-CKP-FND-06: Concept coverage tags are shown for the assessment', { tag: '@positive' }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -182,7 +207,7 @@ test('PLR-CKP-06: Concept coverage tags are shown for the assessment', { tag: '@
 });
 
 test(
-  'PLR-CKP-07: Closing while the test is active asks to Lock it first, instead of silently closing',
+  'PLR-CKP-FND-07: Closing while the test is active asks to Lock it first, instead of silently closing',
   { tag: ['@ui-state', '@bug'] },
   async ({ page }) => {
     const plr = new PlayerPage(page);

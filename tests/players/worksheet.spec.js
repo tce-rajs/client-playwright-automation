@@ -1,8 +1,9 @@
 // Worksheet Player -- CEP_TestCases/Players_Module_Test_Cases_Final.xlsx,
 // "Worksheet Player" section (28 rows: PLR-WS-01..23, PLR-EXP-SEC-07,
-// PLR-EXP-03 (Worksheet variant -- collides with the Video section's own
-// PLR-EXP-03), PLR-EXP-04 (Worksheet variant -- collides with the Code
-// Editor section's own PLR-EXP-04), PLR-EXP-05, PLR-EXP-21).
+// PLR-EXP-03, PLR-EXP-29, PLR-EXP-05, PLR-EXP-21). PLR-EXP-29 was
+// renumbered from a workbook ID collision (originally PLR-EXP-04,
+// duplicating the Code Editor section's own row of that ID) -- see the
+// audit ledger's AUD-09.
 //
 // Confirmed location (cross-checked against automation-cep-cypress's own
 // moduleClassMap.json "computerScienceProject" entry): Class 12A Computer
@@ -327,9 +328,9 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     await openWorksheet(page, plr);
-    const dataQaIdCount = await page.locator('.previous-item [data-qa-id], .pagination-next [data-qa-id]').count();
+    const dataQaIdCount = page.locator('.previous-item [data-qa-id], .pagination-next [data-qa-id]');
     console.log('data-qa-id attributes found on the Prev/Next chrome (expected 0):', dataQaIdCount);
-    expect(dataQaIdCount).toBe(0);
+    await expect(dataQaIdCount).toHaveCount(0);
   }
 );
 
@@ -458,7 +459,7 @@ test(
 );
 
 test(
-  'PLR-EXP-04 (Worksheet variant): clicking Next on the last page does not wrap to page 1 or error',
+  'PLR-EXP-29 (Worksheet variant): clicking Next on the last page does not wrap to page 1 or error',
   { tag: ['@negative', '@bug'] },
   async ({ page }) => {
     const plr = new PlayerPage(page);

@@ -1,8 +1,8 @@
 // Video Player -- CEP_TestCases/Players_Module_Test_Cases_Final.xlsx,
 // "Video Player" section (22 rows: PLR-VID-01..18, PLR-EXP-SEC-01,
-// PLR-EXP-02 (Video variant -- collides with the Quiz section's own
-// PLR-EXP-02), PLR-EXP-03 (Video variant -- collides with the Worksheet
-// section's own PLR-EXP-03), PLR-EXP-20).
+// PLR-EXP-02, PLR-EXP-28, PLR-EXP-20). PLR-EXP-28 was renumbered from a
+// workbook ID collision (originally PLR-EXP-03, duplicating the Worksheet
+// section's own row of that ID) -- see the audit ledger's AUD-09.
 //
 // Confirmed location (cross-checked against automation-cep-cypress's own
 // moduleClassMap.json "computerScienceProject" entry): Class 12A Computer
@@ -482,7 +482,7 @@ test(
 );
 
 test(
-  "PLR-EXP-03 (Video variant): pausing (not closing) then closing and reopening the same video is checked against PLR-VID-08's resume question",
+  "PLR-EXP-28 (Video variant): pausing (not closing) then closing and reopening the same video is checked against PLR-VID-08's resume question",
   { tag: ['@negative', '@bug'] },
   async ({ page }) => {
     const plr = new PlayerPage(page);
