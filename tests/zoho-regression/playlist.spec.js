@@ -64,7 +64,12 @@ test.describe('Playlist -- generic checks', () => {
 
       const finishBox = await finishBtn.boundingBox();
       const pinBox = await pl.pinBtn.boundingBox().catch(() => null);
-      console.log('Finish Editing box:', finishBox, '| Pin box:', pinBox);
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Finish Editing box:', finishBox, '| Pin box:', pinBox].join(' '),
+        });
       const overlaps =
         finishBox &&
         pinBox &&
@@ -100,7 +105,15 @@ test.describe('Playlist -- generic checks', () => {
         .first()
         .isVisible({ timeout: 3000 })
         .catch(() => false);
-      console.log('Finish Editing control visible:', finishVisible, '| a remove control visible:', removeBtnVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Finish Editing control visible:',
+          finishVisible,
+          '| a remove control visible:',
+          removeBtnVisible,
+        ].join(' '),
+      });
 
       test.fail(
         !finishVisible && !removeBtnVisible,
@@ -131,7 +144,13 @@ test.describe('Playlist -- generic checks', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log('Dropdown still open (Subject options visible) right after selecting a Grade:', stillOpenAfterGrade);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Dropdown still open (Subject options visible) right after selecting a Grade:',
+          stillOpenAfterGrade,
+        ].join(' '),
+      });
 
       test.fail(
         !stillOpenAfterGrade,
@@ -184,7 +203,12 @@ test.describe('Playlist -- generic checks', () => {
         .catch(() => false);
       await ar.submitBtn.click({ force: true });
       const successVisible = await toastPromise;
-      console.log('Success message shown after Submit:', successVisible);
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Success message shown after Submit:', successVisible].join(' '),
+        });
 
       test.fail(!successVisible, 'CONFIRMED (matches Zoho CWR-I731): no success message shown after adding a resource');
       expect(successVisible).toBe(true);
@@ -208,7 +232,10 @@ test.describe('Playlist -- generic checks', () => {
       }
       await plr.openResourceCard(pl.resourceCards.first());
       await page.waitForTimeout(2000);
-      const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 8000 }).catch(() => false);
+      const closeIconVisible = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 8000 })
+        .catch(() => false);
       test.fail(
         !closeIconVisible,
         'The opened asset never actually rendered (no close icon found) this pass -- cannot test its position'
@@ -221,7 +248,9 @@ test.describe('Playlist -- generic checks', () => {
       // for "the asset has a real, sane on-screen position" (a real box with real size, not a
       // degenerate 0-size element from an overly-broad CSS guess).
       const box = await plr.closeIcon.first().boundingBox();
-      console.log("Opened asset's close-icon bounding box:", box);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ["Opened asset's close-icon bounding box:", box].join(' ') });
       const sane = box && box.width > 0 && box.height > 0 && box.x >= 0 && box.y >= 0;
       test.fail(!sane, 'CONFIRMED-adjacent: the opened asset has no sane on-screen position this pass');
       expect(sane).toBeTruthy();
@@ -271,9 +300,15 @@ test.describe('Playlist -- generic checks', () => {
         return;
       }
       const dropitStillVisible = await ar.dropitCloseBtn.isVisible({ timeout: 2000 }).catch(() => false);
-      console.log('Drop It window still visible after auto sign-out:', dropitStillVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Drop It window still visible after auto sign-out:', dropitStillVisible].join(' '),
+      });
 
-      test.fail(dropitStillVisible, 'CONFIRMED (matches Zoho CWR-I525): the Drop It window remains open after auto sign-out');
+      test.fail(
+        dropitStillVisible,
+        'CONFIRMED (matches Zoho CWR-I525): the Drop It window remains open after auto sign-out'
+      );
       expect(dropitStillVisible).toBe(false);
     }
   );
@@ -302,7 +337,10 @@ test.describe('Playlist -- generic checks', () => {
         const style = getComputedStyle(el);
         return style.wordBreak === 'break-all' || style.overflowWrap === 'anywhere';
       });
-      console.log('Resource title CSS allows mid-word breaks:', breaksMidWord);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Resource title CSS allows mid-word breaks:', breaksMidWord].join(' '),
+      });
 
       test.fail(
         breaksMidWord,
@@ -376,15 +414,21 @@ test.describe('Playlist -- generic checks', () => {
           .getByText(/something went wrong|try again|unable to/i)
           .isVisible({ timeout: 2000 })
           .catch(() => false));
-      console.log(
-        'Intercepted an AI-related request:',
-        intercepted,
-        '| raw "503"/"Service Unavailable" text shown:',
-        rawErrorVisible,
-        '| a graceful error shown instead:',
-        gracefulErrorVisible
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Intercepted an AI-related request:',
+          intercepted,
+          '| raw "503"/"Service Unavailable" text shown:',
+          rawErrorVisible,
+          '| a graceful error shown instead:',
+          gracefulErrorVisible,
+        ].join(' '),
+      });
+      test.fail(
+        !intercepted,
+        'No AI-related request matched the interception pattern this pass -- could not force the 503 path'
       );
-      test.fail(!intercepted, 'No AI-related request matched the interception pattern this pass -- could not force the 503 path');
       if (!intercepted) {
         expect(intercepted).toBe(true);
         return;
@@ -475,7 +519,12 @@ test.describe('Playlist -- generic checks', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log('Card still shows OLD title after rename:', stillShowsOld, '| shows NEW title:', showsNew);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Card still shows OLD title after rename:', stillShowsOld, '| shows NEW title:', showsNew].join(
+          ' '
+        ),
+      });
 
       test.fail(
         stillShowsOld || !showsNew,
@@ -492,7 +541,7 @@ test.describe('Playlist -- generic checks', () => {
       // Zoho TCN-I17050 (Playlist, Status: Reopened as of the 2026-09-13 export).
       const pl = new PlaylistPage(page);
       const count = await pl.resourceCards.count();
-      console.log('Playlist resource cards loaded:', count);
+      test.info().annotations.push({ type: 'note', description: ['Playlist resource cards loaded:', count].join(' ') });
       test.fail(count === 0, 'CONFIRMED (matches Zoho TCN-I17050): unable to load any Playlist content');
       expect(count).toBeGreaterThan(0);
     }
@@ -551,7 +600,10 @@ test.describe('Playlist -- confirmed-location checks', () => {
         return;
       }
 
-      const opened = await plr.closeIcon.first().isVisible({ timeout: 8000 }).catch(() => false);
+      const opened = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 8000 })
+        .catch(() => false);
       test.fail(!opened, 'Video player never actually opened this pass (no close icon) -- cannot test label position');
       if (!opened) {
         expect(opened).toBe(true);
@@ -562,8 +614,14 @@ test.describe('Playlist -- confirmed-location checks', () => {
         .first()
         .boundingBox()
         .catch(() => null);
-      const playToggleBox = await plr.videoPlayToggle.first().boundingBox().catch(() => null);
-      console.log('Video player box:', playerBox, '| Play/Pause control box:', playToggleBox);
+      const playToggleBox = await plr.videoPlayToggle
+        .first()
+        .boundingBox()
+        .catch(() => null);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Video player box:', playerBox, '| Play/Pause control box:', playToggleBox].join(' '),
+      });
       test.fail(
         !playerBox || !playToggleBox,
         'Could not locate the video player and/or its Play/Pause control this pass -- cannot test label position'
@@ -600,12 +658,15 @@ test.describe('Playlist -- confirmed-location checks', () => {
       await page.waitForTimeout(1000);
       const titlesB = await pl.resourceCards.allTextContents();
 
-      console.log(
-        'Resource titles at location A:',
-        JSON.stringify(titlesA),
-        '| after switching to location B:',
-        JSON.stringify(titlesB)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Resource titles at location A:',
+          JSON.stringify(titlesA),
+          '| after switching to location B:',
+          JSON.stringify(titlesB),
+        ].join(' '),
+      });
       const identical = JSON.stringify(titlesA) === JSON.stringify(titlesB) && titlesA.length > 0;
 
       test.fail(
@@ -646,14 +707,24 @@ test.describe('Playlist -- confirmed-location checks', () => {
         expect(crashed).toBe(false);
         return;
       }
-      const opened = await plr.closeIcon.first().isVisible({ timeout: 8000 }).catch(() => false);
-      test.fail(!opened, 'Video player never actually opened this pass (no close icon) -- cannot test its rendered size');
+      const opened = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 8000 })
+        .catch(() => false);
+      test.fail(
+        !opened,
+        'Video player never actually opened this pass (no close icon) -- cannot test its rendered size'
+      );
       if (!opened) {
         expect(opened).toBe(true);
         return;
       }
-      const box = await page.locator('.video-js, .vjs-tech, video, iframe').first().boundingBox().catch(() => null);
-      console.log('Video player box:', box);
+      const box = await page
+        .locator('.video-js, .vjs-tech, video, iframe')
+        .first()
+        .boundingBox()
+        .catch(() => null);
+      test.info().annotations.push({ type: 'note', description: ['Video player box:', box].join(' ') });
       test.fail(!box, 'Could not locate the video player this pass');
       if (!box) {
         expect(box).toBeTruthy();
@@ -662,7 +733,10 @@ test.describe('Playlist -- confirmed-location checks', () => {
       // A "usable" size is a low bar: at least a small fraction of the viewport, not a few pixels.
       const viewport = page.viewportSize() || { width: 1920, height: 1080 };
       const tooSmall = box.width < viewport.width * 0.15 || box.height < viewport.height * 0.15;
-      test.fail(tooSmall, 'CONFIRMED (matches Zoho TCN-I16794): the video player renders far smaller than a usable size');
+      test.fail(
+        tooSmall,
+        'CONFIRMED (matches Zoho TCN-I16794): the video player renders far smaller than a usable size'
+      );
       expect(tooSmall).toBe(false);
     }
   );
@@ -711,7 +785,12 @@ test.describe('Playlist -- confirmed-location checks', () => {
         boxAfter &&
         boxBefore &&
         (Math.abs(boxAfter.width - boxBefore.width) > 5 || Math.abs(boxAfter.height - boxBefore.height) > 5);
-      console.log('Expand icon visible:', expandIconVisible, '| image size changed on click:', sizeChanged);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Expand icon visible:', expandIconVisible, '| image size changed on click:', sizeChanged].join(
+          ' '
+        ),
+      });
 
       test.fail(
         !expandIconVisible && Boolean(sizeChanged),
@@ -751,7 +830,12 @@ test.describe('Playlist -- confirmed-location checks', () => {
       }
       const imgBox = await img.boundingBox();
       const wrapperBox = await plr.imageWrapper.boundingBox().catch(() => null);
-      console.log('Image box:', imgBox, '| wrapper box:', wrapperBox);
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Image box:', imgBox, '| wrapper box:', wrapperBox].join(' '),
+        });
       test.fail(!wrapperBox, 'Could not locate the image wrapper this pass');
       if (!wrapperBox) {
         expect(wrapperBox).toBeTruthy();
@@ -760,7 +844,10 @@ test.describe('Playlist -- confirmed-location checks', () => {
       const imgCenterX = imgBox.x + imgBox.width / 2;
       const wrapperCenterX = wrapperBox.x + wrapperBox.width / 2;
       const offCenter = Math.abs(imgCenterX - wrapperCenterX) > wrapperBox.width * 0.1;
-      test.fail(offCenter, 'CONFIRMED (matches Zoho TCN-I16702): the image is not horizontally centered within its wrapper');
+      test.fail(
+        offCenter,
+        'CONFIRMED (matches Zoho TCN-I16702): the image is not horizontally centered within its wrapper'
+      );
       expect(offCenter).toBe(false);
     }
   );
@@ -791,8 +878,19 @@ test.describe('Playlist -- confirmed-location checks', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      const playerReady = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
-      console.log('Loading spinner still visible after 5s:', spinnerVisible, '| player content ready:', playerReady);
+      const playerReady = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Loading spinner still visible after 5s:',
+          spinnerVisible,
+          '| player content ready:',
+          playerReady,
+        ].join(' '),
+      });
 
       test.fail(
         spinnerVisible && !playerReady,

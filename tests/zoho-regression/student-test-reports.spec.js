@@ -45,11 +45,13 @@ test(
     // TCN-I14979, TCN-I14989, TCN-I14990, TCN-I14992, TCN-I14993, TCN-I14994, TCN-I15537,
     // TCN-I14960, TCN-I14962, TCN-I14978, TCN-I14981, TCN-I14986, TCN-I14987, TCN-I14988,
     // TCN-I14991, TCN-I15393, TCN-I15328.
-    console.log(
-      'BLOCKED: no confirmed "Student Test" teacher-facing entry point exists in this app (per PLR-STU-01/02) -- ' +
-        'needs product/client clarification before any of this module\'s 19 bugs can be automated.'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'BLOCKED: no confirmed "Student Test" teacher-facing entry point exists in this app (per PLR-STU-01/02) -- ' +
+          "needs product/client clarification before any of this module's 19 bugs can be automated.",
+      ].join(' '),
+    });
     expect(true).toBe(true);
   }
 );
-

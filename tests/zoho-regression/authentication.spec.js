@@ -93,12 +93,15 @@ base.test(
       .getByText(/guest mode/i)
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log(
-      'After fully closing and reopening the client -- still shows signed-in avatar:',
-      stillSignedIn,
-      '| Guest Mode visible:',
-      guestModeVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After fully closing and reopening the client -- still shows signed-in avatar:',
+        stillSignedIn,
+        '| Guest Mode visible:',
+        guestModeVisible,
+      ].join(' '),
+    });
     await app2.close().catch(() => {});
 
     base.test.fail(
@@ -123,7 +126,10 @@ test(
       .then(() => true)
       .catch(() => false);
     const text = loaded ? (await nav.currentClassBtn.textContent()).trim() : '';
-    console.log('Grade/Subject button loaded:', loaded, '| text:', JSON.stringify(text));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Grade/Subject button loaded:', loaded, '| text:', JSON.stringify(text)].join(' '),
+    });
 
     test.fail(
       !loaded || text.length === 0,
@@ -155,12 +161,15 @@ test(
       .textContent({ timeout: 5000 })
       .catch(() => '');
     const placeholderStillVisible = /carr\s*\/?\s*arrow/i.test(bodyTextAfter || '');
-    console.log(
-      'Placeholder icon text visible right after navigation:',
-      placeholderTextVisible,
-      '| still visible after settling:',
-      placeholderStillVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Placeholder icon text visible right after navigation:',
+        placeholderTextVisible,
+        '| still visible after settling:',
+        placeholderStillVisible,
+      ].join(' '),
+    });
 
     test.fail(
       placeholderTextVisible || placeholderStillVisible,
@@ -188,7 +197,10 @@ test(
       .getByText(/signed out|logged out|logout successful|you have been signed out/i)
       .isVisible({ timeout: 4000 })
       .catch(() => false);
-    console.log('A logout confirmation message was shown:', confirmationVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A logout confirmation message was shown:', confirmationVisible].join(' '),
+    });
 
     test.fail(
       !confirmationVisible,
@@ -243,7 +255,10 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('An opened asset player is still visible after auto sign-out:', closeIconStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['An opened asset player is still visible after auto sign-out:', closeIconStillVisible].join(' '),
+    });
 
     test.fail(
       closeIconStillVisible,
@@ -280,8 +295,15 @@ test(
     await acc.newPasswordInput.waitFor({ state: 'visible', timeout: 5000 });
     await acc.newPasswordInput.click({ force: true });
     await page.waitForTimeout(1000);
-    const keyboardVisible = await page.locator('.keyboard-wrapper').first().isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Virtual keyboard visible after focusing the New Password field:', keyboardVisible);
+    const keyboardVisible = await page
+      .locator('.keyboard-wrapper')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Virtual keyboard visible after focusing the New Password field:', keyboardVisible].join(' '),
+    });
     await acc.changePasswordCancelBtn.click({ force: true }).catch(() => {});
 
     test.fail(
@@ -316,11 +338,25 @@ test(
     }
     // Wait through the confirmed ~60-120s soft-warning window, then further without interacting.
     await page.waitForTimeout(220000);
-    const pinScreenVisible = await page.locator('[data-qa-id="login-pin-form"]').isVisible({ timeout: 5000 }).catch(() => false);
+    const pinScreenVisible = await page
+      .locator('[data-qa-id="login-pin-form"]')
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
     const attendanceStillVisible = await att.container.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Login PIN screen visible after the long wait:', pinScreenVisible, '| Attendance window still visible:', attendanceStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Login PIN screen visible after the long wait:',
+        pinScreenVisible,
+        '| Attendance window still visible:',
+        attendanceStillVisible,
+      ].join(' '),
+    });
 
-    test.fail(!pinScreenVisible, 'A real hard session timeout (PIN re-login screen) did not occur within this wait -- cannot test the overlap claim');
+    test.fail(
+      !pinScreenVisible,
+      'A real hard session timeout (PIN re-login screen) did not occur within this wait -- cannot test the overlap claim'
+    );
     if (!pinScreenVisible) {
       expect(pinScreenVisible).toBe(true);
       return;
@@ -355,11 +391,28 @@ test(
       await page.waitForTimeout(8000);
       interactionCount++;
     }
-    console.log('Real interactions performed across the ~280s active-usage window:', interactionCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Real interactions performed across the ~280s active-usage window:', interactionCount].join(' '),
+    });
 
-    const pinScreenVisible = await page.locator('[data-qa-id="login-pin-form"]').isVisible({ timeout: 3000 }).catch(() => false);
-    const avatarStillVisible = await page.locator('[data-qa-id="toolbar-user-avatar"]').isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Signed back out to PIN screen after active usage:', pinScreenVisible, '| still signed in (avatar visible):', avatarStillVisible);
+    const pinScreenVisible = await page
+      .locator('[data-qa-id="login-pin-form"]')
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    const avatarStillVisible = await page
+      .locator('[data-qa-id="toolbar-user-avatar"]')
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Signed back out to PIN screen after active usage:',
+        pinScreenVisible,
+        '| still signed in (avatar visible):',
+        avatarStillVisible,
+      ].join(' '),
+    });
 
     const bugReproduces = pinScreenVisible || !avatarStillVisible;
     test.fail(

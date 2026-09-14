@@ -58,9 +58,23 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     await page.waitForTimeout(1500);
-    const stillLoading = await page.getByText(/loading/i).isVisible({ timeout: 3000 }).catch(() => false);
-    const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Still showing a loading state:', stillLoading, '| reader closeIcon (real content signal) visible:', closeIconVisible);
+    const stillLoading = await page
+      .getByText(/loading/i)
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    const closeIconVisible = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Still showing a loading state:',
+        stillLoading,
+        '| reader closeIcon (real content signal) visible:',
+        closeIconVisible,
+      ].join(' '),
+    });
 
     test.fail(
       stillLoading || !closeIconVisible,
@@ -82,13 +96,32 @@ test(
     await openEbook(page, plr);
     await page.waitForTimeout(1500);
     const topicLabel = page.locator('[data-qa-id="playlist-chapter-topic-btn"]').first();
-    const topicColorInfo = await topicLabel.evaluate((el) => {
-      const style = getComputedStyle(el);
-      return { color: style.color, backgroundColor: style.backgroundColor, opacity: style.opacity };
-    }).catch(() => null);
-    const readerBox = await plr.closeIcon.first().locator('xpath=ancestor::*[3]').boundingBox().catch(() => null);
-    const trayBox = await pl.resourceCards.first().boundingBox().catch(() => null);
-    console.log('Topic label style:', JSON.stringify(topicColorInfo), '| reader region box:', JSON.stringify(readerBox), '| resource tray box:', JSON.stringify(trayBox));
+    const topicColorInfo = await topicLabel
+      .evaluate((el) => {
+        const style = getComputedStyle(el);
+        return { color: style.color, backgroundColor: style.backgroundColor, opacity: style.opacity };
+      })
+      .catch(() => null);
+    const readerBox = await plr.closeIcon
+      .first()
+      .locator('xpath=ancestor::*[3]')
+      .boundingBox()
+      .catch(() => null);
+    const trayBox = await pl.resourceCards
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Topic label style:',
+        JSON.stringify(topicColorInfo),
+        '| reader region box:',
+        JSON.stringify(readerBox),
+        '| resource tray box:',
+        JSON.stringify(trayBox),
+      ].join(' '),
+    });
 
     function overlaps(a, b) {
       if (!a || !b) return false;
@@ -98,14 +131,16 @@ test(
     // default design (readable against its own dark toolbar background). The bug's actual claim is
     // that OVERLAP with the eBook/tray causes it to become unreadable -- so overlap is the real
     // condition to check, not text color in isolation.
-    console.log('Topic label style (context only):', JSON.stringify(topicColorInfo));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Topic label style (context only):', JSON.stringify(topicColorInfo)].join(' '),
+    });
     const overlapsTray = overlaps(readerBox, trayBox);
-    console.log('Reader overlaps resource tray:', overlapsTray);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Reader overlaps resource tray:', overlapsTray].join(' ') });
 
-    test.fail(
-      overlapsTray,
-      'CONFIRMED (matches Zoho CWR-I552): the eBook reader overlaps the Resource Tray'
-    );
+    test.fail(overlapsTray, 'CONFIRMED (matches Zoho CWR-I552): the eBook reader overlaps the Resource Tray');
     expect(overlapsTray).toBe(false);
   }
 );

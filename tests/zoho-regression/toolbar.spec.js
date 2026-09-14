@@ -64,8 +64,18 @@ test(
     const box = await tb.wbSvg.boundingBox();
     await page.mouse.click(box.x + 400, box.y + 400);
     await page.waitForTimeout(1000);
-    const keyboardVisible = await page.locator('.keyboard-wrapper').first().isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Virtual keyboard appeared when the toggle is enabled and text is being entered:', keyboardVisible);
+    const keyboardVisible = await page
+      .locator('.keyboard-wrapper')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Virtual keyboard appeared when the toggle is enabled and text is being entered:',
+        keyboardVisible,
+      ].join(' '),
+    });
 
     test.fail(
       !keyboardVisible,
@@ -109,7 +119,11 @@ test(
     await tb.drawStroke({ x: 500, y: 500 }, { x: 650, y: 500 });
     await page.waitForTimeout(500);
 
-    const textBoxVisibleBefore = await tb.wbContainer.locator('.text-input-container').first().isVisible({ timeout: 2000 }).catch(() => false);
+    const textBoxVisibleBefore = await tb.wbContainer
+      .locator('.text-input-container')
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     await tb.openToolPanel('gtErase');
     const clearAnnotationsBtn = tb.eraserClearAnnotationsBtn;
     const clearBtnVisible = await clearAnnotationsBtn.isVisible({ timeout: 3000 }).catch(() => false);
@@ -121,12 +135,22 @@ test(
     await clearAnnotationsBtn.click({ force: true });
     await page.waitForTimeout(1000);
     const pathsAfter = await tb.pathCount();
-    const textBoxVisibleAfter = await tb.wbContainer.locator('.text-input-container').first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      'Text box present before Clear Annotations:', textBoxVisibleBefore,
-      '| pen strokes remaining after:', pathsAfter,
-      '| text box still present after:', textBoxVisibleAfter
-    );
+    const textBoxVisibleAfter = await tb.wbContainer
+      .locator('.text-input-container')
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Text box present before Clear Annotations:',
+        textBoxVisibleBefore,
+        '| pen strokes remaining after:',
+        pathsAfter,
+        '| text box still present after:',
+        textBoxVisibleAfter,
+      ].join(' '),
+    });
 
     test.fail(
       textBoxVisibleBefore && !textBoxVisibleAfter,
@@ -175,10 +199,21 @@ test(
     }
     const thumbBox = await thumb.boundingBox();
     const overflowsContainer =
-      thumbBox && containerBox &&
+      thumbBox &&
+      containerBox &&
       (thumbBox.x < containerBox.x - 2 || thumbBox.x + thumbBox.width > containerBox.x + containerBox.width + 2);
     const clippedByOverflowHidden = await sliderContainer.evaluate((el) => getComputedStyle(el).overflow === 'hidden');
-    console.log('Thumb box:', thumbBox, '| slider container box:', containerBox, '| container clips overflow:', clippedByOverflowHidden);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Thumb box:',
+        thumbBox,
+        '| slider container box:',
+        containerBox,
+        '| container clips overflow:',
+        clippedByOverflowHidden,
+      ].join(' '),
+    });
 
     test.fail(
       Boolean(overflowsContainer && clippedByOverflowHidden),
@@ -208,8 +243,15 @@ test(
       return;
     }
     // A rendered widget (if any is already open on the canvas) shouldn't sit under the panel.
-    const widgetBox = await page.locator('[class*="widget-instance" i], [class*="active-widget" i]').first().boundingBox().catch(() => null);
-    console.log('Widget selection panel box:', panelBox, '| an active widget box (if any):', widgetBox);
+    const widgetBox = await page
+      .locator('[class*="widget-instance" i], [class*="active-widget" i]')
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Widget selection panel box:', panelBox, '| an active widget box (if any):', widgetBox].join(' '),
+    });
     if (!widgetBox) {
       // No widget currently placed to check against -- the panel itself rendering without error
       // is the closest real signal available this pass.
@@ -237,7 +279,10 @@ test(
     await tb.selectTool('gtPen');
     await tb.drawStroke({ x: 200, y: 200 }, { x: 400, y: 300 });
     const after = await tb.pathCount();
-    console.log('Path count before:', before, '| after drawing a Pen stroke:', after);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Path count before:', before, '| after drawing a Pen stroke:', after].join(' '),
+    });
 
     test.fail(after <= before, 'CONFIRMED (matches Zoho TCN-I17047): the Pen tool did not create a new annotation');
     expect(after).toBeGreaterThan(before);
@@ -264,7 +309,15 @@ test(
     await tb.openToolPanel('gtErase');
     const panelVisible = await tb.panel.isVisible({ timeout: 5000 }).catch(() => false);
     const panelBox = panelVisible ? await tb.panel.boundingBox() : null;
-    console.log('Tool options panel visible after moving the toolbar:', panelVisible, '| box:', JSON.stringify(panelBox));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Tool options panel visible after moving the toolbar:',
+        panelVisible,
+        '| box:',
+        JSON.stringify(panelBox),
+      ].join(' '),
+    });
     // Restore original dock position for other tests sharing this board.
     await toggleBtn.click({ force: true }).catch(() => {});
 
@@ -279,7 +332,7 @@ test(
 );
 
 test(
-  "CWR-I299: Other widgets remain clickable after closing one widget",
+  'CWR-I299: Other widgets remain clickable after closing one widget',
   { tag: '@historical-regression' },
   async ({ page }) => {
     // Zoho CWR-I299 -- after closing one widget, other widgets become unclickable.
@@ -288,7 +341,11 @@ test(
     await tb.widgetTool('Ruler').click({ force: true });
     await page.waitForTimeout(1000);
     await tb.closePanelByTappingOutside();
-    const rulerVisible = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 5000 }).catch(() => false);
+    const rulerVisible = await page
+      .getByText(/\d+(\.\d+)?\s*cm/)
+      .first()
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
     test.fail(!rulerVisible, 'Ruler widget did not open this pass');
     if (!rulerVisible) {
       expect(rulerVisible).toBe(true);
@@ -304,8 +361,20 @@ test(
     const clickable = await protractorBtn.isEnabled({ timeout: 3000 }).catch(() => false);
     await protractorBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
-    const protractorOpened = await page.locator('[class*="protractor" i]').first().isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Protractor widget clickable/enabled:', clickable, '| opened after clicking:', protractorOpened);
+    const protractorOpened = await page
+      .locator('[class*="protractor" i]')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Protractor widget clickable/enabled:',
+        clickable,
+        '| opened after clicking:',
+        protractorOpened,
+      ].join(' '),
+    });
 
     test.fail(
       !clickable,
@@ -343,17 +412,34 @@ test(
     const protractorBox = await protractorEl.boundingBox();
     // Check for any scale-number label whose box is clipped/cut off by the protractor's own
     // container overflow.
-    const clippedNumbers = await protractorEl.evaluate((el) => {
-      const style = getComputedStyle(el);
-      if (style.overflow !== 'hidden') return false;
-      const containerBox = el.getBoundingClientRect();
-      const numberEls = [...el.querySelectorAll('text, span, div')].filter((n) => /^\d+°?$/.test((n.textContent || '').trim()));
-      return numberEls.some((n) => {
-        const b = n.getBoundingClientRect();
-        return b.left < containerBox.left || b.right > containerBox.right || b.top < containerBox.top || b.bottom > containerBox.bottom;
-      });
-    }).catch(() => false);
-    console.log('Protractor box:', JSON.stringify(protractorBox), '| any scale-number label clipped:', clippedNumbers);
+    const clippedNumbers = await protractorEl
+      .evaluate((el) => {
+        const style = getComputedStyle(el);
+        if (style.overflow !== 'hidden') return false;
+        const containerBox = el.getBoundingClientRect();
+        const numberEls = [...el.querySelectorAll('text, span, div')].filter((n) =>
+          /^\d+°?$/.test((n.textContent || '').trim())
+        );
+        return numberEls.some((n) => {
+          const b = n.getBoundingClientRect();
+          return (
+            b.left < containerBox.left ||
+            b.right > containerBox.right ||
+            b.top < containerBox.top ||
+            b.bottom > containerBox.bottom
+          );
+        });
+      })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Protractor box:',
+        JSON.stringify(protractorBox),
+        '| any scale-number label clipped:',
+        clippedNumbers,
+      ].join(' '),
+    });
 
     test.fail(
       clippedNumbers,
@@ -373,7 +459,11 @@ test(
     await tb.widgetTool('Ruler').click({ force: true });
     await page.waitForTimeout(1000);
     await tb.closePanelByTappingOutside();
-    const rulerVisible = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 5000 }).catch(() => false);
+    const rulerVisible = await page
+      .getByText(/\d+(\.\d+)?\s*cm/)
+      .first()
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
     test.fail(!rulerVisible, 'Ruler widget did not open this pass');
     if (!rulerVisible) {
       expect(rulerVisible).toBe(true);
@@ -383,7 +473,7 @@ test(
     // "widgetsRuler" (a <div> wrapping the SVG), not a generic "ruler"-containing class.
     const rulerEl = page.locator('.widgetsRuler').first();
     const rulerBox = await rulerEl.boundingBox().catch(() => null);
-    console.log('Ruler box:', JSON.stringify(rulerBox));
+    test.info().annotations.push({ type: 'note', description: ['Ruler box:', JSON.stringify(rulerBox)].join(' ') });
     test.fail(!rulerBox, 'Could not measure the Ruler widget this pass');
     if (!rulerBox) {
       expect(rulerBox).toBeTruthy();
@@ -397,7 +487,12 @@ test(
       { x: rulerBox.x + rulerBox.width + 300, y: rulerBox.y + rulerBox.height / 2 }
     );
     const after = await tb.pathCount();
-    console.log('Path count before draw:', before, '| after:', after);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Path count before draw:', before, '| after:', after].join(' '),
+      });
     test.fail(after <= before, 'Drawing along the ruler did not create a new stroke this pass');
     if (after <= before) {
       expect(after).toBeGreaterThan(before);
@@ -406,7 +501,10 @@ test(
     const strokeBox = await tb.paths.last().boundingBox();
     const rulerRight = rulerBox.x + rulerBox.width;
     const strokeRight = strokeBox.x + strokeBox.width;
-    console.log('Ruler right edge:', rulerRight, '| resulting stroke right edge:', strokeRight);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Ruler right edge:', rulerRight, '| resulting stroke right edge:', strokeRight].join(' '),
+    });
 
     const continuesBeyond = strokeRight > rulerRight + 20; // small tolerance
     test.fail(
@@ -429,17 +527,40 @@ test(
     await expect(tb.panel).toBeVisible({ timeout: 5000 });
     const closeBtnVisible = await tb.widgetCloseBtn.isVisible({ timeout: 3000 }).catch(() => false);
     const disciplineSelectVisible = await tb.widgetDisciplineSelect.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Widget panel close button visible:', closeBtnVisible, '| discipline select (an action control) visible:', disciplineSelectVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Widget panel close button visible:',
+        closeBtnVisible,
+        '| discipline select (an action control) visible:',
+        disciplineSelectVisible,
+      ].join(' '),
+    });
 
     const panelBox = await tb.panel.boundingBox();
-    const firstCardBox = await pl.resourceCards.first().boundingBox().catch(() => null);
+    const firstCardBox = await pl.resourceCards
+      .first()
+      .boundingBox()
+      .catch(() => null);
     let overlaps = false;
     if (panelBox && firstCardBox) {
       overlaps =
-        panelBox.x < firstCardBox.x + firstCardBox.width && panelBox.x + panelBox.width > firstCardBox.x &&
-        panelBox.y < firstCardBox.y + firstCardBox.height && panelBox.y + panelBox.height > firstCardBox.y;
+        panelBox.x < firstCardBox.x + firstCardBox.width &&
+        panelBox.x + panelBox.width > firstCardBox.x &&
+        panelBox.y < firstCardBox.y + firstCardBox.height &&
+        panelBox.y + panelBox.height > firstCardBox.y;
     }
-    console.log('Widget panel box:', JSON.stringify(panelBox), '| first Resource Tray card box:', JSON.stringify(firstCardBox), '| overlaps:', overlaps);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Widget panel box:',
+        JSON.stringify(panelBox),
+        '| first Resource Tray card box:',
+        JSON.stringify(firstCardBox),
+        '| overlaps:',
+        overlaps,
+      ].join(' '),
+    });
 
     const bugReproduces = !closeBtnVisible || !disciplineSelectVisible || overlaps;
     test.fail(
@@ -460,7 +581,11 @@ test(
     await tb.widgetTool('Ruler').click({ force: true });
     await page.waitForTimeout(1000);
     await tb.closePanelByTappingOutside();
-    const rulerVisibleBefore = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 5000 }).catch(() => false);
+    const rulerVisibleBefore = await page
+      .getByText(/\d+(\.\d+)?\s*cm/)
+      .first()
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
     test.fail(!rulerVisibleBefore, 'Ruler widget did not open this pass');
     if (!rulerVisibleBefore) {
       expect(rulerVisibleBefore).toBe(true);
@@ -470,8 +595,19 @@ test(
     await nextTopicBtn.scrollIntoViewIfNeeded().catch(() => {});
     await nextTopicBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1500);
-    const rulerVisibleAfter = await page.getByText(/\d+(\.\d+)?\s*cm/).first().isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Ruler still visible after switching topics:', rulerVisibleAfter, '(expected: false -- a per-topic tool should not bleed into a different topic)');
+    const rulerVisibleAfter = await page
+      .getByText(/\d+(\.\d+)?\s*cm/)
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Ruler still visible after switching topics:',
+        rulerVisibleAfter,
+        '(expected: false -- a per-topic tool should not bleed into a different topic)',
+      ].join(' '),
+    });
 
     test.fail(
       rulerVisibleAfter,
@@ -489,15 +625,21 @@ test(
     // Zoho CWR-I276 -- geography maps are treated/displayed as widgets in the Playlist.
     const pl = new PlaylistPage(page);
     const titles = await pl.resourceCards.allTextContents();
-    console.log('Current Playlist resource card titles:', JSON.stringify(titles));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Current Playlist resource card titles:', JSON.stringify(titles)].join(' '),
+    });
     const widgetLike = titles.filter((t) => /widget|geography map/i.test(t));
-    console.log('Widget/geography-map-like Playlist entries:', JSON.stringify(widgetLike));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Widget/geography-map-like Playlist entries:', JSON.stringify(widgetLike)].join(' '),
+    });
 
     test.fail(
       widgetLike.length > 0,
       `CONFIRMED (matches Zoho CWR-I272/CWR-I276): ${widgetLike.length} widget/geography-map-like entries appear in the Playlist: ${JSON.stringify(widgetLike)}`
     );
-    expect(widgetLike.length).toBe(0);
+    expect(widgetLike).toHaveLength(0);
   }
 );
 
@@ -512,11 +654,33 @@ test(
     await pl.filterEditBtn.click();
     await page.locator('button', { hasText: /finish editing/i }).waitFor({ state: 'visible', timeout: 5000 });
     await pl.resourceCards.first().hover();
-    const removeBtnBox = await pl.resourceRemoveBtn.first().boundingBox().catch(() => null);
-    const navRightBox = await page.locator('[data-qa-id="playlist-nav-topic-right"]').boundingBox().catch(() => null);
-    const navLeftBox = await page.locator('[data-qa-id="playlist-nav-topic-left"]').boundingBox().catch(() => null);
-    console.log('Remove button box:', JSON.stringify(removeBtnBox), '| nav-right box:', JSON.stringify(navRightBox), '| nav-left box:', JSON.stringify(navLeftBox));
-    await page.locator('button', { hasText: /finish editing/i }).click().catch(() => {});
+    const removeBtnBox = await pl.resourceRemoveBtn
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    const navRightBox = await page
+      .locator('[data-qa-id="playlist-nav-topic-right"]')
+      .boundingBox()
+      .catch(() => null);
+    const navLeftBox = await page
+      .locator('[data-qa-id="playlist-nav-topic-left"]')
+      .boundingBox()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Remove button box:',
+        JSON.stringify(removeBtnBox),
+        '| nav-right box:',
+        JSON.stringify(navRightBox),
+        '| nav-left box:',
+        JSON.stringify(navLeftBox),
+      ].join(' '),
+    });
+    await page
+      .locator('button', { hasText: /finish editing/i })
+      .click()
+      .catch(() => {});
 
     function overlaps(a, b) {
       if (!a || !b) return false;
@@ -530,4 +694,3 @@ test(
     expect(anyOverlap).toBe(false);
   }
 );
-

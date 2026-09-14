@@ -67,7 +67,10 @@ test(
       .getByText(/class strength/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Class Strength message visible on this screen:', messageVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class Strength message visible on this screen:', messageVisible].join(' '),
+    });
 
     test.fail(
       !messageVisible,
@@ -94,7 +97,15 @@ test(
     const launchOrClassStrengthVisible =
       (await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
       (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false));
-    console.log('Loading spinner still visible after 6s:', spinnerVisible, '| launch/class-strength screen reached:', launchOrClassStrengthVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Loading spinner still visible after 6s:',
+        spinnerVisible,
+        '| launch/class-strength screen reached:',
+        launchOrClassStrengthVisible,
+      ].join(' '),
+    });
 
     test.fail(
       spinnerVisible && !launchOrClassStrengthVisible,
@@ -130,7 +141,13 @@ test(
     const stillShowingQuizUi =
       (await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
       (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false));
-    console.log('Quiz launch UI still showing after switching to a class/topic with no quiz:', stillShowingQuizUi);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Quiz launch UI still showing after switching to a class/topic with no quiz:',
+        stillShowingQuizUi,
+      ].join(' '),
+    });
 
     test.fail(
       stillShowingQuizUi,
@@ -147,7 +164,10 @@ test(
     // Zoho TCN-I15681 -- other Quiz files cannot be opened after encountering an error on one.
     const plr = new PlayerPage(page);
     const count = await plr.quizCards.count();
-    test.fail(count < 2, 'Fewer than 2 quiz cards available this pass -- cannot test opening a second one after the first');
+    test.fail(
+      count < 2,
+      'Fewer than 2 quiz cards available this pass -- cannot test opening a second one after the first'
+    );
     if (count < 2) {
       expect(count).toBeGreaterThanOrEqual(2);
       return;
@@ -161,24 +181,36 @@ test(
     const secondOpened =
       (await plr.quizLaunchScreenBtn.isVisible({ timeout: 3000 }).catch(() => false)) ||
       (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 3000 }).catch(() => false));
-    console.log('Second quiz file opened successfully after the first:', secondOpened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Second quiz file opened successfully after the first:', secondOpened].join(' '),
+    });
 
-    test.fail(!secondOpened, 'CONFIRMED (matches Zoho TCN-I15681): a second Quiz file could not be opened after the first');
+    test.fail(
+      !secondOpened,
+      'CONFIRMED (matches Zoho TCN-I15681): a second Quiz file could not be opened after the first'
+    );
     expect(secondOpened).toBe(true);
   }
 );
 
 test(
-  'CWR-I368: A CBA topic\'s Play Quiz file is present (not missing/replaced by only a worksheet)',
+  "CWR-I368: A CBA topic's Play Quiz file is present (not missing/replaced by only a worksheet)",
   { tag: '@historical-regression' },
   async ({ page }) => {
     // Zoho CWR-I368 -- a CBA topic's "Play Quiz" file is missing (only a worksheet is present),
     // making CBA questions unreachable at all.
     const plr = new PlayerPage(page);
     const quizCount = await plr.quizCards.count();
-    console.log('Quiz cards present at this confirmed "quiz" location:', quizCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Quiz cards present at this confirmed "quiz" location:', quizCount].join(' '),
+    });
 
-    test.fail(quizCount === 0, 'CONFIRMED-adjacent (matches Zoho CWR-I368): no Play Quiz file/card present at this location');
+    test.fail(
+      quizCount === 0,
+      'CONFIRMED-adjacent (matches Zoho CWR-I368): no Play Quiz file/card present at this location'
+    );
     expect(quizCount).toBeGreaterThan(0);
   }
 );
@@ -190,9 +222,14 @@ test(
     // Zoho TCN-I15782 -- a Custom Quiz for open-ended questions is not displayed in the Playlist.
     const plr = new PlayerPage(page);
     const count = await plr.quizCards.count();
-    console.log('Quiz cards visible in the Playlist:', count);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Quiz cards visible in the Playlist:', count].join(' ') });
 
-    test.fail(count === 0, 'CONFIRMED-adjacent (matches Zoho TCN-I15782): no quiz cards displayed in the Playlist at all');
+    test.fail(
+      count === 0,
+      'CONFIRMED-adjacent (matches Zoho TCN-I15782): no quiz cards displayed in the Playlist at all'
+    );
     expect(count).toBeGreaterThan(0);
   }
 );
@@ -226,7 +263,10 @@ test(
       .getByText(/no valid question/i)
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('"No valid question found" shown for this Exercise:', noValidQuestionVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"No valid question found" shown for this Exercise:', noValidQuestionVisible].join(' '),
+    });
 
     test.fail(
       noValidQuestionVisible,
@@ -269,7 +309,10 @@ test(
       }
       return textColor.replace(/\s/g, '') === bgColor.replace(/\s/g, '');
     });
-    console.log('"Launch AIR Card" text color exactly matches its background color:', lowContrast);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"Launch AIR Card" text color exactly matches its background color:', lowContrast].join(' '),
+    });
 
     test.fail(
       lowContrast,
@@ -303,15 +346,30 @@ test(
       .filter({ visible: true })
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    const quizOpenedInstead = await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)
-      || await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Remove-confirmation dialog appeared:', confirmDialogVisible, '| quiz opened instead:', quizOpenedInstead);
+    const quizOpenedInstead =
+      (await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
+      (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Remove-confirmation dialog appeared:',
+        confirmDialogVisible,
+        '| quiz opened instead:',
+        quizOpenedInstead,
+      ].join(' '),
+    });
 
     if (confirmDialogVisible) {
       // Cancel rather than actually deleting shared QA playlist data.
-      await pl.resourceRemoveCancelBtn.first().click().catch(() => {});
+      await pl.resourceRemoveCancelBtn
+        .first()
+        .click()
+        .catch(() => {});
     }
-    await page.locator('button', { hasText: /finish editing/i }).click().catch(() => {});
+    await page
+      .locator('button', { hasText: /finish editing/i })
+      .click()
+      .catch(() => {});
 
     const bugReproduces = quizOpenedInstead || !confirmDialogVisible;
     test.fail(
@@ -338,10 +396,19 @@ test(
     const onLaunchScreen =
       (await plr.quizLaunchScreenBtn.isVisible({ timeout: 4000 }).catch(() => false)) ||
       (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false));
-    const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
+    const closeIconVisible = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     const opened = onLaunchScreen || closeIconVisible;
-    console.log('On launch screen:', onLaunchScreen, '| closeIcon visible:', closeIconVisible);
-    test.fail(!opened, 'The quiz did not open (neither launch screen nor closeIcon appeared) this pass -- cannot test the close button');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['On launch screen:', onLaunchScreen, '| closeIcon visible:', closeIconVisible].join(' '),
+    });
+    test.fail(
+      !opened,
+      'The quiz did not open (neither launch screen nor closeIcon appeared) this pass -- cannot test the close button'
+    );
     if (!opened) {
       expect(opened).toBe(true);
       return;
@@ -352,8 +419,16 @@ test(
     const stillOpen =
       (await plr.quizLaunchScreenBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
       (await plr.quizClassStrengthStartBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
-      (await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false));
-    console.log('Quiz still open after clicking Close (X):', stillOpen);
+      (await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 2000 })
+        .catch(() => false));
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Quiz still open after clicking Close (X):', stillOpen].join(' '),
+      });
 
     test.fail(
       stillOpen,
@@ -387,8 +462,14 @@ test(
     const plr = new PlayerPage(page);
     await plr.openResourceCard(exerciseCard);
     await page.waitForTimeout(2000);
-    const unknownTypeVisible = await page.getByText(/unknown question type/i).isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('"Unknown Question Type" shown for this Exercise:', unknownTypeVisible);
+    const unknownTypeVisible = await page
+      .getByText(/unknown question type/i)
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"Unknown Question Type" shown for this Exercise:', unknownTypeVisible].join(' '),
+    });
 
     test.fail(
       unknownTypeVisible,
@@ -420,12 +501,25 @@ test(
       await page.waitForTimeout(1800);
       const text = await page.evaluate(() => document.body.innerText.slice(0, 500));
       questionTexts.push(text);
-      await plr.closeIcon.first().click({ force: true }).catch(() => {});
+      await plr.closeIcon
+        .first()
+        .click({ force: true })
+        .catch(() => {});
       await page.waitForTimeout(800);
     }
     const anyLiteralHashCode = questionTexts.some((t) => /#176/.test(t));
     const allIdentical = questionTexts.length > 1 && questionTexts.every((t) => t === questionTexts[0]);
-    console.log('Checked', questionTexts.length, 'Exercise(s) | literal "#176" found:', anyLiteralHashCode, '| all identical text:', allIdentical);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Checked',
+        questionTexts.length,
+        'Exercise(s) | literal "#176" found:',
+        anyLiteralHashCode,
+        '| all identical text:',
+        allIdentical,
+      ].join(' '),
+    });
 
     const bugReproduces = anyLiteralHashCode || allIdentical;
     test.fail(
@@ -435,4 +529,3 @@ test(
     expect(bugReproduces).toBe(false);
   }
 );
-

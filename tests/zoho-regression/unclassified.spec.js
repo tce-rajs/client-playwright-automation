@@ -62,7 +62,10 @@ test.describe('Unclassified -- generic checks', () => {
       }
       await plr.openResourceCard(pl.resourceCards.first());
       await page.waitForTimeout(2000);
-      const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 8000 }).catch(() => false);
+      const closeIconVisible = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 8000 })
+        .catch(() => false);
       test.fail(!closeIconVisible, 'The opened resource never actually rendered this pass -- cannot test its size');
       if (!closeIconVisible) {
         expect(closeIconVisible).toBe(true);
@@ -74,7 +77,12 @@ test.describe('Unclassified -- generic checks', () => {
         .first()
         .boundingBox()
         .catch(() => null);
-      console.log('Viewport:', viewport, '| opened player box:', box);
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Viewport:', viewport, '| opened player box:', box].join(' '),
+        });
       test.fail(!box, 'Could not locate the opened player element this pass -- cannot test its size');
       if (!box) {
         expect(box).toBeTruthy();
@@ -110,8 +118,19 @@ test.describe('Unclassified -- generic checks', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      const contentReady = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
-      console.log('Loading spinner still visible after 8s:', spinnerVisible, '| resource opened successfully:', contentReady);
+      const contentReady = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 2000 })
+        .catch(() => false);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Loading spinner still visible after 8s:',
+          spinnerVisible,
+          '| resource opened successfully:',
+          contentReady,
+        ].join(' '),
+      });
 
       test.fail(
         spinnerVisible && !contentReady,
@@ -186,7 +205,10 @@ test.describe('Unclassified -- generic checks', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log('Custom asset still visible after delete attempt:', stillVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Custom asset still visible after delete attempt:', stillVisible].join(' '),
+      });
 
       test.fail(stillVisible, 'CONFIRMED (matches Zoho TCN-I17061): the custom asset could not be deleted');
       expect(stillVisible).toBe(false);
@@ -229,8 +251,14 @@ test.describe('Unclassified -- confirmed-location checks', () => {
       });
       await plr.openResourceCard(plr.videoCards);
       await page.waitForTimeout(4000);
-      const opened = await plr.closeIcon.first().isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('Video opened successfully:', opened, '| 401/404 responses observed:', failedRequests);
+      const opened = await plr.closeIcon
+        .first()
+        .isVisible({ timeout: 5000 })
+        .catch(() => false);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Video opened successfully:', opened, '| 401/404 responses observed:', failedRequests].join(' '),
+      });
 
       test.fail(
         !opened || failedRequests.length > 0,

@@ -51,7 +51,13 @@ test(
     await page.waitForTimeout(1000);
 
     const popupStillVisible = await acc.drilldownTrigger.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Profile popup (drilldown trigger) still visible after clicking outside it:', popupStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Profile popup (drilldown trigger) still visible after clicking outside it:',
+        popupStillVisible,
+      ].join(' '),
+    });
 
     test.fail(
       popupStillVisible,
@@ -72,13 +78,18 @@ test(
     await acc.profileTab.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
     const bodyText = await page.evaluate(() => document.body.innerText.length);
-    console.log('Account tab visible:', accountTabActive, '| total body text length after navigating to Profile:', bodyText);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Account tab visible:',
+        accountTabActive,
+        '| total body text length after navigating to Profile:',
+        bodyText,
+      ].join(' '),
+    });
 
     const bugReproduces = !accountTabActive || bodyText < 50;
-    test.fail(
-      bugReproduces,
-      'CONFIRMED (matches Zoho CWR-I554): the Profile screen appears blank/unresponsive'
-    );
+    test.fail(bugReproduces, 'CONFIRMED (matches Zoho CWR-I554): the Profile screen appears blank/unresponsive');
     expect(bugReproduces).toBe(false);
   }
 );
@@ -91,15 +102,29 @@ test(
     // in V2.
     const acc = new AccountManagementPage(page);
     await acc.openProfileMenu();
-    const feedbackInOuterMenu = await page.getByText(/feedback/i).isVisible({ timeout: 3000 }).catch(() => false);
+    const feedbackInOuterMenu = await page
+      .getByText(/feedback/i)
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     let feedbackInInnerModal = false;
     if (!feedbackInOuterMenu) {
       await acc.drilldownTrigger.click({ force: true }).catch(() => {});
       await page.waitForTimeout(1000);
-      feedbackInInnerModal = await page.getByText(/feedback/i).isVisible({ timeout: 3000 }).catch(() => false);
+      feedbackInInnerModal = await page
+        .getByText(/feedback/i)
+        .isVisible({ timeout: 3000 })
+        .catch(() => false);
     }
     const feedbackFound = feedbackInOuterMenu || feedbackInInnerModal;
-    console.log('Feedback option found in outer menu:', feedbackInOuterMenu, '| in inner Account/Profile modal:', feedbackInInnerModal);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Feedback option found in outer menu:',
+        feedbackInOuterMenu,
+        '| in inner Account/Profile modal:',
+        feedbackInInnerModal,
+      ].join(' '),
+    });
 
     test.fail(
       !feedbackFound,

@@ -65,7 +65,7 @@ test(
     // (ACC-PLAN-02/03/04/06 in tests/user-profile/account-management.spec.js).
     test.fail(
       true,
-      'Deliberately not executed -- actually clicking Send delivers a real assignment to real students on the shared QA account, excluded as a destructive action per this suite\'s established policy'
+      "Deliberately not executed -- actually clicking Send delivers a real assignment to real students on the shared QA account, excluded as a destructive action per this suite's established policy"
     );
     expect(true).toBe(false);
   }
@@ -97,14 +97,17 @@ test(
       .catch(() => false);
 
     const noticeStillActive = await an.captureInstructionBanner.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      'Notice capture mode active before opening Homework:',
-      noticeActiveBefore,
-      '| Homework composer opened:',
-      homeworkOpen,
-      '| Notice capture mode STILL active after opening Homework:',
-      noticeStillActive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Notice capture mode active before opening Homework:',
+        noticeActiveBefore,
+        '| Homework composer opened:',
+        homeworkOpen,
+        '| Notice capture mode STILL active after opening Homework:',
+        noticeStillActive,
+      ].join(' '),
+    });
 
     test.fail(
       noticeActiveBefore && homeworkOpen && noticeStillActive,
@@ -113,4 +116,3 @@ test(
     expect(noticeActiveBefore && homeworkOpen && noticeStillActive).toBe(false);
   }
 );
-

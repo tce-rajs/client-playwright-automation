@@ -70,7 +70,7 @@ test(
     await nav.goToChapterTopic(0, 0);
     await tb.waitForBoardToSettle();
     await tb.selectTool('gtPen');
-    const marker = { x: 700 + Date.now() % 100, y: 700 };
+    const marker = { x: 700 + (Date.now() % 100), y: 700 };
     await tb.drawStroke(marker, { x: marker.x + 150, y: marker.y });
     await page.waitForTimeout(6000); // real autosave debounce, per this app's own confirmed toast timing
 
@@ -84,7 +84,10 @@ test(
     await nav.goToChapterTopic(0, 0);
     await page.waitForTimeout(1500);
     const pathsAfter = await tb.pathCount();
-    console.log('Stroke paths present after switching topics away and back:', pathsAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Stroke paths present after switching topics away and back:', pathsAfter].join(' '),
+    });
 
     test.fail(
       pathsAfter === 0,
@@ -111,7 +114,10 @@ test(
     await tb.drawStroke({ x: 750, y: 750 }, { x: 900, y: 750 });
     await page.waitForTimeout(6000);
     const afterDraw = await tb.pathCount();
-    test.fail(afterDraw <= before, 'Drawing a stroke did not actually add a path this pass -- cannot test its persistence');
+    test.fail(
+      afterDraw <= before,
+      'Drawing a stroke did not actually add a path this pass -- cannot test its persistence'
+    );
     if (afterDraw <= before) {
       expect(afterDraw).toBeGreaterThan(before);
       return;
@@ -126,7 +132,17 @@ test(
     await nav.loginWithPin(process.env.VALID_PIN);
     await tb.waitForBoardToSettle();
     const afterRelogin = await tb.pathCount();
-    console.log('Path count: before draw', before, '| after draw', afterDraw, '| after sign-out+relogin', afterRelogin);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count: before draw',
+        before,
+        '| after draw',
+        afterDraw,
+        '| after sign-out+relogin',
+        afterRelogin,
+      ].join(' '),
+    });
 
     test.fail(
       afterRelogin < afterDraw,
@@ -156,7 +172,10 @@ test(
     }
     await page.waitForTimeout(1000);
     const wbStillVisible = await tb.wbContainer.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Whiteboard drawing container still visible after auto sign-out:', wbStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Whiteboard drawing container still visible after auto sign-out:', wbStillVisible].join(' '),
+    });
 
     test.fail(
       wbStillVisible,
@@ -200,10 +219,21 @@ test(
     }
     await plr.openResourceCard(pl.resourceCards.first());
     await page.waitForTimeout(1500);
-    await plr.closeIcon.first().click({ force: true }).catch(() => {});
+    await plr.closeIcon
+      .first()
+      .click({ force: true })
+      .catch(() => {});
     await page.waitForTimeout(1000);
     const transformAfter = await tb.wbContainer.evaluate((el) => getComputedStyle(el).transform);
-    console.log('Whiteboard transform before opening asset:', transformBefore, '| after closing it:', transformAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Whiteboard transform before opening asset:',
+        transformBefore,
+        '| after closing it:',
+        transformAfter,
+      ].join(' '),
+    });
 
     test.fail(
       transformAfter !== transformBefore,
@@ -243,7 +273,10 @@ test(
       await page.waitForTimeout(1000);
     }
     const afterClear = await tb.pathCount();
-    test.fail(afterClear > 0, 'Clear Whiteboard did not actually remove the stroke this pass -- cannot test reappearance');
+    test.fail(
+      afterClear > 0,
+      'Clear Whiteboard did not actually remove the stroke this pass -- cannot test reappearance'
+    );
     if (afterClear > 0) {
       expect(afterClear).toBe(0);
       return;
@@ -258,7 +291,17 @@ test(
     await nav.goToChapterTopic(0, 0);
     await page.waitForTimeout(1500);
     const afterReturn = await tb.pathCount();
-    console.log('Path count: after draw', afterDraw, '| after clear', afterClear, '| after navigating away and back', afterReturn);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count: after draw',
+        afterDraw,
+        '| after clear',
+        afterClear,
+        '| after navigating away and back',
+        afterReturn,
+      ].join(' '),
+    });
 
     test.fail(
       afterReturn > 0,
@@ -269,7 +312,7 @@ test(
 );
 
 test(
-  'TCN-I15631 / CWR-I767: Undo after a fresh re-login does not restore a previous session\'s erased annotations',
+  "TCN-I15631 / CWR-I767: Undo after a fresh re-login does not restore a previous session's erased annotations",
   { tag: '@historical-regression' },
   async ({ page }) => {
     // Zoho TCN-I15631 + CWR-I767 (To do) -- the Undo button stays active after sign-out and restores
@@ -294,7 +337,10 @@ test(
 
     const undoBtn = tb.tool('gtUndo');
     const undoEnabled = await undoBtn.isEnabled().catch(() => false);
-    console.log('Undo button enabled immediately after a fresh re-login:', undoEnabled);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Undo button enabled immediately after a fresh re-login:', undoEnabled].join(' '),
+    });
 
     test.fail(
       undoEnabled,
@@ -328,7 +374,11 @@ test(
     await page.keyboard.type('QA Zoho Regression Text');
     await page.keyboard.press('Escape');
     await page.waitForTimeout(6000);
-    const boxBefore = await tb.wbContainer.locator('.text-input-container').first().boundingBox().catch(() => null);
+    const boxBefore = await tb.wbContainer
+      .locator('.text-input-container')
+      .first()
+      .boundingBox()
+      .catch(() => null);
 
     const backToGuest = await signOut(page);
     test.fail(!backToGuest, 'Sign-out did not return to Guest Mode -- cannot test this pass');
@@ -338,16 +388,29 @@ test(
     }
     await nav.loginWithPin(process.env.VALID_PIN);
     await tb.waitForBoardToSettle();
-    const boxAfter = await tb.wbContainer.locator('.text-input-container').first().boundingBox().catch(() => null);
-    console.log('Text box before sign-out:', boxBefore, '| after re-login:', boxAfter);
+    const boxAfter = await tb.wbContainer
+      .locator('.text-input-container')
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Text box before sign-out:', boxBefore, '| after re-login:', boxAfter].join(' '),
+    });
 
     test.fail(
-      !boxAfter || !boxBefore || Math.abs(boxAfter.width - boxBefore.width) > 5 || Math.abs(boxAfter.height - boxBefore.height) > 5,
+      !boxAfter ||
+        !boxBefore ||
+        Math.abs(boxAfter.width - boxBefore.width) > 5 ||
+        Math.abs(boxAfter.height - boxBefore.height) > 5,
       'CONFIRMED (matches Zoho TCN-I15381/TCN-I15235/TCN-I15240): the text box size/position changed after a real sign-out/sign-in'
     );
-    expect(boxAfter && boxBefore && Math.abs(boxAfter.width - boxBefore.width) <= 5 && Math.abs(boxAfter.height - boxBefore.height) <= 5).toBe(
-      true
-    );
+    expect(
+      boxAfter &&
+        boxBefore &&
+        Math.abs(boxAfter.width - boxBefore.width) <= 5 &&
+        Math.abs(boxAfter.height - boxBefore.height) <= 5
+    ).toBe(true);
   }
 );
 
@@ -393,10 +456,18 @@ test(
     // than assume the container itself carries the visible color.
     const colors = await tb.wbContainer.evaluate((el) => {
       const bg = getComputedStyle(el).backgroundColor;
-      const rects = Array.from(el.querySelectorAll('rect, pattern')).map((r) => getComputedStyle(r).fill || r.getAttribute('fill'));
+      const rects = Array.from(el.querySelectorAll('rect, pattern')).map(
+        (r) => getComputedStyle(r).fill || r.getAttribute('fill')
+      );
       return { bg, rects };
     });
-    console.log('Whiteboard background color in Light Mode with Four Line background:', JSON.stringify(colors));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Whiteboard background color in Light Mode with Four Line background:',
+        JSON.stringify(colors),
+      ].join(' '),
+    });
     // Only a fully-opaque black counts -- rgba(0,0,0,0) is transparent, not visually black.
     const isOpaqueBlack = (c) => {
       if (!c) return false;
@@ -431,7 +502,10 @@ test(
     await page.mouse.click(box.x + 500, box.y + 500);
     await page.waitForTimeout(500);
     const after = await tb.pathCount();
-    console.log('Path count before/after a single Pen click:', before, after);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Path count before/after a single Pen click:', before, after].join(' '),
+    });
 
     test.fail(after <= before, 'CONFIRMED (matches Zoho TCN-I16483): a single Pen click does not draw a visible dot');
     expect(after).toBeGreaterThan(before);
@@ -467,15 +541,20 @@ test(
     await page.waitForTimeout(1000);
     const afterCount = await tb.pathCount();
     const lineBoxAfter = await tb.paths.last().boundingBox();
-    console.log(
-      'Path count before/after dragging with Select tool:',
-      beforeCount,
-      afterCount,
-      '| line box before/after:',
-      lineBoxBefore,
-      lineBoxAfter
-    );
-    const moved = lineBoxAfter && (Math.abs(lineBoxAfter.x - lineBoxBefore.x) > 20 || Math.abs(lineBoxAfter.y - lineBoxBefore.y) > 20);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before/after dragging with Select tool:',
+        beforeCount,
+        afterCount,
+        '| line box before/after:',
+        lineBoxBefore,
+        lineBoxAfter,
+      ].join(' '),
+    });
+    const moved =
+      lineBoxAfter &&
+      (Math.abs(lineBoxAfter.x - lineBoxBefore.x) > 20 || Math.abs(lineBoxAfter.y - lineBoxBefore.y) > 20);
 
     test.fail(
       afterCount < beforeCount || !moved,
@@ -505,7 +584,10 @@ test(
     await nav.resetToClass('Class 5', 'A', 'Mathematics');
     await nav.goToChapterTopic(0, 0);
     const chapterTopicBefore = (await nav.currentChapterTopicBtn.textContent()).trim();
-    console.log('Chapter/Topic selected before sign-out:', chapterTopicBefore);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter/Topic selected before sign-out:', chapterTopicBefore].join(' '),
+    });
 
     // Real sign-out (per the confirmed chain in account-management.page.js / LIVE_FINDINGS.md --
     // no confirmation dialog, immediate). The avatar click is documented elsewhere in this codebase
@@ -517,7 +599,15 @@ test(
       await am.avatarTrigger.click({ force: true });
       await page.waitForTimeout(700);
       const signOutVisible = await am.signOutBtn.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log(`Attempt ${attempt}: profile menu opened, Sign Out visible:`, signOutVisible, '| URL:', page.url());
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          `Attempt ${attempt}: profile menu opened, Sign Out visible:`,
+          signOutVisible,
+          '| URL:',
+          page.url(),
+        ].join(' '),
+      });
       if (!signOutVisible) continue;
       await am.signOutBtn.click({ force: true, timeout: 5000 });
       await page.waitForTimeout(1500);
@@ -525,16 +615,21 @@ test(
         .getByText(/guest mode/i)
         .isVisible({ timeout: 8000 })
         .catch(() => false);
-      console.log(
-        `Attempt ${attempt}: after clicking Sign Out -- back to Guest Mode:`,
-        backToGuest,
-        '| URL:',
-        page.url(),
-        '| avatar still visible (would mean still signed in):',
-        await am.avatarTrigger.isVisible({ timeout: 2000 }).catch(() => false)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          `Attempt ${attempt}: after clicking Sign Out -- back to Guest Mode:`,
+          backToGuest,
+          '| URL:',
+          page.url(),
+          '| avatar still visible (would mean still signed in):',
+          await am.avatarTrigger.isVisible({ timeout: 2000 }).catch(() => false),
+        ].join(' '),
+      });
     }
-    console.log('Signed out back to Guest Mode:', backToGuest);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Signed out back to Guest Mode:', backToGuest].join(' ') });
     test.fail(!backToGuest, 'Sign-out did not return to Guest Mode -- cannot test the re-login resume behavior at all');
     if (!backToGuest) {
       expect(backToGuest).toBe(true);
@@ -546,7 +641,12 @@ test(
     await nav.loginWithPin(process.env.VALID_PIN);
     await nav.currentChapterTopicBtn.waitFor({ state: 'visible', timeout: 15000 });
     const chapterTopicAfter = (await nav.currentChapterTopicBtn.textContent()).trim();
-    console.log('Chapter/Topic shown immediately after re-login (no manual navigation):', chapterTopicAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter/Topic shown immediately after re-login (no manual navigation):', chapterTopicAfter].join(
+        ' '
+      ),
+    });
 
     test.fail(
       chapterTopicAfter !== chapterTopicBefore,
@@ -559,10 +659,18 @@ test(
 async function countCanvasImageCandidates(page) {
   // Same multi-selector probe already established (and proven) in
   // tests/gallery/gallery.spec.js's GAL-ASSET-01 -- reused here rather than duplicated logic.
-  const selectors = ['svg image', '[data-qa-id="wb-drawing-container"] image', 'image.draggable', '[class*="image-element"]'];
+  const selectors = [
+    'svg image',
+    '[data-qa-id="wb-drawing-container"] image',
+    'image.draggable',
+    '[class*="image-element"]',
+  ];
   const counts = {};
   for (const sel of selectors) {
-    counts[sel] = await page.locator(sel).count().catch(() => -1);
+    counts[sel] = await page
+      .locator(sel)
+      .count()
+      .catch(() => -1);
   }
   return counts;
 }
@@ -580,15 +688,29 @@ test(
     const { stillStuck } = await ar.openPickerReliably(ar.actions.gallery);
     if (!stillStuck) await ar.actions.gallery.click({ force: true });
     await page.waitForTimeout(1000);
-    let pickerOpen = await ar.galleryImageCards.first().isVisible({ timeout: 10000 }).catch(() => false);
+    let pickerOpen = await ar.galleryImageCards
+      .first()
+      .isVisible({ timeout: 10000 })
+      .catch(() => false);
     if (!pickerOpen) {
       // One retry: the Add Resources trigger/gallery tab can need a second attempt (same class of
       // flakiness as the documented pointer-events:none picker issue elsewhere in this suite).
       await ar.actions.gallery.click({ force: true }).catch(() => {});
       await page.waitForTimeout(1500);
-      pickerOpen = await ar.galleryImageCards.first().isVisible({ timeout: 8000 }).catch(() => false);
+      pickerOpen = await ar.galleryImageCards
+        .first()
+        .isVisible({ timeout: 8000 })
+        .catch(() => false);
     }
-    console.log('openPickerReliably stillStuck:', stillStuck, '| picker open (galleryImageCards visible):', pickerOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'openPickerReliably stillStuck:',
+        stillStuck,
+        '| picker open (galleryImageCards visible):',
+        pickerOpen,
+      ].join(' '),
+    });
     test.fail(!pickerOpen, 'The Gallery picker did not open reliably this pass');
     if (!pickerOpen) {
       expect(pickerOpen).toBe(true);
@@ -598,12 +720,25 @@ test(
     await ar.galleryImageCards.first().click({ force: true });
     await page.waitForTimeout(1500);
     const afterCanvas = await countCanvasImageCandidates(page);
-    console.log('Canvas image-candidate counts before:', JSON.stringify(beforeCanvas), '| after:', JSON.stringify(afterCanvas));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Canvas image-candidate counts before:',
+        JSON.stringify(beforeCanvas),
+        '| after:',
+        JSON.stringify(afterCanvas),
+      ].join(' '),
+    });
     const anyCanvasIncrease = Object.keys(afterCanvas).some((sel) => afterCanvas[sel] > (beforeCanvas[sel] ?? -1));
     // No error/feedback message of any kind is also part of the original complaint -- capture it
     // either way for context, but the real signal is whether the image actually landed.
-    const anyErrorVisible = await page.getByText(/error|failed|something went wrong/i).isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Any error/failure message shown:', anyErrorVisible);
+    const anyErrorVisible = await page
+      .getByText(/error|failed|something went wrong/i)
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Any error/failure message shown:', anyErrorVisible].join(' ') });
 
     test.fail(
       !anyCanvasIncrease,
@@ -636,7 +771,12 @@ test(
       return;
     }
     const ratioBefore = boxBefore.height / boxBefore.width;
-    console.log('Stroke box before erasing:', JSON.stringify(boxBefore), '| height/width ratio:', ratioBefore);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Stroke box before erasing:', JSON.stringify(boxBefore), '| height/width ratio:', ratioBefore].join(
+        ' '
+      ),
+    });
 
     await tb.selectTool('gtErase');
     const wbBox = await tb.wbSvg.boundingBox();
@@ -661,12 +801,18 @@ test(
     // still overlap the original stroke's area.
     const allBoxes = [];
     for (let i = 0; i < remainingCount; i++) {
-      const b = await tb.paths.nth(i).boundingBox().catch(() => null);
+      const b = await tb.paths
+        .nth(i)
+        .boundingBox()
+        .catch(() => null);
       if (b) allBoxes.push(b);
     }
     const relevant = allBoxes.filter(
-      (b) => b.x < boxBefore.x + boxBefore.width + 5 && b.x + b.width > boxBefore.x - 5 &&
-             b.y < boxBefore.y + boxBefore.height + 5 && b.y + b.height > boxBefore.y - 5
+      (b) =>
+        b.x < boxBefore.x + boxBefore.width + 5 &&
+        b.x + b.width > boxBefore.x - 5 &&
+        b.y < boxBefore.y + boxBefore.height + 5 &&
+        b.y + b.height > boxBefore.y - 5
     );
     test.fail(relevant.length === 0, 'No remaining stroke found near the original location after the partial erase');
     if (relevant.length === 0) {
@@ -687,7 +833,17 @@ test(
     const afterWidth = unionBox.right - unionBox.x;
     const afterHeight = unionBox.bottom - unionBox.y;
     const ratioAfter = afterHeight / afterWidth;
-    console.log('Remaining stroke union box after erasing:', JSON.stringify({ width: afterWidth, height: afterHeight }), '| height/width ratio:', ratioAfter, '| path count after erase:', remainingCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Remaining stroke union box after erasing:',
+        JSON.stringify({ width: afterWidth, height: afterHeight }),
+        '| height/width ratio:',
+        ratioAfter,
+        '| path count after erase:',
+        remainingCount,
+      ].join(' '),
+    });
 
     // A proportionally-shortened 45-degree diagonal keeps roughly the same height/width ratio
     // (~1.0 here). A ratio that's changed by more than 30% indicates the remaining shape warped.
@@ -713,7 +869,9 @@ test(
     await tb.selectTool('gtPen');
     const countBefore = await tb.pathCount();
     const wbBox = await tb.wbSvg.boundingBox();
-    const cx = 400, cy = 400, r = 100;
+    const cx = 400,
+      cy = 400,
+      r = 100;
     // Draw a full circle via many small steps in ONE continuous down/move/up gesture.
     await page.mouse.move(wbBox.x + cx + r, wbBox.y + cy);
     await page.mouse.down();
@@ -726,7 +884,17 @@ test(
     await page.waitForTimeout(800);
     const countAfter = await tb.pathCount();
     const newPaths = countAfter - countBefore;
-    console.log('Path count before:', countBefore, '| after one continuous curved gesture:', countAfter, '| new paths created:', newPaths);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before:',
+        countBefore,
+        '| after one continuous curved gesture:',
+        countAfter,
+        '| new paths created:',
+        newPaths,
+      ].join(' '),
+    });
 
     test.fail(
       newPaths > 1,
@@ -756,12 +924,18 @@ test(
     await nav._closeChaptersPopupIfOpen();
     await page.waitForTimeout(1000);
 
-    console.log('404 responses observed during normal whiteboard navigation:', JSON.stringify(notFoundResponses));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        '404 responses observed during normal whiteboard navigation:',
+        JSON.stringify(notFoundResponses),
+      ].join(' '),
+    });
     test.fail(
       notFoundResponses.length > 0,
       `CONFIRMED (matches Zoho CWR-I274): ${notFoundResponses.length} real "Not Found" (404) network response(s) occurred during normal whiteboard navigation: ${JSON.stringify(notFoundResponses.slice(0, 5))}`
     );
-    expect(notFoundResponses.length).toBe(0);
+    expect(notFoundResponses).toHaveLength(0);
   }
 );
 
@@ -814,7 +988,13 @@ test(
     await page.mouse.click(wbBox.x + finalPoint.x + 20, wbBox.y + finalPoint.y + 10);
     await page.waitForTimeout(1000);
     const formattingPanelVisible = await tb.textMenuFontSlider.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Text formatting/edit popup visible after selecting the text box under heavy content:', formattingPanelVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Text formatting/edit popup visible after selecting the text box under heavy content:',
+        formattingPanelVisible,
+      ].join(' '),
+    });
 
     test.fail(
       !formattingPanelVisible,
@@ -841,7 +1021,7 @@ test(
     // actually changes at each step -- tb.paths.last() alone can't distinguish "topic didn't
     // switch" from "topic switched and content bled across", so both need checking.
     const topicLabelOf = async () => nav.currentChapterTopicBtn.textContent().catch(() => null);
-    const topicALabel = (await topicLabelOf() || '').trim();
+    const topicALabel = ((await topicLabelOf()) || '').trim();
 
     await tb.selectTool('gtPen');
     await tb.drawStroke({ x: 200, y: 200 }, { x: 260, y: 200 });
@@ -851,7 +1031,7 @@ test(
     await nextTopicBtn.scrollIntoViewIfNeeded().catch(() => {});
     await nextTopicBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1500);
-    const topicBLabel = (await topicLabelOf() || '').trim();
+    const topicBLabel = ((await topicLabelOf()) || '').trim();
     await tb.selectTool('gtPen');
     await tb.drawStroke({ x: 200, y: 200 }, { x: 260, y: 200 });
     const strokeBBox1 = await tb.paths.last().boundingBox();
@@ -860,7 +1040,7 @@ test(
     await prevTopicBtn.scrollIntoViewIfNeeded().catch(() => {});
     await prevTopicBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1500);
-    const topicALabelAgain = (await topicLabelOf() || '').trim();
+    const topicALabelAgain = ((await topicLabelOf()) || '').trim();
 
     // Pan topic A using the Pan tool.
     await tb.selectTool('gtPan');
@@ -871,29 +1051,70 @@ test(
     await page.mouse.up();
     await page.waitForTimeout(800);
     const strokeABox2 = await tb.paths.last().boundingBox();
-    console.log('Topic A reference stroke box before pan:', JSON.stringify(strokeABox1), '| after pan:', JSON.stringify(strokeABox2));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Topic A reference stroke box before pan:',
+        JSON.stringify(strokeABox1),
+        '| after pan:',
+        JSON.stringify(strokeABox2),
+      ].join(' '),
+    });
 
     await nextTopicBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1500);
-    const topicBLabelAgain = (await topicLabelOf() || '').trim();
+    const topicBLabelAgain = ((await topicLabelOf()) || '').trim();
     const strokeBBox2 = await tb.paths.last().boundingBox();
-    console.log('Topic labels -- A:', topicALabel, '| B:', topicBLabel, '| A again:', topicALabelAgain, '| B again:', topicBLabelAgain);
-    console.log('Topic B reference stroke box baseline:', JSON.stringify(strokeBBox1), '| after Topic A was panned:', JSON.stringify(strokeBBox2));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Topic labels -- A:',
+        topicALabel,
+        '| B:',
+        topicBLabel,
+        '| A again:',
+        topicALabelAgain,
+        '| B again:',
+        topicBLabelAgain,
+      ].join(' '),
+    });
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Topic B reference stroke box baseline:',
+        JSON.stringify(strokeBBox1),
+        '| after Topic A was panned:',
+        JSON.stringify(strokeBBox2),
+      ].join(' '),
+    });
 
-    const topicSwitchingWorked = topicALabel !== topicBLabel && topicALabelAgain === topicALabel && topicBLabelAgain === topicBLabel;
-    test.fail(!topicSwitchingWorked, `Topic switching did not behave as expected this pass (labels: A="${topicALabel}" B="${topicBLabel}" A2="${topicALabelAgain}" B2="${topicBLabelAgain}") -- cannot trust the cross-topic measurement`);
+    const topicSwitchingWorked =
+      topicALabel !== topicBLabel && topicALabelAgain === topicALabel && topicBLabelAgain === topicBLabel;
+    test.fail(
+      !topicSwitchingWorked,
+      `Topic switching did not behave as expected this pass (labels: A="${topicALabel}" B="${topicBLabel}" A2="${topicALabelAgain}" B2="${topicBLabelAgain}") -- cannot trust the cross-topic measurement`
+    );
     if (!topicSwitchingWorked) {
       expect(topicSwitchingWorked).toBe(true);
       return;
     }
 
-    const panActuallyMovedA = strokeABox1 && strokeABox2 && (Math.abs(strokeABox1.x - strokeABox2.x) > 5 || Math.abs(strokeABox1.y - strokeABox2.y) > 5);
-    test.fail(!panActuallyMovedA, 'Panning Topic A did not visibly move its own reference stroke this pass -- cannot test cross-topic bleed');
+    const panActuallyMovedA =
+      strokeABox1 &&
+      strokeABox2 &&
+      (Math.abs(strokeABox1.x - strokeABox2.x) > 5 || Math.abs(strokeABox1.y - strokeABox2.y) > 5);
+    test.fail(
+      !panActuallyMovedA,
+      'Panning Topic A did not visibly move its own reference stroke this pass -- cannot test cross-topic bleed'
+    );
     if (!panActuallyMovedA) {
       expect(panActuallyMovedA).toBe(true);
       return;
     }
-    const topicBAffected = strokeBBox1 && strokeBBox2 && (Math.abs(strokeBBox1.x - strokeBBox2.x) > 5 || Math.abs(strokeBBox1.y - strokeBBox2.y) > 5);
+    const topicBAffected =
+      strokeBBox1 &&
+      strokeBBox2 &&
+      (Math.abs(strokeBBox1.x - strokeBBox2.x) > 5 || Math.abs(strokeBBox1.y - strokeBBox2.y) > 5);
     test.fail(
       Boolean(topicBAffected),
       `CONFIRMED (matches Zoho TCN-I15589): panning Topic A also moved Topic B's own reference stroke (baseline ${JSON.stringify(strokeBBox1)} -> ${JSON.stringify(strokeBBox2)})`

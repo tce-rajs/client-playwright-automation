@@ -73,7 +73,17 @@ test(
     const viewportHeight = await page.evaluate(() => window.innerHeight);
     const titleBox = await an.titleInput.boundingBox();
     const bodyBox = await an.bodyEditor.boundingBox().catch(() => null);
-    console.log('Viewport height:', viewportHeight, '| title box after scroll:', titleBox, '| body box:', bodyBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Viewport height:',
+        viewportHeight,
+        '| title box after scroll:',
+        titleBox,
+        '| body box:',
+        bodyBox,
+      ].join(' '),
+    });
 
     const titleBelowFold = !titleBox || titleBox.y >= viewportHeight;
     const bodyBelowFold = bodyBox && bodyBox.y >= viewportHeight;
@@ -85,4 +95,3 @@ test(
     expect(titleBelowFold || bodyBelowFold).toBe(false);
   }
 );
-

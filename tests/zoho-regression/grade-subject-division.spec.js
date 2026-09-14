@@ -51,9 +51,15 @@ test(
     }
     const names = await nav.chapterItems.allTextContents();
     const hasEntity = names.some((n) => /&#39;|&amp;#39;/.test(n));
-    console.log('Chapter names checked for the literal HTML entity:', JSON.stringify(names));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter names checked for the literal HTML entity:', JSON.stringify(names)].join(' '),
+    });
 
-    test.fail(hasEntity, 'CONFIRMED (matches Zoho TCN-I16990): a chapter name shows the literal HTML entity &#39; instead of an apostrophe');
+    test.fail(
+      hasEntity,
+      'CONFIRMED (matches Zoho TCN-I16990): a chapter name shows the literal HTML entity &#39; instead of an apostrophe'
+    );
     expect(hasEntity).toBe(false);
     await nav._closeChaptersPopupIfOpen();
   }
@@ -75,12 +81,14 @@ test(
     await nav.openClassPopup();
     await nav.allMyClassesTab.click();
     await page
-      .locator('[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]')
+      .locator(
+        '[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]'
+      )
       .first()
       .waitFor({ state: 'visible', timeout: 10000 })
       .catch(() => {});
     const gradeCount = await nav.gradeButtons.count();
-    console.log('Grade options visible:', gradeCount);
+    test.info().annotations.push({ type: 'note', description: ['Grade options visible:', gradeCount].join(' ') });
 
     test.fail(gradeCount === 0, 'CONFIRMED (matches Zoho CWR-I277): no grade options are visible at all');
     expect(gradeCount).toBeGreaterThan(0);
@@ -98,7 +106,9 @@ test(
     await nav.openClassPopup();
     await nav.allMyClassesTab.click();
     await page
-      .locator('[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]')
+      .locator(
+        '[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]'
+      )
       .first()
       .waitFor({ state: 'visible', timeout: 10000 })
       .catch(() => {});
@@ -113,7 +123,15 @@ test(
     const subjectNames = await nav.subjectButtons.allTextContents();
     const trimmed = subjectNames.map((s) => s.trim());
     const sorted = [...trimmed].sort((a, b) => a.localeCompare(b));
-    console.log('Subject order as displayed:', JSON.stringify(trimmed), '| alphabetical order would be:', JSON.stringify(sorted));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Subject order as displayed:',
+        JSON.stringify(trimmed),
+        '| alphabetical order would be:',
+        JSON.stringify(sorted),
+      ].join(' '),
+    });
 
     test.fail(
       JSON.stringify(trimmed) !== JSON.stringify(sorted),
@@ -135,7 +153,9 @@ test(
     await nav.openClassPopup();
     await nav.allMyClassesTab.click();
     await page
-      .locator('[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]')
+      .locator(
+        '[data-qa-id="common-select-grade-btn"].btn--active, [data-qa-id="common-select-grade-btn"][class*="btn--active"]'
+      )
       .first()
       .waitFor({ state: 'visible', timeout: 10000 })
       .catch(() => {});
@@ -155,8 +175,16 @@ test(
     }
     await nav.divisionButtons.first().click({ force: true });
     await page.waitForTimeout(500);
-    const stillOpen = await nav.subjectButtons.first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Selection window still open (Subject options visible) after switching Division:', stillOpen);
+    const stillOpen = await nav.subjectButtons
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Selection window still open (Subject options visible) after switching Division:', stillOpen].join(
+        ' '
+      ),
+    });
 
     test.fail(!stillOpen, 'CONFIRMED (matches Zoho CWR-I365): the selection window closes when switching Divisions');
     expect(stillOpen).toBe(true);
@@ -180,13 +208,16 @@ test(
     const plr = new PlayerPage(page);
     await plr.openResourceCard(pl.resourceCards.first());
     await page.waitForTimeout(1500);
-    const openedOnFirstClick = await plr.closeIcon.first().isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Content opened on the first click:', openedOnFirstClick);
+    const openedOnFirstClick = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Content opened on the first click:', openedOnFirstClick].join(' '),
+    });
 
-    test.fail(
-      !openedOnFirstClick,
-      'CONFIRMED (matches Zoho TCN-I15337): content did not load on the first click'
-    );
+    test.fail(!openedOnFirstClick, 'CONFIRMED (matches Zoho TCN-I15337): content did not load on the first click');
     expect(openedOnFirstClick).toBe(true);
   }
 );
@@ -210,8 +241,17 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    const chapterItemsVisible = await nav.chapterItems.first().isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Chapters popup/items visible without ever clicking the Chapters control:', chaptersPopupVisible || chapterItemsVisible);
+    const chapterItemsVisible = await nav.chapterItems
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Chapters popup/items visible without ever clicking the Chapters control:',
+        chaptersPopupVisible || chapterItemsVisible,
+      ].join(' '),
+    });
 
     test.fail(
       chaptersPopupVisible || chapterItemsVisible,
@@ -220,4 +260,3 @@ test(
     expect(chaptersPopupVisible || chapterItemsVisible).toBe(false);
   }
 );
-

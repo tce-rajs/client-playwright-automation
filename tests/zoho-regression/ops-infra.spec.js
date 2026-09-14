@@ -74,7 +74,10 @@ test(
       expect(crashed).toBe(false);
       return;
     }
-    await plr.videoPlayToggle.first().click({ force: true }).catch(() => {});
+    await plr.videoPlayToggle
+      .first()
+      .click({ force: true })
+      .catch(() => {});
     await page.waitForTimeout(1000);
 
     const penTool = tb.tool('gtPen');
@@ -87,7 +90,10 @@ test(
     await penTool.click({ force: true });
     await page.waitForTimeout(500);
     const panelVisible = await tb.panel.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Pen tool settings panel opens while a video is playing:', panelVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Pen tool settings panel opens while a video is playing:', panelVisible].join(' '),
+    });
 
     test.fail(
       !panelVisible,
@@ -109,13 +115,17 @@ test(
       expect(count).toBeGreaterThan(0);
       return;
     }
-    const brokenCount = await pl.resourceCards.evaluateAll((cards) =>
-      cards.filter((c) => {
-        const img = c.querySelector('img.type-icon');
-        return img && (!img.complete || img.naturalWidth === 0);
-      }).length
+    const brokenCount = await pl.resourceCards.evaluateAll(
+      (cards) =>
+        cards.filter((c) => {
+          const img = c.querySelector('img.type-icon');
+          return img && (!img.complete || img.naturalWidth === 0);
+        }).length
     );
-    console.log('Resource cards with a broken/unloaded type icon:', brokenCount, 'of', count);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Resource cards with a broken/unloaded type icon:', brokenCount, 'of', count].join(' '),
+    });
 
     test.fail(
       brokenCount > 0,
@@ -144,8 +154,19 @@ test(
       expect(savingVisible).toBe(true);
       return;
     }
-    const savedVisible = await tb.savedToast.waitFor({ state: 'visible', timeout: 15000 }).then(() => true).catch(() => false);
-    console.log('Autosave "Saving..." toast appeared:', savingVisible, '| "Whiteboard Saved!" toast appeared within 15s:', savedVisible);
+    const savedVisible = await tb.savedToast
+      .waitFor({ state: 'visible', timeout: 15000 })
+      .then(() => true)
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Autosave "Saving..." toast appeared:',
+        savingVisible,
+        '| "Whiteboard Saved!" toast appeared within 15s:',
+        savedVisible,
+      ].join(' '),
+    });
 
     test.fail(
       !savedVisible,
@@ -180,9 +201,16 @@ test(
     }
     await plr.worksheetNextPage.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
-    const pageIndicatorBefore = await page.locator('.pagination, [class*="page-indicator" i]').first().textContent().catch(() => null);
+    const pageIndicatorBefore = await page
+      .locator('.pagination, [class*="page-indicator" i]')
+      .first()
+      .textContent()
+      .catch(() => null);
 
-    await plr.closeIcon.first().click({ force: true }).catch(() => {});
+    await plr.closeIcon
+      .first()
+      .click({ force: true })
+      .catch(() => {});
     await page.waitForTimeout(1000);
     await nav.resetToClass('Class 12', 'A', 'Physics');
     await page.waitForTimeout(1000);
@@ -193,12 +221,24 @@ test(
     await pl.ensureDrawerVisible().catch(() => {});
     await plr.openResourceCard(plr.worksheetCards);
     await page.waitForTimeout(2000);
-    const pageIndicatorAfter = await page.locator('.pagination, [class*="page-indicator" i]').first().textContent().catch(() => null);
-    console.log('Worksheet page indicator before switching away:', pageIndicatorBefore, '| after coming back:', pageIndicatorAfter);
+    const pageIndicatorAfter = await page
+      .locator('.pagination, [class*="page-indicator" i]')
+      .first()
+      .textContent()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Worksheet page indicator before switching away:',
+        pageIndicatorBefore,
+        '| after coming back:',
+        pageIndicatorAfter,
+      ].join(' '),
+    });
 
     test.fail(
       pageIndicatorAfter !== pageIndicatorBefore,
-      'CONFIRMED (matches Zoho TCN-I15637): the resource\'s scroll/page position was not preserved after switching topics and coming back'
+      "CONFIRMED (matches Zoho TCN-I15637): the resource's scroll/page position was not preserved after switching topics and coming back"
     );
     expect(pageIndicatorAfter).toBe(pageIndicatorBefore);
   }

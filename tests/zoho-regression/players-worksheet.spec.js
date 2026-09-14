@@ -68,8 +68,15 @@ test(
     }
     await pencilTool.click({ force: true });
     await page.waitForTimeout(500);
-    const beforeCount = await plr.worksheetAnnotationLayer.locator('path').count().catch(() => 0);
-    const box = await page.locator('.annotation-layer, svg.annotation-layer').first().boundingBox().catch(() => null);
+    const beforeCount = await plr.worksheetAnnotationLayer
+      .locator('path')
+      .count()
+      .catch(() => 0);
+    const box = await page
+      .locator('.annotation-layer, svg.annotation-layer')
+      .first()
+      .boundingBox()
+      .catch(() => null);
     if (box) {
       await page.mouse.move(box.x + 100, box.y + 100);
       await page.mouse.down();
@@ -77,8 +84,14 @@ test(
       await page.mouse.up();
       await page.waitForTimeout(500);
     }
-    const afterCount = await plr.worksheetAnnotationLayer.locator('path').count().catch(() => 0);
-    console.log('Annotation path count before/after drawing with the pencil:', beforeCount, afterCount);
+    const afterCount = await plr.worksheetAnnotationLayer
+      .locator('path')
+      .count()
+      .catch(() => 0);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Annotation path count before/after drawing with the pencil:', beforeCount, afterCount].join(' '),
+    });
 
     const eraserTool = page.locator('[class*="eraser" i]').first();
     const eraserVisibleBefore = await eraserTool.isVisible({ timeout: 2000 }).catch(() => false);
@@ -86,7 +99,15 @@ test(
     await body.click({ position: { x: 1500, y: 900 }, force: true }).catch(() => {});
     await page.waitForTimeout(800);
     const eraserVisibleAfterClose = await eraserTool.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Eraser icon visible before close:', eraserVisibleBefore, '| still visible after closing:', eraserVisibleAfterClose);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Eraser icon visible before close:',
+        eraserVisibleBefore,
+        '| still visible after closing:',
+        eraserVisibleAfterClose,
+      ].join(' '),
+    });
 
     const bugReproduces = afterCount <= beforeCount || eraserVisibleAfterClose;
     test.fail(

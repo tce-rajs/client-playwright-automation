@@ -40,11 +40,13 @@ test(
     // TCN-I16602, TCN-I16604, TCN-I16605, TCN-I16606, TCN-I16608, TCN-I16904, TCN-I16905,
     // TCN-I16907, TCN-I16909, TCN-I16911, TCN-I16912, TCN-I16927, TCN-I17129, CWR-I536, CWR-I680,
     // TCN-I15731.
-    console.log(
-      'BLOCKED: no confirmed "AfL Report" UI entry point exists for a teacher account in this suite -- ' +
-        'needs product/client clarification (Principal-level access?) before any of this module\'s 17 bugs can be automated.'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'BLOCKED: no confirmed "AfL Report" UI entry point exists for a teacher account in this suite -- ' +
+          "needs product/client clarification (Principal-level access?) before any of this module's 17 bugs can be automated.",
+      ].join(' '),
+    });
     expect(true).toBe(true);
   }
 );
-
