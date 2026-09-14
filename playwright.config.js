@@ -94,7 +94,10 @@ module.exports = defineConfig({
     // 1280x720 the canvas genuinely only fills that smaller area; at
     // 1920x1080 it correctly fills the whole window). Setting it here
     // makes every file consistent regardless of whether it overrides it.
-    // viewport: { width: 1920, height: 1080 },
+    // Re-enabled (2026-09-14): only matters for legacy browser mode (the desktop-client fixture
+    // ignores this entirely) -- without it, a real headed browser window can open at an
+    // inconsistent/oversized native window size instead of this project's confirmed standard.
+    viewport: { width: 1920, height: 1080 },
 
     // Capture a trace whenever a test fails -- 'on-first-retry' (the previous
     // setting) only produces a trace on retry attempts, so a local run
