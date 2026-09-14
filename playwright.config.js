@@ -119,11 +119,14 @@ module.exports = defineConfig({
   // always launches the real Tata ClassEdge School.exe regardless of a project's `use.browserName`
   // -- so the firefox/webkit projects never actually drove Firefox or WebKit, they just reran
   // RESP-05 two more times through the SAME Electron client under a misleading label. Confirmed
-  // live: no real browser has ever launched in this suite's default run. Down to a single project
-  // so the reporter's [chromium] label doesn't imply browser testing that isn't happening.
+  // live: no real browser has ever launched in this suite's default run. Down to a single project,
+  // renamed from 'chromium' to 'client' -- Playwright requires every test to belong to a named
+  // project (it's a structural requirement, the name itself has no effect on what runs, and the
+  // fixture ignores `use.browserName` entirely either way), but the reporter prints whatever that
+  // project is called, and 'chromium' was misleading people into thinking a browser was involved.
   projects: [
     {
-      name: 'chromium',
+      name: 'client',
       use: { ...devices['Desktop Chrome'] },
     },
   ],
