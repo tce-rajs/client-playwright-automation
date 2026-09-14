@@ -49,7 +49,10 @@ test(
     const tb = new ToolbarPage(page);
     const point = at(200, 200);
     const { appeared: editorAppeared, box } = await openTextEditorAt(tb, page, point);
-    console.log('Text editor appeared (after up to 2 attempts):', editorAppeared);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Text editor appeared (after up to 2 attempts):', editorAppeared].join(' '),
+    });
     test.fail(
       !editorAppeared,
       'Text editor did not appear after 2 attempts -- could not exercise the 2000-char boundary case'
@@ -64,7 +67,15 @@ test(
 
     const pageAlive = await tb.wbSvg.isVisible().catch(() => false);
     const textObjectExists = await page.locator('foreignObject.text-element, .text-element').count();
-    console.log('Page alive after 2000-char text commit:', pageAlive, '| text-element count:', textObjectExists);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Page alive after 2000-char text commit:',
+        pageAlive,
+        '| text-element count:',
+        textObjectExists,
+      ].join(' '),
+    });
     test.fail(!pageAlive, 'Committing a 2000-character text object crashes the whiteboard canvas');
     expect(pageAlive).toBe(true);
   }
@@ -78,7 +89,10 @@ test(
     const tb = new ToolbarPage(page);
     const point = at(250, 250);
     const { appeared: editorAppeared, box } = await openTextEditorAt(tb, page, point);
-    console.log('Text editor appeared (after up to 2 attempts):', editorAppeared);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Text editor appeared (after up to 2 attempts):', editorAppeared].join(' '),
+    });
     test.fail(!editorAppeared, 'Text editor did not appear after 2 attempts -- could not exercise the emoji/RTL case');
     expect(editorAppeared).toBe(true);
     if (!editorAppeared) return;
@@ -88,7 +102,12 @@ test(
     await page.waitForTimeout(1500);
 
     const pageAlive = await tb.wbSvg.isVisible().catch(() => false);
-    console.log('Page alive after emoji+RTL text commit:', pageAlive);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Page alive after emoji+RTL text commit:', pageAlive].join(' '),
+      });
     test.fail(!pageAlive, 'Committing emoji + Arabic (RTL) text crashes the whiteboard canvas');
     expect(pageAlive).toBe(true);
   }
@@ -117,14 +136,17 @@ test(
 
     const pageAlive = await tb.wbSvg.isVisible().catch(() => false);
     const finalCount = await tb.pathCount();
-    console.log(
-      'Baseline stroke count:',
-      baselineCount,
-      '| after 16x alternating Undo/Redo:',
-      finalCount,
-      '| page alive:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Baseline stroke count:',
+        baselineCount,
+        '| after 16x alternating Undo/Redo:',
+        finalCount,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'Rapidly alternating Undo/Redo 16 times crashes the whiteboard canvas');
     expect(pageAlive).toBe(true);
@@ -163,14 +185,17 @@ test(
 
     const pageAlive = await tb.wbSvg.isVisible().catch(() => false);
     const afterCount = await tb.pathCount();
-    console.log(
-      'Path count before:',
-      beforeCount,
-      '| after mid-drag tool switch:',
-      afterCount,
-      '| page alive:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before:',
+        beforeCount,
+        '| after mid-drag tool switch:',
+        afterCount,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'Switching from Pen to Eraser mid-drag (before mouseup) crashes the whiteboard canvas');
     expect(pageAlive).toBe(true);
@@ -190,7 +215,7 @@ test(
     if (!panelOpened) return;
 
     const optionCount = await tb.backgroundOptions.count();
-    console.log('Background option count:', optionCount);
+    test.info().annotations.push({ type: 'note', description: ['Background option count:', optionCount].join(' ') });
     const clicksToTry = Math.min(optionCount, 5);
     for (let i = 0; i < clicksToTry; i++) {
       await tb.backgroundOptions
@@ -203,7 +228,15 @@ test(
 
     const activeCount = await tb.backgroundActive.count();
     const pageAlive = await tb.wbSvg.isVisible().catch(() => false);
-    console.log('Active background option count after rapid switching:', activeCount, '| page alive:', pageAlive);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Active background option count after rapid switching:',
+        activeCount,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(
       activeCount > 1 || !pageAlive,

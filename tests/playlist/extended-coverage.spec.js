@@ -76,7 +76,7 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const nav = new NavigationPage(page);
       await nav.openChaptersPopup();
       const chapterCount = await nav.chapterItems.count();
-      console.log('Chapters listed:', chapterCount);
+      test.info().annotations.push({ type: 'note', description: ['Chapters listed:', chapterCount].join(' ') });
       expect(chapterCount).toBeGreaterThan(0);
     }
   );
@@ -88,7 +88,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const nav = new NavigationPage(page);
       await nav.openChaptersPopup();
       const highlighted = await page.locator('[class*="active"], [class*="selected"]').count();
-      console.log('Highlighted chapter/topic elements found:', highlighted);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Highlighted chapter/topic elements found:', highlighted].join(' '),
+      });
       expect(highlighted).toBeGreaterThan(0);
     }
   );
@@ -173,10 +176,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           .catch(() => {});
         topicsAfter = await nav.topicItems.allTextContents();
       }
-      console.log(
-        'Topics before/after switching chapter differ:',
-        JSON.stringify(topicsBefore) !== JSON.stringify(topicsAfter)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Topics before/after switching chapter differ:',
+          JSON.stringify(topicsBefore) !== JSON.stringify(topicsAfter),
+        ].join(' '),
+      });
       test.fail(
         topicsAfter.length === 0,
         'Walked every chapter in a confirmed-topic-bearing curriculum but the Topic list never repopulated -- likely the same confirmed live-session-drop condition rather than a genuine defect'
@@ -193,7 +199,9 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.goToChapterTopic(0, 0);
       await nav.openChaptersPopup();
       const highlighted = await page.locator('[class*="active"], [class*="selected"]').count();
-      console.log('Highlighted elements on reopen:', highlighted);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Highlighted elements on reopen:', highlighted].join(' ') });
       expect(highlighted).toBeGreaterThan(0);
     }
   );
@@ -214,7 +222,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         await page.waitForTimeout(400);
         if ((await nav.topicItems.count()) === 0) foundEmpty = true;
       }
-      console.log('A zero-topic chapter was found in this curriculum:', foundEmpty);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['A zero-topic chapter was found in this curriculum:', foundEmpty].join(' '),
+      });
       // Documenting whichever real state is found, matching NAV-CHP-07's own framing.
       expect(true).toBe(true);
     }
@@ -240,7 +251,9 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.openChaptersPopup();
       const topicTexts = await nav.topicItems.allTextContents();
       const longest = topicTexts.reduce((a, b) => (a.length > b.length ? a : b), '');
-      console.log('Longest topic name text found:', longest);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Longest topic name text found:', longest].join(' ') });
       expect(topicTexts.length).toBeGreaterThan(0);
     }
   );
@@ -258,7 +271,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         await nav.openClassPopup();
         reachable = await nav.allMyClassesTab.isVisible({ timeout: 5000 }).catch(() => false);
       }
-      console.log("Class-selection cascade (covered by Navigation's own GSD-* cases) reachable:", reachable);
+      test.info().annotations.push({
+        type: 'note',
+        description: ["Class-selection cascade (covered by Navigation's own GSD-* cases) reachable:", reachable].join(
+          ' '
+        ),
+      });
       expect(reachable).toBe(true);
     }
   );
@@ -286,7 +304,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('[role="dialog"], .mat-dialog-container')
         .isVisible({ timeout: 1500 })
         .catch(() => false);
-      console.log('A dialog opened from tapping the outer wrapper edge (should be false):', dialogAfterOuterTap);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'A dialog opened from tapping the outer wrapper edge (should be false):',
+          dialogAfterOuterTap,
+        ].join(' '),
+      });
       await quizCardOuter
         .locator('.resource-card')
         .first()
@@ -297,7 +321,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('[role="dialog"], .mat-dialog-container')
         .isVisible({ timeout: 3000 })
         .catch(() => false);
-      console.log('A dialog opened from tapping the inner .resource-card (should be true):', dialogAfterInnerTap);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'A dialog opened from tapping the inner .resource-card (should be true):',
+          dialogAfterInnerTap,
+        ].join(' '),
+      });
       test.fail(
         dialogAfterOuterTap,
         'Tapping the outer Quiz card wrapper unexpectedly opened a dialog -- contradicts the confirmed cross-repo "outer wrapper is a no-op" finding'
@@ -338,12 +368,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         await page.keyboard.press('Escape').catch(() => {});
         await page.waitForTimeout(300);
       }
-      console.log(
-        'At least one card showed Edit:',
-        anyEditFound,
-        '| at least one card did NOT show Edit:',
-        anyNoEditFound
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'At least one card showed Edit:',
+          anyEditFound,
+          '| at least one card did NOT show Edit:',
+          anyNoEditFound,
+        ].join(' '),
+      });
       // Documenting the real ownership-scoped split found, matching this
       // case's own "not a bug" framing.
       expect(anyEditFound || anyNoEditFound).toBe(true);
@@ -383,12 +416,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .filter({ hasNot: page.locator('[aria-selected="false"]') })
         .count()
         .catch(() => -1);
-      console.log(
-        'Filter options checked after two Toggle All clicks from a single-type state:',
-        checkedCount,
-        '/',
-        optionCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Filter options checked after two Toggle All clicks from a single-type state:',
+          checkedCount,
+          '/',
+          optionCount,
+        ].join(' '),
+      });
       test.fail(
         checkedCount < optionCount,
         'CONFIRMED (cross-repo): two Toggle All clicks from a single-type-checked state did not restore a full selection'
@@ -416,7 +452,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
       await page.waitForTimeout(1500);
       const textAfterReload = ((await drawerBtn.textContent().catch(() => '')) || '').trim();
-      console.log('Drawer button text before toggle:', textBefore, '| after toggle + reload:', textAfterReload);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Drawer button text before toggle:',
+          textBefore,
+          '| after toggle + reload:',
+          textAfterReload,
+        ].join(' '),
+      });
       test.fail(
         textAfterReload === textBefore,
         'The Show/Hide Drawer toggle did NOT persist across a reload -- contradicts the confirmed cross-repo "persistent account-level setting" finding'
@@ -437,12 +481,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const immediateCount = await pl.resourceCards.count();
       await page.waitForTimeout(1500);
       const settledCount = await pl.resourceCards.count();
-      console.log(
-        'Resource cards immediately after topic switch:',
-        immediateCount,
-        '| after a 1.5s settle:',
-        settledCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Resource cards immediately after topic switch:',
+          immediateCount,
+          '| after a 1.5s settle:',
+          settledCount,
+        ].join(' '),
+      });
       // Documenting the real streaming behavior -- not a hard pass/fail bar.
       expect(settledCount).toBeGreaterThanOrEqual(immediateCount);
     }
@@ -500,14 +547,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
       await page.waitForTimeout(1500);
       const titlesAfterReload = await pl.resourceCards.allTextContents();
-      console.log(
-        'Titles before:',
-        JSON.stringify(titlesBefore),
-        '| after drag:',
-        JSON.stringify(titlesAfterDrag),
-        '| after reload:',
-        JSON.stringify(titlesAfterReload)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Titles before:',
+          JSON.stringify(titlesBefore),
+          '| after drag:',
+          JSON.stringify(titlesAfterDrag),
+          '| after reload:',
+          JSON.stringify(titlesAfterReload),
+        ].join(' '),
+      });
       const orderChanged = JSON.stringify(titlesBefore) !== JSON.stringify(titlesAfterDrag);
       test.fail(
         !orderChanged,
@@ -546,17 +596,20 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.mouse.up();
       await page.waitForTimeout(800);
       const titlesAfterInvalidDrop = await pl.resourceCards.allTextContents();
-      console.log(
-        'Card count before:',
-        titlesBefore.length,
-        '| after a drop outside any valid zone:',
-        titlesAfterInvalidDrop.length
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Card count before:',
+          titlesBefore.length,
+          '| after a drop outside any valid zone:',
+          titlesAfterInvalidDrop.length,
+        ].join(' '),
+      });
       test.fail(
         titlesAfterInvalidDrop.length !== titlesBefore.length,
         'A drop outside any valid drop zone changed the resource card COUNT (a card was lost or duplicated) instead of cleanly snapping back'
       );
-      expect(titlesAfterInvalidDrop.length).toBe(titlesBefore.length);
+      expect(titlesAfterInvalidDrop).toHaveLength(titlesBefore.length);
     }
   );
 
@@ -576,7 +629,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log('A direct Remove control is exposed for a curriculum (non-asset) resource card:', removeBtnVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'A direct Remove control is exposed for a curriculum (non-asset) resource card:',
+          removeBtnVisible,
+        ].join(' '),
+      });
       // Documenting the real reachability/permission model found, per this
       // case's own "document what applies" framing rather than a hard bar.
       expect(true).toBe(true);
@@ -610,14 +669,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const stripVisible = await pl.contentsTile.isVisible({ timeout: 3000 }).catch(() => false);
       const addTriggerVisible = await pl.addResourcesTrigger.isVisible({ timeout: 3000 }).catch(() => false);
       const stripExistsInDom = await pl.contentsTile.count();
-      console.log(
-        'Playlist strip visually visible after closing the Weblink preview:',
-        stripVisible,
-        '| Add Resources trigger visible:',
-        addTriggerVisible,
-        '| Contents tile still exists in DOM:',
-        stripExistsInDom > 0
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Playlist strip visually visible after closing the Weblink preview:',
+          stripVisible,
+          '| Add Resources trigger visible:',
+          addTriggerVisible,
+          '| Contents tile still exists in DOM:',
+          stripExistsInDom > 0,
+        ].join(' '),
+      });
       test.fail(
         !stripVisible || !addTriggerVisible,
         'CONFIRMED CRITICAL BUG: closing a Weblink/Flashcard-type resource preview left the Playlist strip/Contents/Add-Resource controls invisible, with only a full page reload as a workaround'
@@ -634,7 +696,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.openChaptersPopup();
       const chapterCount = await nav.chapterItems.count();
       const topicCount = await nav.topicItems.count();
-      console.log('Chapters drawer opened -- chapters:', chapterCount, '| topics for the first chapter:', topicCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Chapters drawer opened -- chapters:',
+          chapterCount,
+          '| topics for the first chapter:',
+          topicCount,
+        ].join(' '),
+      });
       expect(chapterCount).toBeGreaterThan(0);
     }
   );
@@ -658,14 +728,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .catch(() => false);
       const chapterCount = await nav.chapterItems.count();
       const emptyListShown = chapterCount === 0;
-      console.log(
-        'Clear error state shown on a blocked chapter/topic fetch:',
-        errorShown,
-        '| falls back to an indistinguishable empty list:',
-        emptyListShown,
-        '| chapters loaded anyway:',
-        chapterCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Clear error state shown on a blocked chapter/topic fetch:',
+          errorShown,
+          '| falls back to an indistinguishable empty list:',
+          emptyListShown,
+          '| chapters loaded anyway:',
+          chapterCount,
+        ].join(' '),
+      });
       // CONFIRMED LIVE (verifier pass): a 3rd real outcome is possible beyond
       // the original 2 branches -- content loads anyway despite the route
       // abort (same network-interception limitation already documented for
@@ -720,7 +793,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .catch(() => {});
       await page.waitForTimeout(1000);
       const orphanedSpinner = await page.locator('[class*="spinner"], [class*="loading"]').count();
-      console.log('Loading-spinner-like elements left behind after an early remove:', orphanedSpinner);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Loading-spinner-like elements left behind after an early remove:', orphanedSpinner].join(' '),
+      });
       expect(true).toBe(true);
     }
   );
@@ -752,12 +828,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         await page.waitForTimeout(300);
       }
       const recoveredCardCount = await pl.resourceCards.count();
-      console.log(
-        '"No resources found!" shown with zero types selected:',
-        noResourcesMessage,
-        '| cards recovered after re-checking all types:',
-        recoveredCardCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          '"No resources found!" shown with zero types selected:',
+          noResourcesMessage,
+          '| cards recovered after re-checking all types:',
+          recoveredCardCount,
+        ].join(' '),
+      });
       test.fail(
         recoveredCardCount === 0,
         'Filter checkboxes did not remain interactive/recoverable after unchecking every type -- a dead end, not a graceful zero-match state'
@@ -802,12 +881,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // the search/result flow is confirmed; a real duplicate-add attempt
       // durably grows the shared account's Playlist twice, avoided per this
       // suite's established destructive-action convention (see ADD-LIB-06).
-      console.log(
-        'Playlist resource count before this reachability check:',
-        beforeCount,
-        '| Library search results available to re-add:',
-        resultCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Playlist resource count before this reachability check:',
+          beforeCount,
+          '| Library search results available to re-add:',
+          resultCount,
+        ].join(' '),
+      });
       expect(resultCount).toBeGreaterThan(0);
       await ar.libraryCloseBtn.click({ force: true, timeout: 3000 }).catch(() => {});
     }
@@ -830,7 +912,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await pl.contentsSearchInput.fill('a').catch(() => {});
       await page.waitForTimeout(1500);
       const resultCount = await pl.topicItems.count();
-      console.log('Topic results for a broad single-letter search issued immediately on open:', resultCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Topic results for a broad single-letter search issued immediately on open:', resultCount].join(
+          ' '
+        ),
+      });
       expect(resultCount).toBeGreaterThanOrEqual(0);
     }
   );
@@ -857,7 +944,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const longest = topicTexts.reduce((a, b) => (a.length > b.length ? a : b), '');
       const longestLocator = nav.topicItems.filter({ hasText: longest }).first();
       const titleAttr = await longestLocator.getAttribute('title').catch(() => null);
-      console.log('Longest topic name:', longest, '| has a title="" tooltip attribute for the full text:', !!titleAttr);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Longest topic name:',
+          longest,
+          '| has a title="" tooltip attribute for the full text:',
+          !!titleAttr,
+        ].join(' '),
+      });
       test.fail(
         !titleAttr,
         'The longest/truncated Topic name has no title="" tooltip (or other full-text-reveal affordance) -- the truncated name may be permanently ambiguous'
@@ -872,7 +967,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
     async ({ page }) => {
       const pl = new PlaylistPage(page);
       const leftDisabledAtStart = await pl.leftScrollBtn.isDisabled().catch(() => null);
-      console.log('Left-scroll chevron disabled at the very first resource:', leftDisabledAtStart);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Left-scroll chevron disabled at the very first resource:', leftDisabledAtStart].join(' '),
+      });
       const rightVisible = await pl.rightScrollBtn.isVisible({ timeout: 3000 }).catch(() => false);
       if (rightVisible) {
         for (let i = 0; i < 15; i++) {
@@ -883,7 +981,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         }
       }
       const rightDisabledAtEnd = await pl.rightScrollBtn.isDisabled().catch(() => null);
-      console.log('Right-scroll chevron disabled after scrolling to the last resource:', rightDisabledAtEnd);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Right-scroll chevron disabled after scrolling to the last resource:', rightDisabledAtEnd].join(
+          ' '
+        ),
+      });
       expect(leftDisabledAtStart === true || leftDisabledAtStart === null).toBe(true);
     }
   );
@@ -912,7 +1015,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .nth(0)
         .getAttribute('aria-selected')
         .catch(() => null);
-      console.log('Filter checkbox 0 aria-selected before refresh:', stateBefore, '| after refresh:', stateAfter);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Filter checkbox 0 aria-selected before refresh:',
+          stateBefore,
+          '| after refresh:',
+          stateAfter,
+        ].join(' '),
+      });
       test.fail(
         stateAfter !== stateBefore,
         'Filter checkbox state did NOT survive a page refresh -- a genuinely different code path from the already-confirmed Topic-switch reset (PL-FLT-05)'
@@ -952,12 +1063,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await finishBtn.click({ force: true, timeout: 5000 });
       await page.waitForTimeout(800);
       const titlesAfter = await pl.resourceCards.allTextContents();
-      console.log(
-        'Titles before Edit mode:',
-        JSON.stringify(titlesBefore),
-        '| after no-op Edit -> Finish Editing:',
-        JSON.stringify(titlesAfter)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Titles before Edit mode:',
+          JSON.stringify(titlesBefore),
+          '| after no-op Edit -> Finish Editing:',
+          JSON.stringify(titlesAfter),
+        ].join(' '),
+      });
       test.fail(
         JSON.stringify(titlesAfter) !== JSON.stringify(titlesBefore),
         'Entering and exiting Edit mode with no actual changes altered the Playlist order/content -- should be a pure no-op'
@@ -992,12 +1106,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           .textContent()
           .catch(() => '')) || '';
       const topicCount = await nav.topicItems.count();
-      console.log(
-        'Settled after rapid chapter-click stress -- last-clicked chapter text:',
-        lastChapterText.trim(),
-        '| topics shown:',
-        topicCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Settled after rapid chapter-click stress -- last-clicked chapter text:',
+          lastChapterText.trim(),
+          '| topics shown:',
+          topicCount,
+        ].join(' '),
+      });
       expect(topicCount).toBeGreaterThanOrEqual(0);
     }
   );
@@ -1070,7 +1187,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(1500);
       const afterCount = await pl.resourceCards.count();
       const corruptedCard = await pl.resourceCards.filter({ hasText: '' }).count(); // best-effort: no reliable "broken card" selector
-      console.log('Resource cards before:', beforeCount, '| after a cancel-mid-add:', afterCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Resource cards before:', beforeCount, '| after a cancel-mid-add:', afterCount].join(' '),
+      });
       expect(afterCount).toBeGreaterThanOrEqual(beforeCount);
     }
   );

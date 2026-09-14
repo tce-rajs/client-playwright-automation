@@ -34,7 +34,7 @@ test('PL-EBK-03: A subject with more than one eBook available', { tag: ['@bounda
   await pl.eBooksTile.click();
   await expect(page.getByText('Choose an eBook')).toBeVisible();
   const count = await pl.eBookLaunchButtons.count();
-  console.log('eBooks available for this subject:', count);
+  test.info().annotations.push({ type: 'note', description: ['eBooks available for this subject:', count].join(' ') });
   if (count < 2) {
     test.fail(
       true,
@@ -60,6 +60,9 @@ test('PL-EBK-04: Clicking an eBook thumbnail actually opens the reader', { tag: 
     .getByText('Choose an eBook')
     .isVisible()
     .catch(() => false);
-  console.log('Still showing the "Choose an eBook" picker after clicking a book:', stillOnPicker);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Still showing the "Choose an eBook" picker after clicking a book:', stillOnPicker].join(' '),
+  });
   expect(stillOnPicker).toBe(false);
 });

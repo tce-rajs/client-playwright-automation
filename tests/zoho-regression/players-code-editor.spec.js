@@ -63,8 +63,16 @@ test(
     const plr = new PlayerPage(page);
     await openCodeEditor(page, plr);
     const mounted = await plr.monacoEditor.isVisible({ timeout: 10000 }).catch(() => false);
-    const lineCount = mounted ? await plr.monacoViewLines.locator('.view-line').count().catch(() => 0) : 0;
-    console.log('Monaco editor mounted:', mounted, '| visible code lines:', lineCount);
+    const lineCount = mounted
+      ? await plr.monacoViewLines
+          .locator('.view-line')
+          .count()
+          .catch(() => 0)
+      : 0;
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Monaco editor mounted:', mounted, '| visible code lines:', lineCount].join(' '),
+    });
 
     test.fail(
       !mounted || lineCount === 0,
@@ -90,8 +98,13 @@ test(
     await plr.codeRunBtn.click({ force: true });
     await page.waitForTimeout(3000);
     const outputText = await plr.codeOutputPaneText().catch(() => '');
-    console.log('Output after running empty code:', JSON.stringify(outputText.slice(0, 300)));
-    const showsRawInternalError = /error during exec|expected an indented block|traceback \(most recent/i.test(outputText);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Output after running empty code:', JSON.stringify(outputText.slice(0, 300))].join(' '),
+    });
+    const showsRawInternalError = /error during exec|expected an indented block|traceback \(most recent/i.test(
+      outputText
+    );
 
     test.fail(
       showsRawInternalError,
@@ -130,7 +143,13 @@ test(
       if (!root) return null;
       const els = Array.from(root.querySelectorAll('*')).filter((el) => {
         const r = el.getBoundingClientRect();
-        return r.width > 20 && r.height > 10 && el.textContent && el.textContent.trim().length > 3 && el.children.length === 0;
+        return (
+          r.width > 20 &&
+          r.height > 10 &&
+          el.textContent &&
+          el.textContent.trim().length > 3 &&
+          el.children.length === 0
+        );
       });
       for (let i = 0; i < els.length; i++) {
         for (let j = i + 1; j < els.length; j++) {
@@ -147,7 +166,10 @@ test(
       }
       return null;
     });
-    console.log('Significant text-element overlap found after collapsing:', JSON.stringify(overlapInfo));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Significant text-element overlap found after collapsing:', JSON.stringify(overlapInfo)].join(' '),
+    });
 
     test.fail(
       Boolean(overlapInfo),
@@ -167,7 +189,10 @@ test(
     await openCodeEditor(page, plr);
     const addToPlaylistBtn = page.getByText(/add to playlist/i).first();
     const visible = await addToPlaylistBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('"Add to Playlist" visible in the Code Editor:', visible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"Add to Playlist" visible in the Code Editor:', visible].join(' '),
+    });
 
     test.fail(
       !visible,
@@ -201,13 +226,22 @@ test(
     await saveBtn.click({ force: true });
     await page.waitForTimeout(2000);
     const afterCount = await pl.resourceCards.count().catch(() => 0);
-    console.log('Playlist resource count before/after Save to Playlist:', beforeCount, afterCount, '| 400 responses:', JSON.stringify(badResponses));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Playlist resource count before/after Save to Playlist:',
+        beforeCount,
+        afterCount,
+        '| 400 responses:',
+        JSON.stringify(badResponses),
+      ].join(' '),
+    });
 
     test.fail(
       badResponses.length > 0,
       `CONFIRMED (matches Zoho TCN-I14943): "Save to Playlist" produced a real 400 error response: ${JSON.stringify(badResponses)}`
     );
-    expect(badResponses.length).toBe(0);
+    expect(badResponses).toHaveLength(0);
   }
 );
 
@@ -222,7 +256,10 @@ test(
     await pl.ensureResourcesPresent();
     const { stillStuck } = await ar.openPickerReliably(ar.actions.library);
     if (!stillStuck) await ar.actions.library.click({ force: true });
-    const libraryOpen = await ar.libraryResults.first().isVisible({ timeout: 10000 }).catch(() => false);
+    const libraryOpen = await ar.libraryResults
+      .first()
+      .isVisible({ timeout: 10000 })
+      .catch(() => false);
     test.fail(!libraryOpen, 'The Library picker did not open reliably this pass');
     if (!libraryOpen) {
       expect(libraryOpen).toBe(true);
@@ -242,7 +279,10 @@ test(
     await plr.openResourceCard(newCard);
     await page.waitForTimeout(2000);
     const monacoMounted = await plr.monacoEditor.isVisible({ timeout: 8000 }).catch(() => false);
-    console.log('Monaco editor mounted for the Library code file:', monacoMounted);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Monaco editor mounted for the Library code file:', monacoMounted].join(' '),
+    });
 
     test.fail(
       !monacoMounted,

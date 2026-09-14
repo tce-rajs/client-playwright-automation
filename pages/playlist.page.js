@@ -7,7 +7,7 @@
 // (playlist-contents-selector) turned out not to be the real click target —
 // playlist-chapter-topic-btn is the actual CONTENTS tile trigger.
 
-const { loginWithPin } = require('./auth.helper');
+const { loginWithPin } = require('../utils/auth.helper');
 
 class PlaylistPage {
   constructor(page) {
@@ -83,7 +83,7 @@ class PlaylistPage {
   }
 
   /** Log in with a PIN from Guest Mode — the starting point for every Playlist test.
-   * Retries once on the transient post-login-race timeout (see auth.helper.js). */
+   * Retries once on the transient post-login-race timeout (see utils/auth.helper.js). */
   async loginWithPin(pin) {
     await loginWithPin(this.page, pin);
   }

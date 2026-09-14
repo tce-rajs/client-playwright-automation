@@ -57,7 +57,10 @@ test(
     await expect(cmp.triggerBtn).toBeVisible({ timeout: 10000 });
     await cmp.openTrigger();
     const analyseItVisible = await cmp.analyseItItem.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('AnalyseIt item visible after opening the Compass trigger:', analyseItVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['AnalyseIt item visible after opening the Compass trigger:', analyseItVisible].join(' '),
+    });
     expect(analyseItVisible).toBe(true);
   }
 );
@@ -69,7 +72,10 @@ test(
     const cmp = new CompassPage(page);
     await cmp.openTrigger();
     const analyseItVisible = await cmp.analyseItItem.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('AnalyseIt visible on an assigned class/subject:', analyseItVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['AnalyseIt visible on an assigned class/subject:', analyseItVisible].join(' '),
+    });
     expect(analyseItVisible).toBe(true);
     // The cross-tenant (unassigned) half of this check is the same scenario
     // as CMP-ADV-02 -- see that test.
@@ -85,7 +91,10 @@ test(
     await cmp.analyseItItem.click({ force: true });
     await page.waitForTimeout(1000);
     const noHomeworkVisible = await cmp.noHomeworkMessage.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Graceful "no homework" message shown:', noHomeworkVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Graceful "no homework" message shown:', noHomeworkVisible].join(' '),
+    });
     test.fail(
       !noHomeworkVisible,
       'AnalyseIt with no assignment data does not show the expected graceful "no homework" message -- may be showing an empty placeholder instead (a confirmed bug on other accounts per the reference suite)'
@@ -124,7 +133,12 @@ test(
     const cmp = new CompassPage(page);
     await cmp.openTrigger();
     const openWidgetsVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('ExploreIt "Open Widgets" link visible (implies widget tiles present):', openWidgetsVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['ExploreIt "Open Widgets" link visible (implies widget tiles present):', openWidgetsVisible].join(
+        ' '
+      ),
+    });
     test.fail(!openWidgetsVisible, 'No ExploreIt widget tiles/Open Widgets link found for this chapter this pass');
     expect(openWidgetsVisible).toBe(true);
   }
@@ -141,12 +155,15 @@ test(
     await cmp.openTrigger();
     const openWidgetsVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 3000 }).catch(() => false);
     const brokenPlaceholder = await page.locator('.ng-star-inserted:empty').count();
-    console.log(
-      'On a different chapter -- ExploreIt widgets present:',
-      openWidgetsVisible,
-      '| empty Angular placeholder nodes nearby:',
-      brokenPlaceholder
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'On a different chapter -- ExploreIt widgets present:',
+        openWidgetsVisible,
+        '| empty Angular placeholder nodes nearby:',
+        brokenPlaceholder,
+      ].join(' '),
+    });
     test.fail(
       !openWidgetsVisible === false && brokenPlaceholder > 5,
       'Possible broken empty-state placeholder found instead of a clean zero-widget hide'
@@ -164,7 +181,10 @@ test(
     const cmp = new CompassPage(page);
     await cmp.openTrigger();
     const revisionVisible = await cmp.revisionTestsItem.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Revision Tests item visible on this class/subject:', revisionVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Revision Tests item visible on this class/subject:', revisionVisible].join(' '),
+    });
     // Isolating the individual flag states needs specific test data not
     // identified this pass -- documenting the combined-state observation.
     test.fail(
@@ -191,12 +211,15 @@ test(
     const nextByTitle = page.locator('[title="Next"]');
     const nextCount = await nextByTitle.count();
     const dataQaIdCount = await page.locator('[title="Next"][data-qa-id]').count();
-    console.log(
-      'Pagination "Next" controls found by fragile title attribute:',
-      nextCount,
-      '| with a stable data-qa-id:',
-      dataQaIdCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Pagination "Next" controls found by fragile title attribute:',
+        nextCount,
+        '| with a stable data-qa-id:',
+        dataQaIdCount,
+      ].join(' '),
+    });
     // FIXED (test-authoring gap, not app bug): the original assertion assumed
     // nextCount > 0 (real pagination controls reachable) always holds, which
     // depends on real assignment/homework data existing to paginate through --
@@ -226,10 +249,13 @@ test(
     const cmp = new CompassPage(page);
     await expect(cmp.triggerBtn).toBeVisible({ timeout: 10000 });
     const questionBankVisibleInTeaching = await cmp.questionBankNavItem.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      'Question Bank nav item visible while still in Teaching mode (should be false):',
-      questionBankVisibleInTeaching
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Question Bank nav item visible while still in Teaching mode (should be false):',
+        questionBankVisibleInTeaching,
+      ].join(' '),
+    });
     expect(questionBankVisibleInTeaching).toBe(false);
   }
 );
@@ -241,7 +267,10 @@ test(
     const cmp = new CompassPage(page);
     await cmp.switchToPlanningMode();
     const questionBankVisible = await cmp.questionBankNavItem.isVisible({ timeout: 8000 }).catch(() => false);
-    console.log('Question Bank nav item visible after switching to Planning mode:', questionBankVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Question Bank nav item visible after switching to Planning mode:', questionBankVisible].join(' '),
+    });
     expect(questionBankVisible).toBe(true);
     await cmp.questionBankNavItem.click({ force: true });
     await page.waitForTimeout(1000);
@@ -258,11 +287,13 @@ test(
     await cmp.questionBankNavItem.click({ force: true });
     await page.waitForTimeout(1500);
     const cardCount = await cmp.questionCards.count();
-    console.log('Question cards found:', cardCount);
+    test.info().annotations.push({ type: 'note', description: ['Question cards found:', cardCount].join(' ') });
     test.fail(cardCount === 0, 'No question cards rendered in Question Bank this pass');
     if (cardCount > 0) {
       const cardText = await cmp.questionCards.first().textContent();
-      console.log('First card text sample:', cardText.slice(0, 150));
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['First card text sample:', cardText.slice(0, 150)].join(' ') });
     }
     expect(cardCount).toBeGreaterThan(0);
     await cmp.switchToTeachingMode();
@@ -290,7 +321,10 @@ test(
       .getByRole('button', { name: /submit answer/i })
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Preview dialog with Submit Answer button opened:', submitAnswerVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Preview dialog with Submit Answer button opened:', submitAnswerVisible].join(' '),
+    });
     // FIXED (test-authoring gap, not app bug): CONFIRMED LIVE this pass --
     // with a much larger question pool (56 cards vs fewer on earlier passes),
     // `.first()` can land on a CUSTOM/open-ended question type (e.g. the pool
@@ -334,7 +368,13 @@ test(
       .getByRole('button', { name: /submit answer/i })
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Clicking near (not precisely on) the checkbox opened the preview dialog instead:', previewOpened);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Clicking near (not precisely on) the checkbox opened the preview dialog instead:',
+        previewOpened,
+      ].join(' '),
+    });
     await page.keyboard.press('Escape');
     await cmp.switchToTeachingMode();
   }
@@ -361,7 +401,10 @@ test(
     await cmp.createQuizBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
     const titleInputVisible = await cmp.quizTitleInput.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Create Quiz dialog with a Title input opened:', titleInputVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Create Quiz dialog with a Title input opened:', titleInputVisible].join(' '),
+    });
     // Deliberately NOT clicking Add Quiz -- would create a permanent real quiz
     // on the shared QA account, same reasoning as other destructive actions
     // avoided elsewhere in this suite.
@@ -396,7 +439,12 @@ test(
       .getByText(/grade or class you selected seems incorrect/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('"Grade or class incorrect" validation error shown for a non-STEM subject:', errorVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"Grade or class incorrect" validation error shown for a non-STEM subject:', errorVisible].join(
+        ' '
+      ),
+    });
     // Documenting the real observed behavior -- the workbook itself frames
     // this as likely-expected validation, not a hard bug, pending a
     // supported-subject retest (see CMP-EXP-03 for that comparison).
@@ -440,7 +488,10 @@ test(
       .getByText(/grade or class you selected seems incorrect/i)
       .textContent()
       .catch(() => null);
-    console.log('Error text on a second non-STEM subject (Hindi Language):', errorText);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Error text on a second non-STEM subject (Hindi Language):', errorText].join(' '),
+    });
     test.fail(
       !errorText,
       'The same "grade or class incorrect" error did not reproduce on a second non-STEM subject -- the STEM-only-allowlist theory may not hold'
@@ -462,7 +513,10 @@ test(
     const hasContent =
       (await cmp.noHomeworkMessage.isVisible({ timeout: 3000 }).catch(() => false)) ||
       (await cmp.detailViewListBtn.isVisible({ timeout: 1000 }).catch(() => false));
-    console.log('AnalyseIt shows real content or a real empty-state message:', hasContent);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['AnalyseIt shows real content or a real empty-state message:', hasContent].join(' '),
+    });
     // FIXED (same confirmed root cause as CMP-TRIG-03, not a new bug): the
     // "no homework" empty-state banner (compass-no-homework-create) renders
     // at the TOP LEVEL of the compass-menu as soon as the trigger opens --
@@ -489,7 +543,13 @@ test(
     const cmp = new CompassPage(page);
     await cmp.openTrigger();
     const exploreItVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('ExploreIt located in Teaching mode (its real location, per CMP-RECONCILE-01):', exploreItVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'ExploreIt located in Teaching mode (its real location, per CMP-RECONCILE-01):',
+        exploreItVisible,
+      ].join(' '),
+    });
     expect(exploreItVisible).toBe(true);
   }
 );
@@ -513,12 +573,15 @@ test(
       .isVisible({ timeout: 3000 })
       .catch(() => false);
     const widgetCount = await page.locator('[data-qa-id^="toolbar-widget-tool-"]').count();
-    console.log(
-      'Broader Discipline-filtered widget browser opened:',
-      disciplineSelectVisible,
-      '| widget tiles shown:',
-      widgetCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Broader Discipline-filtered widget browser opened:',
+        disciplineSelectVisible,
+        '| widget tiles shown:',
+        widgetCount,
+      ].join(' '),
+    });
     expect(disciplineSelectVisible || widgetCount > 0).toBe(true);
   }
 );
@@ -570,7 +633,15 @@ test(
     await page.waitForTimeout(500);
     await cmp.switchToTeachingMode();
     const afterClass = (await page.locator('[data-qa-id="playlist-current-grade-subject-btn"]').textContent()).trim();
-    console.log('Class before switching to Planning:', beforeClass, '| after returning to Teaching:', afterClass);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Class before switching to Planning:',
+        beforeClass,
+        '| after returning to Teaching:',
+        afterClass,
+      ].join(' '),
+    });
     test.fail(
       afterClass !== beforeClass,
       'Switching to Planning mode and back changed the active class unexpectedly -- a teacher mid-lesson would not expect this'
@@ -592,7 +663,10 @@ test(
     await cmp.analyseItItem.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1200);
     const openPanelCount = await page.locator('.compass-detail-view, .analyse-it-panel, [class*="analyseit"]').count();
-    console.log('Panels/views open after a rapid double-click on AnalyseIt:', openPanelCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Panels/views open after a rapid double-click on AnalyseIt:', openPanelCount].join(' '),
+    });
     test.fail(
       openPanelCount > 1,
       'A rapid double-click on AnalyseIt opened multiple stacked/overlapping panels instead of exactly one'
@@ -634,12 +708,15 @@ test(
       .locator('[data-qa-id="playlist-current-grade-subject-btn"]')
       .isVisible()
       .catch(() => false);
-    console.log(
-      'App recovered cleanly after a hard refresh with the Compass widget browser open:',
-      avatarVisible,
-      '| class context intact:',
-      classLabel
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'App recovered cleanly after a hard refresh with the Compass widget browser open:',
+        avatarVisible,
+        '| class context intact:',
+        classLabel,
+      ].join(' '),
+    });
     expect(avatarVisible).toBe(true);
     expect(classLabel).toBe(true);
   }
@@ -660,12 +737,15 @@ test(
       .isVisible({ timeout: 3000 })
       .catch(() => false);
     const emptyStateVisible = await cmp.noHomeworkMessage.isVisible({ timeout: 1000 }).catch(() => false);
-    console.log(
-      'Error/retry state shown on a blocked fetch:',
-      errorStateVisible,
-      '| falls back to (indistinguishable) empty-state message:',
-      emptyStateVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Error/retry state shown on a blocked fetch:',
+        errorStateVisible,
+        '| falls back to (indistinguishable) empty-state message:',
+        emptyStateVisible,
+      ].join(' '),
+    });
     // FIXED (test-authoring gap, not app bug): the original condition only
     // covered "silently falls back to the empty-state message" as the failure
     // mode. CONFIRMED LIVE this pass (same root cause as CMP-TRIG-03/
@@ -736,7 +816,10 @@ test(
     await cmp.noHomeworkCreateLink.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1200);
     const composerCount = await page.locator('[class*="homework-composer"], [data-qa-id*="homework"]').count();
-    console.log('Homework composer instances open after a rapid double-click:', composerCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Homework composer instances open after a rapid double-click:', composerCount].join(' '),
+    });
     test.fail(
       composerCount > 1,
       'Rapidly clicking the Homework create-link opened multiple overlapping composer instances'
@@ -773,7 +856,12 @@ test(
         overflowX: getComputedStyle(el).overflowX,
       }))
       .catch(() => null);
-    console.log('ExploreIt widget list overflow info:', overflowInfo);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['ExploreIt widget list overflow info:', overflowInfo].join(' '),
+      });
     const scrollableOrFits =
       !overflowInfo || overflowInfo.scrollWidth <= overflowInfo.clientWidth + 5 || overflowInfo.overflowX !== 'visible';
     test.fail(
@@ -792,7 +880,10 @@ test(
     await page.waitForTimeout(1000);
     const cmp = new CompassPage(page);
     const triggerVisible = await cmp.triggerBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Compass trigger visible at 375px mobile width:', triggerVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Compass trigger visible at 375px mobile width:', triggerVisible].join(' '),
+    });
     if (triggerVisible) {
       await cmp.triggerBtn.click({ force: true });
       await page.waitForTimeout(600);

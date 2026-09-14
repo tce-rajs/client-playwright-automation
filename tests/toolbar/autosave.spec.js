@@ -47,7 +47,10 @@ test('TB-SAVE-02: Autosave reflects a running stroke count', { tag: '@positive' 
   await expect(tb.savedToast).toBeVisible({ timeout: 15000 });
   const secondSaveText = (await tb.savedToast.textContent()).trim();
 
-  console.log('First save toast:', firstSaveText, '| second save toast:', secondSaveText);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['First save toast:', firstSaveText, '| second save toast:', secondSaveText].join(' '),
+  });
   const firstCount = parseInt(firstSaveText.match(/(\d+)/)?.[1] || '0', 10);
   const secondCount = parseInt(secondSaveText.match(/(\d+)/)?.[1] || '0', 10);
   expect(secondCount).toBeGreaterThan(firstCount);
@@ -71,12 +74,15 @@ test(
       .getByText(/error|failed|not saved|try again/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      '"Whiteboard Saved!" shown despite the save request failing:',
-      savedToastShown,
-      '| error indicator shown:',
-      errorShown
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        '"Whiteboard Saved!" shown despite the save request failing:',
+        savedToastShown,
+        '| error indicator shown:',
+        errorShown,
+      ].join(' '),
+    });
 
     test.fail(
       savedToastShown && !errorShown,

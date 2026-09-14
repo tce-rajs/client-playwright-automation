@@ -46,8 +46,8 @@ test('CORE-04: displayed time advances on its own without a refresh', { tag: '@p
   const calendar = page.locator('[data-qa-id="wb-header-calendar-container"]');
   const before = await calendar.textContent();
   await page.waitForTimeout(61_000);
-  const after = await calendar.textContent();
-  expect(after).not.toBe(before);
+  const after = calendar;
+  await expect(after).not.toHaveText(before);
 });
 
 test('CORE-05: toolbar and its opposite-side toggle button are visible', { tag: '@ui-state' }, async ({ page }) => {
@@ -143,12 +143,15 @@ test(
     const hasAccessibleLabel = await logo.evaluate(
       (el) => !!(el.getAttribute('aria-label') || el.getAttribute('role') || el.title)
     );
-    console.log(
-      'Logo div box after blocked background-image request:',
-      box,
-      '| has an accessible text label:',
-      hasAccessibleLabel
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Logo div box after blocked background-image request:',
+        box,
+        '| has an accessible text label:',
+        hasAccessibleLabel,
+      ].join(' '),
+    });
 
     // Rest of the header (version, clock) must be unaffected by the broken logo.
     await expect(page.locator('[data-qa-id="wb-header-version-text"]')).toBeVisible();
@@ -176,7 +179,12 @@ test(
     const calendar = page.locator('[data-qa-id="wb-header-calendar-container"]');
     await expect(calendar).toBeVisible({ timeout: 15_000 });
     const text = await calendar.textContent();
-    console.log('Header clock text with system year set to 2099:', text);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Header clock text with system year set to 2099:', text].join(' '),
+      });
     // The concern is a hard crash / blank render, not the value's accuracy --
     // any non-empty rendered string means the app shell survived the skew.
     expect(text && text.trim().length).toBeGreaterThan(0);
@@ -198,7 +206,10 @@ test(
         .textContent()
         .catch(() => '')) || '';
     const bodyIsBlank = bodyText.trim().length === 0;
-    console.log('Body text length after fully blocked initial load:', bodyText.trim().length);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Body text length after fully blocked initial load:', bodyText.trim().length].join(' '),
+    });
 
     test.fail(
       bodyIsBlank,
@@ -225,12 +236,15 @@ test(
     const overflowsViewport = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
     );
-    console.log(
-      'Logo moved after long version string:',
-      JSON.stringify(logoBoxBefore) !== JSON.stringify(logoBoxAfter),
-      '| page overflows horizontally:',
-      overflowsViewport
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Logo moved after long version string:',
+        JSON.stringify(logoBoxBefore) !== JSON.stringify(logoBoxAfter),
+        '| page overflows horizontally:',
+        overflowsViewport,
+      ].join(' '),
+    });
 
     const logoMoved =
       logoBoxAfter &&
@@ -262,7 +276,15 @@ test(
       hour: 'numeric',
       hour12: false,
     });
-    console.log('Header clock under UTC+14 spoofed timezone:', displayed, '| expected local hour there:', expectedHour);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Header clock under UTC+14 spoofed timezone:',
+        displayed,
+        '| expected local hour there:',
+        expectedHour,
+      ].join(' '),
+    });
 
     // The header legitimately reflects the spoofed client timezone (display
     // only) -- that part is expected, not a bug. Whether server-side logic

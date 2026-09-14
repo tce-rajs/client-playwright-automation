@@ -65,7 +65,15 @@ test(
     await page.mouse.move(box.x + 400, box.y + 300, { steps: 4 });
     const boxCountAfterMove = await page.locator('svg rect, svg [class*="selection"]').count();
     await page.mouse.up();
-    console.log('Selection rect count mid-drag:', boxCountMidDrag, '| after moving further:', boxCountAfterMove);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Selection rect count mid-drag:',
+        boxCountMidDrag,
+        '| after moving further:',
+        boxCountAfterMove,
+      ].join(' '),
+    });
 
     test.fail(
       boxCountMidDrag === 0,
@@ -95,13 +103,19 @@ test(
     await ah.open();
     await ah.selectChapterBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
-    const chapterVisible = await ah.topicsChapter(0).isVisible({ timeout: 5000 }).catch(() => false);
+    const chapterVisible = await ah
+      .topicsChapter(0)
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
     test.fail(!chapterVisible, 'Select Chapter section not reachable this pass');
     if (!chapterVisible) {
       expect(chapterVisible).toBe(true);
       return;
     }
-    await ah.topicsChapterCheckbox(0).click({ force: true }).catch(() => {});
+    await ah
+      .topicsChapterCheckbox(0)
+      .click({ force: true })
+      .catch(() => {});
     await page.waitForTimeout(500);
     const checkedIndicator = await ah
       .topicsChapter(0)
@@ -109,8 +123,19 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    const checkboxState = await ah.topicsChapterCheckbox(0).isChecked().catch(() => null);
-    console.log('Visible check/tick indicator on selected topic:', checkedIndicator, '| checkbox isChecked():', checkboxState);
+    const checkboxState = await ah
+      .topicsChapterCheckbox(0)
+      .isChecked()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Visible check/tick indicator on selected topic:',
+        checkedIndicator,
+        '| checkbox isChecked():',
+        checkboxState,
+      ].join(' '),
+    });
 
     test.fail(
       !checkedIndicator && checkboxState !== true,
@@ -139,8 +164,14 @@ test(
       return;
     }
     const composerBox = await ah.selectChapterBtn.boundingBox();
-    const trayBox = await pl.resourceCards.first().boundingBox().catch(() => null);
-    console.log('Composer box:', composerBox, '| resource tray card box:', trayBox);
+    const trayBox = await pl.resourceCards
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Composer box:', composerBox, '| resource tray card box:', trayBox].join(' '),
+    });
     test.fail(!trayBox, 'No resource tray card found this pass to check for overlap');
     if (!trayBox) {
       expect(trayBox).toBeTruthy();

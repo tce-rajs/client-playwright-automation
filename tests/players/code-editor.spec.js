@@ -50,7 +50,7 @@ test('PLR-CODE-02: The code is displayed and readable in the editor', { tag: '@p
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const text = await plr.monacoViewLines.textContent();
-  console.log('Editor text length:', text.length);
+  test.info().annotations.push({ type: 'note', description: ['Editor text length:', text.length].join(' ') });
   expect(text.trim().length).toBeGreaterThan(20);
 });
 
@@ -59,7 +59,7 @@ test('PLR-CODE-03: Run executes the code and produces output', { tag: '@ui-state
   const plr = new PlayerPage(page);
   await openCodeEditor(page, plr);
   const isWeb = (await plr.codeLanguageTabs.count()) > 0;
-  console.log('Editor kind:', isWeb ? 'web' : 'console');
+  test.info().annotations.push({ type: 'note', description: ['Editor kind:', isWeb ? 'web' : 'console'].join(' ') });
 
   if (isWeb) {
     await expect(plr.codeOutputFrame).toHaveCount(0);
@@ -71,7 +71,10 @@ test('PLR-CODE-03: Run executes the code and produces output', { tag: '@ui-state
     await plr.codeRunBtn.click({ force: true });
     await page.waitForTimeout(6000);
     const after = await plr.codeOutputPaneText();
-    console.log('Output pane before Run:', JSON.stringify(before), '| after:', JSON.stringify(after));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Output pane before Run:', JSON.stringify(before), '| after:', JSON.stringify(after)].join(' '),
+    });
     expect(after.length).toBeGreaterThan(before.length);
     expect(after).toMatch(/ZERODIVISIONERROR|===/i);
   }
@@ -118,7 +121,10 @@ test('PLR-CODE-06: The Minimap can be shown and hidden', { tag: '@positive' }, a
   const minimapWidthAfter = await page.evaluate(
     () => document.querySelector('.minimap')?.getBoundingClientRect().width || 0
   );
-  console.log('Minimap width before:', minimapWidthBefore, '| after toggle:', minimapWidthAfter);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Minimap width before:', minimapWidthBefore, '| after toggle:', minimapWidthAfter].join(' '),
+  });
   expect(minimapWidthAfter).not.toBe(minimapWidthBefore);
 });
 
@@ -236,15 +242,18 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     await openCodeEditor(page, plr);
-    const iframeCount = await plr.codeEditorComponent.locator('iframe').count();
+    const iframeCount = plr.codeEditorComponent.locator('iframe');
     const isWeb = (await plr.codeLanguageTabs.count()) > 0;
-    console.log(
-      'Editor kind:',
-      isWeb ? 'web (expects 1 preview iframe)' : 'console (expects 0 iframes)',
-      '| iframe count:',
-      iframeCount
-    );
-    if (!isWeb) expect(iframeCount).toBe(0);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Editor kind:',
+        isWeb ? 'web (expects 1 preview iframe)' : 'console (expects 0 iframes)',
+        '| iframe count:',
+        iframeCount,
+      ].join(' '),
+    });
+    if (!isWeb) await expect(iframeCount).toHaveCount(0);
     // CONFIRMED LIVE (verifier pass): codeTextSizeSelect only renders once
     // the Settings gear panel is open -- the original test never opened it,
     // so the id check always read null regardless of the real DOM.
@@ -269,7 +278,10 @@ test(
       .getByText(/force\s*stop/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Editor kind:', isWeb ? 'web' : 'console', '| Force Stop visible:', forceStopVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Editor kind:', isWeb ? 'web' : 'console', '| Force Stop visible:', forceStopVisible].join(' '),
+    });
     if (isWeb) {
       test.fail(
         forceStopVisible,
@@ -290,7 +302,10 @@ test(
     await openCodeEditor(page, plr);
     const text = await plr.monacoViewLines.textContent();
     const hasNbsp = / /.test(text || ''); // eslint-disable-line no-irregular-whitespace -- deliberately checking for a literal non-breaking space
-    console.log('Editor text contains a non-breaking space character (U+00A0):', hasNbsp);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Editor text contains a non-breaking space character (U+00A0):', hasNbsp].join(' '),
+    });
     test.fail(
       !hasNbsp,
       "Expected Monaco to render leading indentation using non-breaking spaces on this resource's code -- none found, either this snippet has no indentation or the rendering differs from the confirmed finding"
@@ -318,7 +333,10 @@ test(
       .getByText('Collpase All', { exact: true })
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Label flipped to the misspelled "Collpase All":', misspeltVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Label flipped to the misspelled "Collpase All":', misspeltVisible].join(' '),
+    });
     test.fail(
       misspeltVisible,
       'CONFIRMED real shipped typo: "Expand All" flips to "Collpase All" (missing the second "a") the instant it is clicked'
@@ -341,12 +359,15 @@ test(
       .first()
       .boundingBox()
       .catch(() => null);
-    console.log(
-      'Whiteboard minimap element count (unrelated, same-sounding data-qa-id):',
-      wbMinimapCount,
-      '| Monaco minimap box:',
-      JSON.stringify(monacoMinimapBox)
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Whiteboard minimap element count (unrelated, same-sounding data-qa-id):',
+        wbMinimapCount,
+        '| Monaco minimap box:',
+        JSON.stringify(monacoMinimapBox),
+      ].join(' '),
+    });
     expect(wbMinimapCount).toBeGreaterThanOrEqual(0);
   }
 );
@@ -361,7 +382,13 @@ test(
     await plr.codeThemeSelect.selectOption('vs-light');
     await page.waitForTimeout(1000);
     const wrapperClassRightAfterSelect = await page.locator('.editor-wrapper').first().getAttribute('class');
-    console.log('Theme immediately after selecting vs-light (before any close/reload):', wrapperClassRightAfterSelect);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Theme immediately after selecting vs-light (before any close/reload):',
+        wrapperClassRightAfterSelect,
+      ].join(' '),
+    });
     // CONFIRMED LIVE (verifier pass): if this setting is a real account-level
     // backend save (per the workbook's own claim), closing the panel/player
     // too soon after selecting risks racing that save request. Give it
@@ -377,13 +404,22 @@ test(
     const card = page.locator(CODE_CARD_SELECTOR);
     await plr.openCodeEditorCard(card);
     const wrapperClass = await page.locator('.editor-wrapper').first().getAttribute('class');
-    console.log('Theme after a full page reload (should still be vs-light if settings persist):', wrapperClass);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Theme after a full page reload (should still be vs-light if settings persist):',
+        wrapperClass,
+      ].join(' '),
+    });
     // CONFIRMED LIVE: the theme DOES apply immediately (wrapperClassRightAfterSelect
     // contains vs-light), but does NOT survive a full page reload -- contradicts
     // the workbook's own "genuinely persists at the account level" claim.
     const appliedImmediately = (wrapperClassRightAfterSelect || '').includes('vs-light');
     const survivedReload = (wrapperClass || '').includes('vs-light');
-    console.log('Applied immediately:', appliedImmediately, '| survived reload:', survivedReload);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Applied immediately:', appliedImmediately, '| survived reload:', survivedReload].join(' '),
+    });
     test.fail(
       appliedImmediately && !survivedReload,
       'CONTRADICTS the workbook\'s own claim ("these settings genuinely PERSIST at the account level across runs"): the theme change applies immediately in-session but is LOST on a full page reload -- either a regression, or the original finding was based on a same-session check (e.g. closing/reopening the SAME Code Editor instance without a real page reload) rather than a genuine cross-session/reload persistence test'
@@ -408,7 +444,14 @@ test(
     await plr.codeRunBtn.dblclick({ force: true });
     await page.waitForTimeout(6000);
     const after = await plr.codeOutputPaneText().catch(() => '');
-    console.log('Output pane before/after a rapid double-click Run:', JSON.stringify(before), JSON.stringify(after));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Output pane before/after a rapid double-click Run:',
+        JSON.stringify(before),
+        JSON.stringify(after),
+      ].join(' '),
+    });
     await expect(plr.codeRunBtn).toContainText('Rerun');
   }
 );
@@ -435,12 +478,15 @@ test(
     const output = await plr.codeOutputPaneText();
     const blacklisted = /BLACKLISTED/i.test(output);
     const subclassesLeaked = /<class '/i.test(output);
-    console.log(
-      'Blacklist caught this payload:',
-      blacklisted,
-      '| real subclass list leaked instead:',
-      subclassesLeaked
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Blacklist caught this payload:',
+        blacklisted,
+        '| real subclass list leaked instead:',
+        subclassesLeaked,
+      ].join(' '),
+    });
     test.fail(
       !blacklisted && subclassesLeaked,
       "CONFIRMED (per workbook's prior detailed investigation): the classic Python object-introspection escape (().__class__.__bases__[0].__subclasses__()) is NOT on the sandbox's deny-list and runs freely, unlike named-import/builtin escapes which are correctly blocked -- a real security architecture gap (targeted deny-list, not true capability isolation), even though no immediately-weaponizable path was found this pass"
@@ -475,12 +521,15 @@ test(
       .isVisible({ timeout: 3000 })
       .catch(() => false);
     const editorStillResponsive = await plr.monacoEditor.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log(
-      'A timeout/terminated message or Force Stop control appeared:',
-      timeoutMessageVisible,
-      '| editor still responsive:',
-      editorStillResponsive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'A timeout/terminated message or Force Stop control appeared:',
+        timeoutMessageVisible,
+        '| editor still responsive:',
+        editorStillResponsive,
+      ].join(' '),
+    });
     test.fail(
       !timeoutMessageVisible,
       'No timeout/terminated indication appeared after 20s of a genuine infinite loop -- either it silently hung or needs a longer wait than this pass allowed'
@@ -511,14 +560,17 @@ test(
     const output = await plr.codeOutputPaneText();
     const hasLineNumber = /line\s*\d+/i.test(output);
     const hasErrorType = /syntaxerror|error/i.test(output);
-    console.log(
-      'Error output:',
-      JSON.stringify(output.slice(0, 300)),
-      '| mentions a line number:',
-      hasLineNumber,
-      '| names an error type:',
-      hasErrorType
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Error output:',
+        JSON.stringify(output.slice(0, 300)),
+        '| mentions a line number:',
+        hasLineNumber,
+        '| names an error type:',
+        hasErrorType,
+      ].join(' '),
+    });
     test.fail(
       !(hasLineNumber && hasErrorType),
       'The syntax error output did not clearly identify both a line number and an error type -- a generic message would be a real UX gap for a teacher debugging student code'
@@ -551,7 +603,10 @@ test(
       if (msg.type() === 'error') consoleErrors.push(msg.text());
     });
     await page.waitForTimeout(1500);
-    console.log('Console errors captured:', JSON.stringify(consoleErrors));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Console errors captured:', JSON.stringify(consoleErrors)].join(' '),
+    });
     const outputFrameExists = (await plr.codeOutputFrame.count()) > 0;
     test.fail(
       !outputFrameExists && consoleErrors.length === 0,
@@ -580,7 +635,10 @@ test(
     await page.keyboard.insertText('\n' + largeSnippet);
     await page.waitForTimeout(2000);
     const stillResponsive = await plr.monacoEditor.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Editor still visible/responsive after pasting ~3000 lines:', stillResponsive);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Editor still visible/responsive after pasting ~3000 lines:', stillResponsive].join(' '),
+    });
     expect(stillResponsive).toBe(true);
   }
 );

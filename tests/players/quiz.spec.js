@@ -1,8 +1,9 @@
 // Quiz Player -- CEP_TestCases/Players_Module_Test_Cases_Final.xlsx, "Quiz
 // Player" section (28 rows: PLR-QZ-01..21, PLR-QZ-RECONCILE-01,
-// PLR-EXP-SEC-03, PLR-EXP-01 x2 (workbook ID collision -- two different
-// rows both named PLR-EXP-01), PLR-EXP-02 (Quiz variant -- also collides
-// with the Video Player's own PLR-EXP-02), PLR-EXP-18, PLR-EXP-19).
+// PLR-EXP-SEC-03, PLR-EXP-01, PLR-EXP-26, PLR-EXP-27, PLR-EXP-18, PLR-EXP-19).
+// PLR-EXP-26/27 were renumbered from a workbook ID collision (both were
+// originally PLR-EXP-01/02, duplicating the Quiz/Video sections' own rows
+// of those same IDs) -- see the audit ledger's AUD-09.
 //
 // Confirmed location (cross-checked against automation-cep-cypress's own
 // moduleClassMap.json "quiz" entry): Class 11A Accountancy, chapter index
@@ -99,7 +100,10 @@ test(
     await page.waitForTimeout(1500);
     const onLaunchScreen = await plr.quizLaunchScreenBtn.isVisible({ timeout: 4000 }).catch(() => false);
     const rendererVisible = await plr.quizRenderer.isVisible({ timeout: 4000 }).catch(() => false);
-    console.log('Launch screen shown:', onLaunchScreen, '| renderer loaded directly:', rendererVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Launch screen shown:', onLaunchScreen, '| renderer loaded directly:', rendererVisible].join(' '),
+    });
     expect(onLaunchScreen || rendererVisible).toBe(true);
   }
 );
@@ -110,7 +114,10 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { reachedQuestion, cameraBlocked } = await openQuiz(page, plr);
-    console.log('Reached a real question:', reachedQuestion, '| camera-blocked:', cameraBlocked);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Reached a real question:', reachedQuestion, '| camera-blocked:', cameraBlocked].join(' '),
+    });
     test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
     expect(reachedQuestion).toBe(true);
   }
@@ -256,11 +263,11 @@ test(
     const q1Text = await plr.quizQuestion.textContent();
     await plr.quizNextControl.locator('button').first().click({ force: true });
     await page.waitForTimeout(1500);
-    const q2Text = await plr.quizQuestion.textContent();
-    expect(q2Text).not.toBe(q1Text);
+    const q2Text = plr.quizQuestion;
+    await expect(q2Text).not.toHaveText(q1Text);
     await plr.quizPrevControl.locator('button').first().click({ force: true });
     await page.waitForTimeout(1500);
-    expect(await plr.quizQuestion.textContent()).toBe(q1Text);
+    await expect(plr.quizQuestion).toHaveText(q1Text);
   }
 );
 
@@ -438,7 +445,7 @@ test(
       expect(reachedQuestion).toBe(true);
       return;
     }
-    expect(await plr.quizRenderer.locator('iframe').count()).toBe(0);
+    await expect(plr.quizRenderer.locator('iframe')).toHaveCount(0);
   }
 );
 
@@ -491,7 +498,12 @@ test(
     });
     await page.waitForTimeout(2500);
     const rendererCount = await plr.quizRenderer.count();
-    console.log('lib-quiz-renderer instance count after a rapid triple-click (should be <=1):', rendererCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['lib-quiz-renderer instance count after a rapid triple-click (should be <=1):', rendererCount].join(
+        ' '
+      ),
+    });
     test.fail(
       rendererCount > 1,
       'CONFIRMED RACE (per mature Cypress suite, cross-repo confirmed): a rapid multi-click on a Quiz card opened duplicate stacked quiz instances instead of exactly one'
@@ -545,7 +557,9 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { cameraBlocked } = await openQuiz(page, plr);
-    console.log('Camera-access error shown:', cameraBlocked);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Camera-access error shown:', cameraBlocked].join(' ') });
     // This IS the confirming evidence for the reconciliation question --
     // documented as a real pass (the discrepancy is resolved, not left open).
     expect(typeof cameraBlocked).toBe('boolean');
@@ -592,7 +606,7 @@ test(
 );
 
 test(
-  'PLR-EXP-01 (Quiz, Show-Answer-then-Submit variant): (BLOCKED -- camera-dependent)',
+  'PLR-EXP-26 (Quiz, Show-Answer-then-Submit variant): (BLOCKED -- camera-dependent)',
   { tag: ['@negative', '@bug'] },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -611,7 +625,7 @@ test(
 );
 
 test(
-  'PLR-EXP-02 (Quiz variant): a question data load failure does not corrupt navigation (BLOCKED -- camera-dependent)',
+  'PLR-EXP-27 (Quiz variant): a question data load failure does not corrupt navigation (BLOCKED -- camera-dependent)',
   { tag: ['@negative', '@bug'] },
   async ({ page }) => {
     const plr = new PlayerPage(page);

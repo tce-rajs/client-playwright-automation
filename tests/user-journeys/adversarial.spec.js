@@ -57,14 +57,17 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible()
       .catch(() => false);
-    console.log(
-      'After the full journey + class switch -- Minimap stuck open:',
-      minimapStuck,
-      '| Attendance panel stuck open:',
-      attendanceStuck,
-      '| page alive:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After the full journey + class switch -- Minimap stuck open:',
+        minimapStuck,
+        '| Attendance panel stuck open:',
+        attendanceStuck,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'The realistic multi-panel lesson journey crashes the app outright');
     expect(pageAlive).toBe(true);
@@ -77,12 +80,15 @@ test(
     // Bonus check (not the primary assertion): did the earlier drawing survive?
     await nav.resetToClass('Class 12', 'A', 'Physics').catch(() => {});
     const afterRoundTripCount = await new ToolbarPage(page).waitForBoardToSettle();
-    console.log(
-      'Stroke count before drawing:',
-      beforeStrokeCount,
-      '| after the whole journey + returning to the original class:',
-      afterRoundTripCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Stroke count before drawing:',
+        beforeStrokeCount,
+        '| after the whole journey + returning to the original class:',
+        afterRoundTripCount,
+      ].join(' '),
+    });
   }
 );
 
@@ -107,19 +113,25 @@ test(
       .click({ force: true, timeout: 5000 })
       .then(() => true)
       .catch((e) => {
-        console.log('Magnet click while AI Homework open threw:', e.message.split('\n')[0]);
+        test.info().annotations.push({
+          type: 'note',
+          description: ['Magnet click while AI Homework open threw:', e.message.split('\n')[0]].join(' '),
+        });
         return false;
       });
     await page.waitForTimeout(800);
 
     const bothComposersVisible =
       homeworkOpened && (await ah.homeworkTypeCard.isVisible({ timeout: 2000 }).catch(() => false));
-    console.log(
-      'Magnet tool click succeeded while AI Homework composer was open:',
-      opened,
-      '| AI Homework composer still visible:',
-      bothComposersVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Magnet tool click succeeded while AI Homework composer was open:',
+        opened,
+        '| AI Homework composer still visible:',
+        bothComposersVisible,
+      ].join(' '),
+    });
 
     // Documenting real behavior either way -- a hard crash is the only
     // outright failure condition; a cleanly blocked Magnet click (same
@@ -170,10 +182,15 @@ test(
       .loginWithPin(process.env.VALID_PIN_2)
       .then(() => true)
       .catch((e) => {
-        console.log('Re-login failed:', e.message.split('\n')[0]);
+        test
+          .info()
+          .annotations.push({ type: 'note', description: ['Re-login failed:', e.message.split('\n')[0]].join(' ') });
         return false;
       });
-    console.log('Re-login after signing out mid-class-switch-transition succeeded:', reloginWorked);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Re-login after signing out mid-class-switch-transition succeeded:', reloginWorked].join(' '),
+    });
     test.fail(
       !reloginWorked,
       'Signing out immediately after a mid-transition class switch leaves the account unable to log back in cleanly'

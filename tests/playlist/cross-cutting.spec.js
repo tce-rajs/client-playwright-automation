@@ -60,8 +60,8 @@ test(
     await page.waitForTimeout(500);
     await page.locator('button', { hasText: /finish editing/i }).click();
     await page.waitForTimeout(500);
-    const afterCount = await pl.resourceCards.count();
-    expect(afterCount).toBe(beforeCount);
+    const afterCount = pl.resourceCards;
+    await expect(afterCount).toHaveCount(beforeCount);
   }
 );
 
@@ -94,7 +94,17 @@ test(
       .getByText(/error|failed|try again/i)
       .isVisible()
       .catch(() => false);
-    console.log('Cards before:', beforeCount, '| after failed delete:', afterCount, '| error shown:', errorShown);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Cards before:',
+        beforeCount,
+        '| after failed delete:',
+        afterCount,
+        '| error shown:',
+        errorShown,
+      ].join(' '),
+    });
 
     // The card should NOT have been optimistically removed with no
     // indication anything went wrong.
@@ -123,12 +133,15 @@ test(
       .getByText(/error|retry|failed to load/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Resource cards after topic-switch fetch failure:',
-      cardCount,
-      '| error/retry shown:',
-      errorStateVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Resource cards after topic-switch fetch failure:',
+        cardCount,
+        '| error/retry shown:',
+        errorStateVisible,
+      ].join(' '),
+    });
 
     test.fail(
       cardCount === 0 && !errorStateVisible,
@@ -147,7 +160,10 @@ test(
       const imgs = Array.from(document.querySelectorAll('img'));
       return imgs.filter((img) => img.complete && img.naturalWidth === 0).length;
     });
-    console.log('Broken/failed-to-load images currently visible on the playlist:', brokenImageCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Broken/failed-to-load images currently visible on the playlist:', brokenImageCount].join(' '),
+    });
 
     // Report what's actually there rather than forcing a specific broken URL
     // (no known-broken resource identified in this account) -- if any are
@@ -187,12 +203,15 @@ test(
     await page.waitForTimeout(3000);
 
     const finalTopic = (await pl.contentsTile.textContent()).trim();
-    console.log(
-      'Switched B (delayed) then C (fast); Current Chapter/Topic now:',
-      finalTopic,
-      '| expected Topic C:',
-      topicCText
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Switched B (delayed) then C (fast); Current Chapter/Topic now:',
+        finalTopic,
+        '| expected Topic C:',
+        topicCText,
+      ].join(' '),
+    });
     expect(finalTopic).toContain(topicCText);
   }
 );
@@ -228,7 +247,10 @@ test(
     await pl.openAddResourcesPicker();
     await page.waitForTimeout(1000);
 
-    console.log('API requests matching add-resource/filter from one single "+" click:', requestCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['API requests matching add-resource/filter from one single "+" click:', requestCount].join(' '),
+    });
     expect(requestCount).toBeLessThanOrEqual(1);
   }
 );

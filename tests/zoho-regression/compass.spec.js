@@ -74,7 +74,10 @@ test(
       const title = (await el.getAttribute('title')) || (await el.getAttribute('aria-label')) || '';
       titles.push(title.trim());
     }
-    console.log('First few widget tiles\' hover-name attributes:', JSON.stringify(titles));
+    test.info().annotations.push({
+      type: 'note',
+      description: ["First few widget tiles' hover-name attributes:", JSON.stringify(titles)].join(' '),
+    });
     const allSayCompass = titles.length > 0 && titles.every((t) => /^compass$/i.test(t));
 
     test.fail(
@@ -102,7 +105,10 @@ test(
     await cmp.openTrigger();
     await cmp.revisionTestsItem.click({ force: true });
     await page.waitForTimeout(1500);
-    const card = page.locator('[data-qa-id^="player-student-test-item-sat-"]').filter({ hasText: 'testing title overlap issue' }).first();
+    const card = page
+      .locator('[data-qa-id^="player-student-test-item-sat-"]')
+      .filter({ hasText: 'testing title overlap issue' })
+      .first();
     const cardCount = await card.count();
     test.fail(cardCount === 0, 'The QA-seeded "testing title overlap issue" card was not found this pass');
     if (cardCount === 0) {
@@ -111,11 +117,17 @@ test(
     }
     const titleBox = await card.locator('.title').boundingBox();
     const metaBox = await card.locator('.checkpoint-description').boundingBox();
-    console.log('Title box:', JSON.stringify(titleBox), '| metadata block box:', JSON.stringify(metaBox));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Title box:', JSON.stringify(titleBox), '| metadata block box:', JSON.stringify(metaBox)].join(' '),
+    });
     const overlaps =
-      titleBox && metaBox &&
-      titleBox.x < metaBox.x + metaBox.width && titleBox.x + titleBox.width > metaBox.x &&
-      titleBox.y < metaBox.y + metaBox.height && titleBox.y + titleBox.height > metaBox.y;
+      titleBox &&
+      metaBox &&
+      titleBox.x < metaBox.x + metaBox.width &&
+      titleBox.x + titleBox.width > metaBox.x &&
+      titleBox.y < metaBox.y + metaBox.height &&
+      titleBox.y + titleBox.height > metaBox.y;
     test.fail(
       Boolean(overlaps),
       'CONFIRMED (matches Zoho TCN-I16048): the Revision Test card title overlaps its duration/question-count/date metadata block'
@@ -134,20 +146,39 @@ test(
     await cmp.revisionTestsItem.click({ force: true });
     await page.waitForTimeout(1500);
     const popupBox = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().boundingBox();
-    const trayBox = await pl.resourceCards.first().boundingBox().catch(() => null);
-    console.log('Revision Test popup card box:', JSON.stringify(popupBox), '| Resource Tray (first playlist card) box:', JSON.stringify(trayBox));
+    const trayBox = await pl.resourceCards
+      .first()
+      .boundingBox()
+      .catch(() => null);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Revision Test popup card box:',
+        JSON.stringify(popupBox),
+        '| Resource Tray (first playlist card) box:',
+        JSON.stringify(trayBox),
+      ].join(' '),
+    });
     test.fail(!popupBox || !trayBox, 'Could not measure both the popup and the Resource Tray this pass');
     if (!popupBox || !trayBox) {
       expect(popupBox && trayBox).toBeTruthy();
       return;
     }
     const overlaps =
-      popupBox.x < trayBox.x + trayBox.width && popupBox.x + popupBox.width > trayBox.x &&
-      popupBox.y < trayBox.y + trayBox.height && popupBox.y + popupBox.height > trayBox.y;
+      popupBox.x < trayBox.x + trayBox.width &&
+      popupBox.x + popupBox.width > trayBox.x &&
+      popupBox.y < trayBox.y + trayBox.height &&
+      popupBox.y + popupBox.height > trayBox.y;
     // Also check whether the Resource Tray is actually interactable while the popup is open --
     // this is the workbook's own second, distinct complaint (must close popup first).
-    const trayClickable = await pl.resourceCards.first().isEnabled().catch(() => false);
-    console.log('Resource Tray card still clickable/enabled while popup is open:', trayClickable);
+    const trayClickable = await pl.resourceCards
+      .first()
+      .isEnabled()
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Resource Tray card still clickable/enabled while popup is open:', trayClickable].join(' '),
+    });
     test.fail(
       Boolean(overlaps) || !trayClickable,
       `CONFIRMED (matches Zoho TCN-I16052): the Revision Test popup ${overlaps ? 'overlaps the Resource Tray' : 'does not overlap, but the Resource Tray is not interactable while it is open'}`
@@ -165,7 +196,11 @@ test(
     await cmp.openTrigger();
     await cmp.revisionTestsItem.click({ force: true });
     await page.waitForTimeout(1500);
-    const popupVisibleBefore = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 3000 }).catch(() => false);
+    const popupVisibleBefore = await page
+      .locator('[data-qa-id^="player-student-test-item-sat-"]')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     test.fail(!popupVisibleBefore, 'The Revision Test popup was not open this pass');
     if (!popupVisibleBefore) {
       expect(popupVisibleBefore).toBe(true);
@@ -175,8 +210,18 @@ test(
     await nextTopicBtn.scrollIntoViewIfNeeded();
     await nextTopicBtn.click({ force: true });
     await page.waitForTimeout(1500);
-    const popupStillVisibleAfter = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Revision Test popup still visible after navigating to the next topic:', popupStillVisibleAfter);
+    const popupStillVisibleAfter = await page
+      .locator('[data-qa-id^="player-student-test-item-sat-"]')
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Revision Test popup still visible after navigating to the next topic:',
+        popupStillVisibleAfter,
+      ].join(' '),
+    });
 
     test.fail(
       popupStillVisibleAfter,
@@ -194,7 +239,11 @@ test(
     await cmp.openTrigger();
     await cmp.revisionTestsItem.click({ force: true });
     await page.waitForTimeout(1500);
-    const popupVisibleBefore = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 3000 }).catch(() => false);
+    const popupVisibleBefore = await page
+      .locator('[data-qa-id^="player-student-test-item-sat-"]')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
     test.fail(!popupVisibleBefore, 'The Revision Test popup was not open this pass');
     if (!popupVisibleBefore) {
       expect(popupVisibleBefore).toBe(true);
@@ -203,8 +252,20 @@ test(
     await cmp.triggerBtn.click({ force: true });
     await page.waitForTimeout(1000);
     const compassMenuVisible = await cmp.analyseItItem.isVisible({ timeout: 2000 }).catch(() => false);
-    const popupStillVisible = await page.locator('[data-qa-id^="player-student-test-item-sat-"]').first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('After re-clicking the Compass trigger -- Compass menu visible:', compassMenuVisible, '| Revision Test popup still visible:', popupStillVisible);
+    const popupStillVisible = await page
+      .locator('[data-qa-id^="player-student-test-item-sat-"]')
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After re-clicking the Compass trigger -- Compass menu visible:',
+        compassMenuVisible,
+        '| Revision Test popup still visible:',
+        popupStillVisible,
+      ].join(' '),
+    });
     // The reported bug is specifically BOTH being visible/overlapping at once.
     const bothVisibleAtOnce = compassMenuVisible && popupStillVisible;
     test.fail(
@@ -214,4 +275,3 @@ test(
     expect(bothVisibleAtOnce).toBe(false);
   }
 );
-

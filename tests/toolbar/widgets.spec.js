@@ -100,6 +100,11 @@ test('TB-WIDGET-04: The Discipline filter changes which widgets are shown', { ta
     .locator(galleryWidgets)
     .evaluateAll((els) => els.map((el) => el.getAttribute('data-qa-id')));
 
-  console.log('Gallery widget ids before:', JSON.stringify(beforeIds), '| after:', JSON.stringify(afterIds));
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Gallery widget ids before:', JSON.stringify(beforeIds), '| after:', JSON.stringify(afterIds)].join(
+      ' '
+    ),
+  });
   expect(afterIds).not.toEqual(beforeIds);
 });

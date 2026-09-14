@@ -53,7 +53,7 @@ test('PLR-IMG-01: Clicking an Image resource opens the image viewer frame', { ta
     .first()
     .isVisible({ timeout: 8000 })
     .catch(() => false);
-  console.log('Viewer frame opened:', frameOpened);
+  test.info().annotations.push({ type: 'note', description: ['Viewer frame opened:', frameOpened].join(' ') });
   expect(frameOpened).toBe(true);
 });
 
@@ -63,14 +63,17 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { crashed, imageLoaded, errors } = await openImageTrackingCrash(page, plr);
-    console.log(
-      'Crashed (targetContainer error):',
-      crashed,
-      '| image loaded:',
-      imageLoaded,
-      '| pageerrors:',
-      JSON.stringify(errors)
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Crashed (targetContainer error):',
+        crashed,
+        '| image loaded:',
+        imageLoaded,
+        '| pageerrors:',
+        JSON.stringify(errors),
+      ].join(' '),
+    });
     test.fail(
       crashed || !imageLoaded,
       crashed
@@ -124,9 +127,12 @@ test(
       expect(imageLoaded).toBe(true);
       return;
     }
-    const qaIdInside = await page.locator('.image-gallery [data-qa-id]').count();
-    console.log('data-qa-id attributes found inside .image-gallery (expected 0):', qaIdInside);
-    expect(qaIdInside).toBe(0);
+    const qaIdInside = page.locator('.image-gallery [data-qa-id]');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['data-qa-id attributes found inside .image-gallery (expected 0):', qaIdInside].join(' '),
+    });
+    await expect(qaIdInside).toHaveCount(0);
   }
 );
 
@@ -150,7 +156,12 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const count = await plr.imageCards.count();
-    console.log('Distinct Image resources found on this topic:', count);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Distinct Image resources found on this topic:', count].join(' '),
+      });
     test.fail(
       count < 2,
       'Content-availability gap, not a defect: only ' +
@@ -167,7 +178,10 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { crashed } = await openImageTrackingCrash(page, plr);
-    console.log('This resource (the only confirmed Image resource on this account) crashed:', crashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['This resource (the only confirmed Image resource on this account) crashed:', crashed].join(' '),
+    });
     test.fail(
       crashed,
       "Unlike Video, no working counter-example Image resource has been found on any account so far -- this pass's own confirmed resource also crashed, leaving Image's crash scope more (not less) certain to be universal on this account"
@@ -194,12 +208,19 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { crashed, imageLoaded } = await openImageTrackingCrash(page, plr);
-    console.log('Crashed:', crashed, '| loaded:', imageLoaded);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Crashed:', crashed, '| loaded:', imageLoaded].join(' ') });
     const closeStillWorks = await plr.closeIcon
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Player chrome (close button) remains functional despite the load failure:', closeStillWorks);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Player chrome (close button) remains functional despite the load failure:', closeStillWorks].join(
+        ' '
+      ),
+    });
     test.fail(
       !closeStillWorks,
       'The player chrome itself (close control) is not functional when the image content fails to load -- worse than a contained broken-image state, the whole player becomes unrecoverable'

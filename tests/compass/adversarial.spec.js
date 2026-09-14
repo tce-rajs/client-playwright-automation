@@ -31,7 +31,10 @@ test(
     await page.waitForTimeout(800);
 
     const openMenuCount = await page.locator('.compass-menu.open').count();
-    console.log('Open compass-menu instances after 6 rapid trigger clicks:', openMenuCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Open compass-menu instances after 6 rapid trigger clicks:', openMenuCount].join(' '),
+    });
     test.fail(
       openMenuCount > 1,
       'Rapidly clicking the Compass trigger 6 times stacks more than one open popover instance'
@@ -47,7 +50,10 @@ test(
     const cmp = new CompassPage(page);
     await expect(cmp.triggerBtn).toBeVisible({ timeout: 10000 });
     const { opened } = await cmp.openTrigger();
-    console.log('Compass popover opened for this Back-button test:', opened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Compass popover opened for this Back-button test:', opened].join(' '),
+    });
     if (!opened) {
       // Never skip -- this is a real, tracked outcome: the popover itself
       // couldn't be reached this run, so the Back-button interaction has
@@ -74,14 +80,17 @@ test(
       .isVisible()
       .catch(() => false);
     const url = page.url();
-    console.log(
-      'After Back with Compass popover open -- menu still showing:',
-      menuStillShowing,
-      '| page usable:',
-      pageUsable,
-      '| URL:',
-      url
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After Back with Compass popover open -- menu still showing:',
+        menuStillShowing,
+        '| page usable:',
+        pageUsable,
+        '| URL:',
+        url,
+      ].join(' '),
+    });
 
     test.fail(
       menuStillShowing && !pageUsable,
@@ -117,12 +126,15 @@ test(
           () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
         );
         const inputValue = await cmp.quizTitleInput.inputValue().catch(() => '');
-        console.log(
-          'Quiz title field after 250-char input -- overflow:',
-          overflowsViewport,
-          '| value length accepted:',
-          inputValue.length
-        );
+        test.info().annotations.push({
+          type: 'note',
+          description: [
+            'Quiz title field after 250-char input -- overflow:',
+            overflowsViewport,
+            '| value length accepted:',
+            inputValue.length,
+          ].join(' '),
+        });
         test.fail(overflowsViewport, 'A 250-character Quiz title overflows the Create Quiz form layout');
         expect(overflowsViewport).toBe(false);
       } else {
@@ -156,10 +168,15 @@ test(
       const toTeaching = await cmp.switchToTeachingMode();
       results.push(`cycle${cycle}-toTeaching:${toTeaching.switched}`);
     }
-    console.log('Two rapid mode-switch cycles:', results.join(', '));
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Two rapid mode-switch cycles:', results.join(', ')].join(' ') });
 
     const finalTriggerReachable = await cmp.triggerBtn.isVisible({ timeout: 10000 }).catch(() => false);
-    console.log('Compass trigger reachable after 2 rapid switch cycles:', finalTriggerReachable);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Compass trigger reachable after 2 rapid switch cycles:', finalTriggerReachable].join(' '),
+    });
     test.fail(
       !finalTriggerReachable,
       'After 2 rapid Teaching<->Planning mode switch cycles, the app no longer reaches a usable Teaching-mode state (Compass trigger unreachable)'
@@ -190,7 +207,9 @@ test(
         await cmp.quizTitleInput.fill('<img src=x onerror="window.__cmpXss=true">');
         await page.waitForTimeout(800);
         const xssRan = await page.evaluate(() => !!window.__cmpXss);
-        console.log('Quiz title XSS payload executed:', xssRan);
+        test
+          .info()
+          .annotations.push({ type: 'note', description: ['Quiz title XSS payload executed:', xssRan].join(' ') });
         test.fail(xssRan, 'An HTML/script-tag string in the Create Quiz title field executes as real markup');
         expect(xssRan).toBe(false);
       } else {

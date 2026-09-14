@@ -47,12 +47,15 @@ test(
         .then(() => true)
         .catch(() => false),
     ]);
-    console.log(
-      'Tab 1 (context A) reached a signed-in state:',
-      tab1Ok,
-      '| Tab 2 (independent context B) reached a signed-in state:',
-      tab2Ok
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Tab 1 (context A) reached a signed-in state:',
+        tab1Ok,
+        '| Tab 2 (independent context B) reached a signed-in state:',
+        tab2Ok,
+      ].join(' '),
+    });
 
     test.fail(
       !tab1Ok || !tab2Ok,
@@ -84,12 +87,15 @@ test(
       .locator('[data-qa-id="login-auth-toggle-button"]')
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log(
-      'Recovered to a signed-in dashboard after mid-transition reload:',
-      recovered,
-      '| still shows the Guest Mode sign-in prompt:',
-      stillOnLogin
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Recovered to a signed-in dashboard after mid-transition reload:',
+        recovered,
+        '| still shows the Guest Mode sign-in prompt:',
+        stillOnLogin,
+      ].join(' '),
+    });
 
     // Either outcome (still signed in, or cleanly bounced back to a fresh
     // Guest Mode login prompt) is acceptable -- the adversarial failure mode
@@ -122,12 +128,15 @@ test(
 
     const pinFormVisible = await login.pinForm.isVisible({ timeout: 3000 }).catch(() => false);
     const pwdFormVisible = await login.passwordForm.isVisible({ timeout: 1000 }).catch(() => false);
-    console.log(
-      'After 10x rapid PIN<->Password toggles -- PIN form visible:',
-      pinFormVisible,
-      '| Password form ALSO visible:',
-      pwdFormVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 10x rapid PIN<->Password toggles -- PIN form visible:',
+        pinFormVisible,
+        '| Password form ALSO visible:',
+        pwdFormVisible,
+      ].join(' '),
+    });
 
     const bothVisibleAtOnce = pinFormVisible && pwdFormVisible;
     test.fail(
@@ -154,12 +163,15 @@ test(
     const overflowsViewport = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
     );
-    console.log(
-      'Password form alive after emoji/Unicode User ID:',
-      formAlive,
-      '| horizontal overflow:',
-      overflowsViewport
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Password form alive after emoji/Unicode User ID:',
+        formAlive,
+        '| horizontal overflow:',
+        overflowsViewport,
+      ].join(' '),
+    });
 
     test.fail(
       !formAlive || overflowsViewport,

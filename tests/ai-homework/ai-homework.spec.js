@@ -45,7 +45,10 @@ test.describe('AI Homework -- independent checks', () => {
     const ah = new AiHomeworkPage(page);
     await ah.open();
     const typePickerVisible = await ah.homeworkTypeCard.isVisible({ timeout: 8000 }).catch(() => false);
-    console.log('Homework/Revise type-picker cards visible after Magnet -> Homework:', typePickerVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Homework/Revise type-picker cards visible after Magnet -> Homework:', typePickerVisible].join(' '),
+    });
     expect(typePickerVisible).toBe(true);
   });
 
@@ -61,7 +64,9 @@ test.describe('AI Homework -- independent checks', () => {
       await page.waitForTimeout(800);
       await expect(ah.hwObjInput).toBeVisible({ timeout: 5000 });
       const defaultVal = await ah.hwObjInput.inputValue().catch(async () => ah.hwObjInput.textContent());
-      console.log('Homework Objective counter default:', defaultVal);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Homework Objective counter default:', defaultVal].join(' ') });
       expect(String(defaultVal)).toContain('15');
     }
   );
@@ -94,12 +99,15 @@ test.describe('AI Homework -- independent checks', () => {
       await ah.open();
       await expect(ah.homeworkTypeCard).toBeVisible({ timeout: 8000 });
       const headerText = (await page.locator('body').textContent()) || '';
-      console.log(
-        'Active whiteboard class:',
-        activeClassText.trim(),
-        '| composer reachable directly to type-picker:',
-        true
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Active whiteboard class:',
+          activeClassText.trim(),
+          '| composer reachable directly to type-picker:',
+          true,
+        ].join(' '),
+      });
       // Directly reaching the type picker (no forced intermediate topic pick)
       // is itself the confirmation this case cares about.
       expect(headerText.length).toBeGreaterThan(0);
@@ -123,12 +131,15 @@ test.describe('AI Homework -- independent checks', () => {
         await page.waitForTimeout(500);
       }
       const classAfter = (await nav.currentClassBtn.textContent()) || '';
-      console.log(
-        'Whiteboard active class before/after opening+closing the Topics picker:',
-        classBefore.trim(),
-        '|',
-        classAfter.trim()
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Whiteboard active class before/after opening+closing the Topics picker:',
+          classBefore.trim(),
+          '|',
+          classAfter.trim(),
+        ].join(' '),
+      });
       expect(classAfter.trim()).toBe(classBefore.trim());
     }
   );
@@ -148,7 +159,10 @@ test.describe('AI Homework -- independent checks', () => {
       await ah.hwObjMinus.click({ force: true });
       await page.waitForTimeout(400);
       const afterMinus = await ah.hwObjInput.inputValue().catch(async () => ah.hwObjInput.textContent());
-      console.log('Counter before/after +/after -:', before, afterPlus, afterMinus);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Counter before/after +/after -:', before, afterPlus, afterMinus].join(' '),
+      });
       expect(Number(afterPlus)).toBe(Number(before) + 1);
       expect(Number(afterMinus)).toBe(Number(before));
     }
@@ -174,15 +188,18 @@ test.describe('AI Homework -- independent checks', () => {
       await ah.hwObjPlus.dblclick({ force: true });
       await page.waitForTimeout(500);
       const afterDblClick = await ah.hwObjInput.inputValue().catch(async () => ah.hwObjInput.textContent());
-      console.log(
-        'Counter before dblclick:',
-        afterOneClick,
-        '| after dblclick:',
-        afterDblClick,
-        '(expected +2 if healthy: ',
-        Number(afterOneClick) + 2,
-        ')'
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Counter before dblclick:',
+          afterOneClick,
+          '| after dblclick:',
+          afterDblClick,
+          '(expected +2 if healthy: ',
+          Number(afterOneClick) + 2,
+          ')',
+        ].join(' '),
+      });
 
       const netChange = Number(afterDblClick) - Number(afterOneClick);
       test.fail(
@@ -206,12 +223,15 @@ test.describe('AI Homework -- independent checks', () => {
       await ah.open();
       const staleSelectBtnPresent = await ah.selectHomeworkBtn.count();
       const stalePreviewBtnPresent = await ah.previewBackBtn.count();
-      console.log(
-        'ai-homework-select-homework-btn present anywhere in normal flow:',
-        staleSelectBtnPresent,
-        '| ai-homework-preview-back-btn present:',
-        stalePreviewBtnPresent
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'ai-homework-select-homework-btn present anywhere in normal flow:',
+          staleSelectBtnPresent,
+          '| ai-homework-preview-back-btn present:',
+          stalePreviewBtnPresent,
+        ].join(' '),
+      });
       test.fail(
         true,
         'CONFIRMED cross-repo (source-read): ai-homework-select-* and ai-homework-preview-* components carry real selectors but have zero live callers/unreferenced in the actual composer flow -- not reachable via any UI path this pass either'
@@ -245,12 +265,15 @@ test.describe('AI Homework -- independent checks', () => {
         .first()
         .isVisible({ timeout: 3000 })
         .catch(() => false);
-      console.log(
-        'Questions rendered anyway despite forced 429:',
-        questionsRenderedAnyway,
-        '| an error-ish message visible:',
-        errorTextVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Questions rendered anyway despite forced 429:',
+          questionsRenderedAnyway,
+          '| an error-ish message visible:',
+          errorTextVisible,
+        ].join(' '),
+      });
       // Matches this suite's own documented network-interception limitation
       // pattern (see AIA-ERROR-01 in LIVE_FINDINGS.md) -- content sometimes
       // renders anyway from a client cache regardless of the intercepted call.
@@ -297,14 +320,17 @@ test.describe('AI Homework -- independent checks', () => {
       // class-switch + Magnet-open sequence hit exactly that same crash this
       // pass. Tracked as a genuine failure (not test.fail()), matching this
       // suite's own convention for a confirmed reproducible crash.
-      console.log(
-        'Page crashed while switching class + opening Magnet->Homework twice:',
-        pageCrashed,
-        '| history reachable:',
-        historyReachable,
-        '| math reachable:',
-        mathReachable
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Page crashed while switching class + opening Magnet->Homework twice:',
+          pageCrashed,
+          '| history reachable:',
+          historyReachable,
+          '| math reachable:',
+          mathReachable,
+        ].join(' '),
+      });
       expect(
         pageCrashed,
         'Repeatedly switching class and opening Magnet->Homework should not crash the page (same root cause as ATT-EXP-01)'
@@ -373,14 +399,20 @@ test.describe('AI Homework -- independent checks', () => {
         prevVal = curVal;
       }
       const minValue = Number(prevVal);
-      console.log('Objective counter driven down to its floor value:', minValue);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Objective counter driven down to its floor value:', minValue].join(' '),
+      });
       // CONFIRMED LIVE this pass: the counter's real floor is 0 (not "1" as
       // the workbook's own precondition assumed) -- generateAndWait() hard-
       // waits for at least one builder question to appear, which can never
       // resolve at a genuine 0-question request. Handle that edge directly
       // instead of reusing the 1+-question helper.
       const generateDisabledAtFloor = await ah.generateBtn.isDisabled({ timeout: 2000 }).catch(() => false);
-      console.log('Generate button disabled at the floor value:', generateDisabledAtFloor);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Generate button disabled at the floor value:', generateDisabledAtFloor].join(' '),
+      });
       if (minValue === 0 && generateDisabledAtFloor) {
         // Sensible, graceful behavior: a genuinely empty request is blocked
         // up front rather than sent to the AI backend at all.
@@ -392,13 +424,16 @@ test.describe('AI Homework -- independent checks', () => {
       // floor of 0) the builder legitimately staying empty, rather than
       // hard-waiting for 1+ questions that may never come.
       await page.waitForTimeout(minValue === 0 ? 5000 : 25000);
-      const count = await ah.builderQuestions.count();
-      console.log('Question count after Generate at minimum counter value', minValue, ':', count);
+      const count = ah.builderQuestions;
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Question count after Generate at minimum counter value', minValue, ':', count].join(' '),
+      });
       test.fail(
         count !== minValue,
         `Generate at the minimum counter value (${minValue}) produced ${count} questions instead of matching it -- either an error, or a default-size fallback ignoring the boundary value`
       );
-      expect(count).toBe(minValue);
+      await expect(count).toHaveCount(minValue);
     }
   );
 
@@ -422,21 +457,27 @@ test.describe('AI Homework -- independent checks', () => {
         prevVal = curVal;
       }
       const maxValue = Number(prevVal);
-      console.log('Objective counter driven up to its ceiling value:', maxValue);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Objective counter driven up to its ceiling value:', maxValue].join(' '),
+      });
       const generateStart = Date.now();
       const generated = await ah
         .generateAndWait(90000)
         .then(() => true)
         .catch(() => false);
       const generateDurationMs = Date.now() - generateStart;
-      console.log(
-        'Generate at maximum counter value',
-        maxValue,
-        '-- completed:',
-        generated,
-        '| took (ms):',
-        generateDurationMs
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Generate at maximum counter value',
+          maxValue,
+          '-- completed:',
+          generated,
+          '| took (ms):',
+          generateDurationMs,
+        ].join(' '),
+      });
       test.fail(
         !generated,
         `Generate at the maximum counter value (${maxValue}) timed out instead of completing, even with a generous 90s budget`
@@ -445,13 +486,16 @@ test.describe('AI Homework -- independent checks', () => {
         expect(generated).toBe(true);
         return;
       }
-      const count = await ah.builderQuestions.count();
-      console.log('Question count after Generate at maximum counter value:', count);
+      const count = ah.builderQuestions;
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Question count after Generate at maximum counter value:', count].join(' '),
+      });
       test.fail(
         count !== maxValue,
         `Generate at the maximum counter value (${maxValue}) produced ${count} questions instead of matching it -- a silently-truncated result short of the requested count`
       );
-      expect(count).toBe(maxValue);
+      await expect(count).toHaveCount(maxValue);
     }
   );
 });
@@ -499,9 +543,12 @@ test.describe('AI Homework -- generated worksheet flow', () => {
   test.beforeEach(async ({}, testInfo) => {
     testInfo.setTimeout(120000);
     if (page.isClosed()) {
-      console.log(
-        'Shared page was closed (confirmed crash from a prior test) -- rebuilding a fresh composer for the remaining cases.'
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Shared page was closed (confirmed crash from a prior test) -- rebuilding a fresh composer for the remaining cases.',
+        ].join(' '),
+      });
       await freshLoginAndClass();
     }
     if (!reachedAssignStep) {
@@ -529,7 +576,10 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     await page.waitForTimeout(800);
     await ah.generateAndWait();
     const count = await ah.builderQuestions.count();
-    console.log('Question Builder question count after Generate:', count);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Question Builder question count after Generate:', count].join(' '),
+    });
     expect(count).toBeGreaterThan(0);
   });
 
@@ -559,7 +609,13 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       });
       await page.waitForTimeout(15000); // real AI/RAG regenerate call
       const firstQuestionTextAfter = await ah.builderQuestions.first().textContent();
-      console.log('First question text changed after Regenerate:', firstQuestionTextBefore !== firstQuestionTextAfter);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'First question text changed after Regenerate:',
+          firstQuestionTextBefore !== firstQuestionTextAfter,
+        ].join(' '),
+      });
       // Navigate away (swipe forward then back) and confirm retained.
       const countNow = await ah.builderQuestions.count();
       if (countNow > 1) {
@@ -568,8 +624,8 @@ test.describe('AI Homework -- generated worksheet flow', () => {
           .scrollIntoViewIfNeeded()
           .catch(() => {});
       }
-      const stillThere = await ah.builderQuestions.first().textContent();
-      expect(stillThere).toBe(firstQuestionTextAfter);
+      const stillThere = ah.builderQuestions.first();
+      await expect(stillThere).toHaveText(firstQuestionTextAfter);
     }
   );
 
@@ -604,16 +660,19 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       }
       await page.waitForTimeout(500);
 
-      const countAfter = await ah.builderQuestions.count();
-      console.log(
-        'Question count before/after boundary swipe attempts:',
-        count,
-        countAfter,
-        '| page crashed:',
-        pageCrashed
-      );
+      const countAfter = ah.builderQuestions;
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Question count before/after boundary swipe attempts:',
+          count,
+          countAfter,
+          '| page crashed:',
+          pageCrashed,
+        ].join(' '),
+      });
       expect(pageCrashed).toBe(false);
-      expect(countAfter).toBe(count);
+      await expect(countAfter).toHaveCount(count);
     }
   );
 
@@ -632,7 +691,10 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       await ah.regenerateBtn.click({ force: true, timeout: 5000 }).catch(() => {});
       await page.waitForTimeout(3000); // just enough to observe request firing, not full completion
       page.off('request', onReq);
-      console.log('RAG regenerate requests observed within 3s of a rapid double-click:', ragRequestCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['RAG regenerate requests observed within 3s of a rapid double-click:', ragRequestCount].join(' '),
+      });
       test.fail(
         ragRequestCount > 1,
         `A rapid double-click on Regenerate fired ${ragRequestCount} overlapping AI/RAG requests instead of being debounced to at most 1`
@@ -675,7 +737,10 @@ test.describe('AI Homework -- generated worksheet flow', () => {
         if (page.isClosed()) pageCrashed = true;
         else throw err;
       }
-      console.log('Assignment form Title pre-fill:', titleVal, '| page crashed:', pageCrashed);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Assignment form Title pre-fill:', titleVal, '| page crashed:', pageCrashed].join(' '),
+      });
       // CONFIRMED LIVE (reproduced across multiple runs while developing this
       // suite): navigating to the Assign step shortly after QB-04's Regenerate
       // call crashes the page. Tracked as a genuine failure (not test.fail()),
@@ -700,7 +765,10 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       for (let i = 0; i < count; i++) {
         labels.push(((await ah.assignClassOption(i).textContent()) || '').trim());
       }
-      console.log('Class-share options exposed at the Assign step:', JSON.stringify(labels));
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Class-share options exposed at the Assign step:', JSON.stringify(labels)].join(' '),
+      });
       // Every exposed option should correspond to a real class label (never
       // blank/placeholder, which would suggest a data-scoping leak) -- a
       // black-box check without a second reference account/roster to cross
@@ -725,7 +793,12 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       await page.waitForTimeout(500);
       const disabled = await ah.assignSendBtn.isDisabled().catch(() => null);
       const ariaDisabled = await ah.assignSendBtn.getAttribute('aria-disabled').catch(() => null);
-      console.log('Send button disabled state with empty Title:', disabled, '| aria-disabled:', ariaDisabled);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Send button disabled state with empty Title:', disabled, '| aria-disabled:', ariaDisabled].join(
+          ' '
+        ),
+      });
       // Restore the title so later tests in this flow aren't left broken.
       await ah.assignTitleInput.fill(titleBefore || 'Homework');
       const blocked = disabled === true || ariaDisabled === 'true';
@@ -753,7 +826,15 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       await page.waitForTimeout(500);
       const disabled = await ah.assignSendBtn.isDisabled().catch(() => null);
       const ariaDisabled = await ah.assignSendBtn.getAttribute('aria-disabled').catch(() => null);
-      console.log('Send button disabled state with zero classes selected:', disabled, '| aria-disabled:', ariaDisabled);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Send button disabled state with zero classes selected:',
+          disabled,
+          '| aria-disabled:',
+          ariaDisabled,
+        ].join(' '),
+      });
       // Restore original selection.
       for (let i = 0; i < count; i++) {
         if (wasChecked[i])
@@ -780,14 +861,24 @@ test.describe('AI Homework -- generated worksheet flow', () => {
       await ah.assignPreviousBtn.click({ force: true, timeout: 5000 });
       await page.waitForTimeout(1000);
       const questionsStillThere = await ah.builderQuestions.count();
-      console.log('Question count after Previous back to builder:', questionsStillThere);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Question count after Previous back to builder:', questionsStillThere].join(' '),
+      });
       expect(questionsStillThere).toBeGreaterThan(0);
 
       await ah.nextBtn.click({ force: true, timeout: 8000 });
       await page.waitForTimeout(1000);
-      const titleAfterForward = await ah.assignTitleInput.inputValue();
-      console.log('Assign title before going back / after returning forward:', titleBeforeBack, titleAfterForward);
-      expect(titleAfterForward).toBe(titleBeforeBack);
+      const titleAfterForward = ah.assignTitleInput;
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Assign title before going back / after returning forward:',
+          titleBeforeBack,
+          titleAfterForward,
+        ].join(' '),
+      });
+      await expect(titleAfterForward).toHaveValue(titleBeforeBack);
     }
   );
 
@@ -824,16 +915,19 @@ test.describe('AI Homework -- generated worksheet flow', () => {
             .isChecked()
             .catch(() => false));
       }
-      console.log(
-        'Max due-in option (index',
-        dueOptionCount - 1,
-        ') selected:',
-        selected,
-        '| all',
-        classCount,
-        'class checkboxes checked:',
-        allChecked
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Max due-in option (index',
+          dueOptionCount - 1,
+          ') selected:',
+          selected,
+          '| all',
+          classCount,
+          'class checkboxes checked:',
+          allChecked,
+        ].join(' '),
+      });
       expect(selected).toBe(true);
       expect(allChecked).toBe(true);
     }
@@ -856,12 +950,15 @@ test.describe('AI Homework -- generated worksheet flow', () => {
         .first()
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log(
-        'Composer still open after hard refresh:',
-        composerStillOpen,
-        '| an unsaved-work warning was shown at any point:',
-        warningShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Composer still open after hard refresh:',
+          composerStillOpen,
+          '| an unsaved-work warning was shown at any point:',
+          warningShown,
+        ].join(' '),
+      });
       test.fail(
         !composerStillOpen && !warningShown,
         'CONFIRMED: refreshing mid-composer silently drops back to the plain whiteboard with no recovery of the generated worksheet and no warning beforehand -- a real risk of losing an expensive AI-generated draft'
@@ -876,10 +973,13 @@ test.describe('AI Homework -- generated worksheet flow', () => {
     async ({}) => {
       await ah.open();
       const typePickerVisible = await ah.homeworkTypeCard.isVisible({ timeout: 8000 }).catch(() => false);
-      console.log(
-        "Composer reopened after AIH-STATE-01's refresh -- fresh type picker shown (no leftover draft):",
-        typePickerVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          "Composer reopened after AIH-STATE-01's refresh -- fresh type picker shown (no leftover draft):",
+          typePickerVisible,
+        ].join(' '),
+      });
       expect(typePickerVisible).toBe(true);
       // The actual Discard gesture (from a populated Assign step) was already
       // exercised implicitly by AIH-STATE-01's refresh discarding the prior

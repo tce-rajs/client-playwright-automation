@@ -35,7 +35,9 @@ test(
     await ain.titleInput.fill('<img src=x onerror="window.__ainXss=true">');
     await page.waitForTimeout(500);
     const xssRan = await page.evaluate(() => !!window.__ainXss);
-    console.log('Notice Title XSS payload executed:', xssRan);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Notice Title XSS payload executed:', xssRan].join(' ') });
     test.fail(xssRan, 'An HTML/script-tag string in the Notice Title field executes as real markup');
     expect(xssRan).toBe(false);
   }
@@ -58,21 +60,26 @@ test(
       .resetToClass('Class 9', 'A', 'Hindi Language')
       .then(() => false)
       .catch((e) => {
-        console.log('resetToClass threw:', e.message.split('\n')[0]);
+        test
+          .info()
+          .annotations.push({ type: 'note', description: ['resetToClass threw:', e.message.split('\n')[0]].join(' ') });
         return true;
       });
     await page.waitForTimeout(2000);
 
     const dialogStillVisible = await ain.titleInput.isVisible({ timeout: 2000 }).catch(() => false);
     const classLabel = await nav.currentClassBtn.textContent().catch(() => '(unreadable)');
-    console.log(
-      'Class-switch attempt itself threw/timed out:',
-      switchThrew,
-      '| Notice compose dialog still visible:',
-      dialogStillVisible,
-      '| current class label:',
-      classLabel
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Class-switch attempt itself threw/timed out:',
+        switchThrew,
+        '| Notice compose dialog still visible:',
+        dialogStillVisible,
+        '| current class label:',
+        classLabel,
+      ].join(' '),
+    });
 
     // DIFFERENT shape than the ATT-BREAK-02/DRP-BREAK-01/MM-BREAK-01 pattern:
     // there, the class switch SUCCEEDED and the panel was left stuck behind.
@@ -112,7 +119,10 @@ test(
     if (!lastOpened) return;
 
     const titleInputCount = await ain.titleInput.count();
-    console.log('Title input instance count after 5x rapid open/close cycles:', titleInputCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Title input instance count after 5x rapid open/close cycles:', titleInputCount].join(' '),
+    });
     test.fail(
       titleInputCount > 1,
       'Rapidly opening/closing the compose dialog 5 times leaves more than one instance mounted'
@@ -142,7 +152,12 @@ test(
       .locator('body')
       .isVisible()
       .catch(() => false);
-    console.log('Page usable after Back with Notice compose dialog open:', pageUsable, '| URL:', page.url());
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Page usable after Back with Notice compose dialog open:', pageUsable, '| URL:', page.url()].join(
+        ' '
+      ),
+    });
     test.fail(!pageUsable, 'Pressing Back while the Notice compose dialog is open leaves the page unusable');
     expect(pageUsable).toBe(true);
   }

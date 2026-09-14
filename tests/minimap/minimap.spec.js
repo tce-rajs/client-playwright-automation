@@ -43,7 +43,7 @@ test('MM-CANVAS-01: The Minimap canvas renders with a viewport rectangle', { tag
   await mm.open();
   await expect(mm.canvas).toBeVisible();
   const box = await mm.canvas.boundingBox();
-  console.log('Minimap canvas box:', box);
+  test.info().annotations.push({ type: 'note', description: ['Minimap canvas box:', box].join(' ') });
   expect(box.width).toBeGreaterThan(0);
   expect(box.height).toBeGreaterThan(0);
   await mm.close();
@@ -57,7 +57,15 @@ test(
     // Closed by default at the start of a fresh test.
     const presentWhileClosed = await mm.container.count();
     const openWhileClosed = await mm.isOpen();
-    console.log('Container present while closed:', presentWhileClosed, '| isOpen() while closed:', openWhileClosed);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Container present while closed:',
+        presentWhileClosed,
+        '| isOpen() while closed:',
+        openWhileClosed,
+      ].join(' '),
+    });
     expect(presentWhileClosed).toBeGreaterThan(0);
     expect(openWhileClosed).toBe(false);
 
@@ -81,14 +89,22 @@ test(
     // expected no-op the comment already describes. Check visibility with a
     // short bounded timeout first.
     const toggleVisible = await mm.togglePlayersBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Player-toggle button visible with no active Player:', toggleVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Player-toggle button visible with no active Player:', toggleVisible].join(' '),
+    });
     if (toggleVisible) await mm.togglePlayersBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(500);
     // No crash/error is the real bar here -- per the workbook's own
     // cross-repo clarification, this control is conditional on an open
     // Player, so a no-op on an empty canvas is expected, not a defect.
     const stillOpen = await mm.isOpen();
-    console.log('Minimap still open and stable after clicking Player-toggle on an empty canvas:', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap still open and stable after clicking Player-toggle on an empty canvas:', stillOpen].join(
+        ' '
+      ),
+    });
     expect(stillOpen).toBe(true);
     await mm.close();
   }
@@ -120,16 +136,20 @@ test(
     await tb.zoomInBtn.click({ force: true });
     await page.waitForTimeout(500);
     const zoomedValue = await tb.zoomSlider.getAttribute('aria-valuetext');
-    console.log('Zoom level after 2x Zoom In:', zoomedValue);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Zoom level after 2x Zoom In:', zoomedValue].join(' ') });
     await page.keyboard.press('Escape').catch(() => {});
 
     await mm.open();
     await mm.resetBtn.click({ force: true });
     await page.waitForTimeout(600);
     await tb.openToolPanel('gtZoom');
-    const afterReset = await tb.zoomSlider.getAttribute('aria-valuetext');
-    console.log('Zoom level after Minimap Reset:', afterReset);
-    expect(afterReset).toBe('100');
+    const afterReset = tb.zoomSlider;
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Zoom level after Minimap Reset:', afterReset].join(' ') });
+    await expect(afterReset).toHaveAttribute('aria-valuetext', '100');
   }
 );
 
@@ -151,7 +171,10 @@ test(
     // Set an active tool other than the default Select first.
     await tb.selectTool('gtPen');
     const activeBefore = await tb.isToolActive('gtPen').count();
-    console.log('Pen tool active before the sequence:', activeBefore > 0);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Pen tool active before the sequence:', activeBefore > 0].join(' '),
+    });
 
     await mm.open();
     await mm.resetBtn.click({ force: true });
@@ -166,12 +189,15 @@ test(
 
     const activeAfter = await tb.isToolActive('gtPen').count();
     const selectActiveAfter = await tb.isToolActive('gtSelect').count();
-    console.log(
-      'Pen tool still active after the sequence:',
-      activeAfter > 0,
-      '| Select tool became active:',
-      selectActiveAfter > 0
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Pen tool still active after the sequence:',
+        activeAfter > 0,
+        '| Select tool became active:',
+        selectActiveAfter > 0,
+      ].join(' '),
+    });
 
     test.fail(
       activeAfter === 0 && selectActiveAfter > 0,
@@ -200,7 +226,10 @@ test(
     await page.waitForTimeout(600);
     await page.keyboard.press('Escape').catch(() => {});
     const after = await mm.canvas.evaluate((c) => c.toDataURL());
-    console.log('Minimap canvas render changed after zooming the main canvas:', before !== after);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap canvas render changed after zooming the main canvas:', before !== after].join(' '),
+    });
     expect(before).not.toBe(after);
 
     await mm.resetBtn.click({ force: true }).catch(() => {});
@@ -228,7 +257,10 @@ test(
     await page.waitForTimeout(700);
     const after = await mm.canvas.evaluate((c) => c.toDataURL());
     const panned = before !== after;
-    console.log('Minimap canvas changed after clicking inside it (pan occurred):', panned);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap canvas changed after clicking inside it (pan occurred):', panned].join(' '),
+    });
     // Documenting as a real finding rather than assuming a click-to-pan
     // gesture works -- not independently confirmed via any other selector/
     // signal this pass (the canvas render is the only observable proxy for
@@ -271,10 +303,13 @@ test(
 
     await mm.open();
     const afterSwitch = await mm.canvas.evaluate((c) => c.toDataURL());
-    console.log(
-      'Minimap render changed after switching class (expected -- different class, different board):',
-      beforeSwitch !== afterSwitch
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Minimap render changed after switching class (expected -- different class, different board):',
+        beforeSwitch !== afterSwitch,
+      ].join(' '),
+    });
     // A real cross-teacher-scoping check needs a second account, which isn't
     // available -- this documents the same-account, same-session version:
     // the render DOES change per class rather than staying frozen on stale
@@ -300,7 +335,10 @@ test(
     await tb.openToolPanel('gtZoom');
     await expect(tb.zoomSlider).toHaveAttribute('aria-valuetext', '100');
     const stillOpen = await mm.isOpen();
-    console.log('Minimap still stable (open) after rapid double-click Reset:', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap still stable (open) after rapid double-click Reset:', stillOpen].join(' '),
+    });
   }
 );
 
@@ -314,7 +352,10 @@ test(
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     const stillOpen = await mm.isOpen();
-    console.log('Minimap open after hard refresh (should be false):', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap open after hard refresh (should be false):', stillOpen].join(' '),
+    });
     expect(stillOpen).toBe(false);
   }
 );
@@ -342,10 +383,18 @@ test(
     await mm.resetBtn.click({ force: true });
     await page.waitForTimeout(600);
     await tb.openToolPanel('gtZoom');
-    const recovered = await tb.zoomSlider.getAttribute('aria-valuetext');
-    console.log('Minimap still open/stable after edge-corner spam:', noCrash, '| zoom after Reset:', recovered);
+    const recovered = tb.zoomSlider;
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Minimap still open/stable after edge-corner spam:',
+        noCrash,
+        '| zoom after Reset:',
+        recovered,
+      ].join(' '),
+    });
     expect(noCrash).toBe(true);
-    expect(recovered).toBe('100');
+    await expect(recovered).toHaveAttribute('aria-valuetext', '100');
   }
 );
 
@@ -370,7 +419,10 @@ test(
 
     await mm.open();
     const canvasVisible = await mm.canvas.isVisible().catch(() => false);
-    console.log('Minimap canvas visible immediately after Clear Whiteboard:', canvasVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap canvas visible immediately after Clear Whiteboard:', canvasVisible].join(' '),
+    });
     expect(canvasVisible).toBe(true);
     await mm.close();
   }
@@ -391,7 +443,15 @@ test(
     await page.waitForTimeout(800);
     const finalZoom = await tb.zoomSlider.getAttribute('aria-valuetext');
     const minimapStillOpen = await mm.isOpen();
-    console.log('Zoom value after rapid in/out spam:', finalZoom, '| Minimap still open/stable:', minimapStillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Zoom value after rapid in/out spam:',
+        finalZoom,
+        '| Minimap still open/stable:',
+        minimapStillOpen,
+      ].join(' '),
+    });
     // Documenting as a real finding -- matches the same class of issue
     // already confirmed in MM-TOGGLE-BUG-01 (adjacent toolbar interactions
     // can silently close/desync the Minimap panel with no error shown).
@@ -439,14 +499,17 @@ test(
     const maxZoom = await tb.zoomSlider.getAttribute('aria-valuetext');
     const maxRender = await mm.canvas.evaluate((c) => c.toDataURL());
 
-    console.log(
-      'Zoom at minimum:',
-      minZoom,
-      '| Zoom at maximum:',
-      maxZoom,
-      '| Minimap render differs between the two extremes:',
-      minRender !== maxRender
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Zoom at minimum:',
+        minZoom,
+        '| Zoom at maximum:',
+        maxZoom,
+        '| Minimap render differs between the two extremes:',
+        minRender !== maxRender,
+      ].join(' '),
+    });
     expect(minRender).not.toBe(maxRender);
     await tb.zoomResetBtn.click({ force: true }).catch(() => {});
   }
@@ -460,7 +523,10 @@ test(
     await page.waitForTimeout(800);
     const mm = new MinimapPage(page);
     const opened = await mm.open();
-    console.log('Minimap actually opened at 375px mobile width:', opened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap actually opened at 375px mobile width:', opened].join(' '),
+    });
     test.fail(
       !opened,
       "The Zoom submenu's Minimap toggle (toolbar-zoom-minimap-btn) is not reachable at a 375px mobile viewport this pass -- cannot check the overlap this case asks about"
@@ -480,7 +546,10 @@ test(
       .locator('[data-qa-id="add-resource-trigger"]')
       .boundingBox()
       .catch(() => null);
-    console.log('Minimap box at 375px:', mmBox, '| Add Resources FAB box:', addResBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap box at 375px:', mmBox, '| Add Resources FAB box:', addResBox].join(' '),
+    });
 
     const overlaps =
       mmBox &&
@@ -491,7 +560,10 @@ test(
         mmBox.y + mmBox.height < addResBox.y ||
         addResBox.y + addResBox.height < mmBox.y
       );
-    console.log('Minimap overlaps the Add Resources FAB at mobile width:', overlaps);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap overlaps the Add Resources FAB at mobile width:', overlaps].join(' '),
+    });
     test.fail(
       !!overlaps,
       'CONFIRMED: the Minimap panel overlaps the Add Resources FAB at a 375px mobile viewport, potentially blocking it'
@@ -517,12 +589,15 @@ test(
 
     expect(crashed, 'Switching class while the Minimap panel is open should not crash the page').toBe(false);
     const stillPresent = await mm.container.count();
-    console.log(
-      'Minimap container still present in DOM after a class switch mid-open:',
-      stillPresent > 0,
-      '| page crashed:',
-      crashed
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Minimap container still present in DOM after a class switch mid-open:',
+        stillPresent > 0,
+        '| page crashed:',
+        crashed,
+      ].join(' '),
+    });
     expect(stillPresent).toBeGreaterThan(0);
   }
 );

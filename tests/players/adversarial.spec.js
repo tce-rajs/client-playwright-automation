@@ -50,14 +50,17 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Close-icon instance count after rapidly cycling 3 player types:',
-      closeIconCount,
-      '(expected >1 -- side-by-side is confirmed intended, per PLR-XCUT-02) | Weblink still genuinely rendered:',
-      weblinkStillReal,
-      '| page alive:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Close-icon instance count after rapidly cycling 3 player types:',
+        closeIconCount,
+        '(expected >1 -- side-by-side is confirmed intended, per PLR-XCUT-02) | Weblink still genuinely rendered:',
+        weblinkStillReal,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'Rapidly cycling through 3 different player types with no settle wait crashes the page');
     expect(pageAlive).toBe(true);
@@ -88,12 +91,15 @@ test(
       .then(() => true)
       .catch(() => false);
     const weblinkOpened = await plr.weblinkWrapper.isVisible({ timeout: 10000 }).catch(() => false);
-    console.log(
-      'Reopen call succeeded:',
-      reopened,
-      '| Weblink player actually opened after instant-close of Worksheet:',
-      weblinkOpened
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Reopen call succeeded:',
+        reopened,
+        '| Weblink player actually opened after instant-close of Worksheet:',
+        weblinkOpened,
+      ].join(' '),
+    });
 
     test.fail(
       !weblinkOpened,
@@ -124,7 +130,10 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Player close-icon still visible after switching class:', playerStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Player close-icon still visible after switching class:', playerStillVisible].join(' '),
+    });
     test.fail(
       playerStillVisible,
       "Switching class while a Worksheet player is open leaves it stuck visible over the new class's whiteboard (same bug class as ATT-BREAK-02/DRP-BREAK-01/MM-BREAK-01)"
@@ -150,7 +159,12 @@ test(
     await page.waitForTimeout(1500);
 
     const closeIconCount = await plr.closeIcon.count();
-    console.log('Close-icon instance count after 6x rapid clicks on the same Worksheet card:', closeIconCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Close-icon instance count after 6x rapid clicks on the same Worksheet card:', closeIconCount].join(
+        ' '
+      ),
+    });
     test.fail(
       closeIconCount > 1,
       'Rapidly clicking the same resource card 6 times opens more than one overlapping player instance'

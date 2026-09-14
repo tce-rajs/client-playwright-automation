@@ -37,7 +37,10 @@ test(
 
     const stillResponsive = await ar.librarySearchInput.isVisible().catch(() => false);
     const resultCount = await ar.libraryResults.count();
-    console.log('500-char Library search -- responsive:', stillResponsive, '| results:', resultCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['500-char Library search -- responsive:', stillResponsive, '| results:', resultCount].join(' '),
+    });
     test.fail(!stillResponsive, 'A 500-character Library search query crashes/hides the search UI');
     expect(stillResponsive).toBe(true);
   }
@@ -57,20 +60,23 @@ test(
     await ar.librarySearchBtn.click({ timeout: 5000 }).catch(() => {});
     await page.waitForTimeout(2500);
 
-    const finalInputValue = await ar.librarySearchInput.inputValue();
+    const finalInputValue = ar.librarySearchInput;
     const resultCount = await ar.libraryResults.count();
-    console.log(
-      'Input value after fast character-by-character typing:',
-      finalInputValue,
-      '| result count:',
-      resultCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Input value after fast character-by-character typing:',
+        finalInputValue,
+        '| result count:',
+        resultCount,
+      ].join(' '),
+    });
 
     test.fail(
       finalInputValue !== fullQuery,
       'Fast character-by-character typing leaves the search box holding a truncated/stale value instead of the fully-typed query'
     );
-    expect(finalInputValue).toBe(fullQuery);
+    await expect(finalInputValue).toHaveValue(fullQuery);
   }
 );
 
@@ -89,14 +95,22 @@ test(
     await page.waitForTimeout(2500);
 
     const stillResponsive = await ar.librarySearchInput.isVisible().catch(() => false);
-    const finalValue = await ar.librarySearchInput.inputValue();
-    console.log('After rapid fill/clear cycling -- responsive:', stillResponsive, '| final input value:', finalValue);
+    const finalValue = ar.librarySearchInput;
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After rapid fill/clear cycling -- responsive:',
+        stillResponsive,
+        '| final input value:',
+        finalValue,
+      ].join(' '),
+    });
 
     test.fail(
       !stillResponsive || finalValue !== 'calculus',
       'Rapid fill/clear/refill cycling on the Library search box leaves it in a stuck or stale-value state'
     );
     expect(stillResponsive).toBe(true);
-    expect(finalValue).toBe('calculus');
+    await expect(finalValue).toHaveValue('calculus');
   }
 );

@@ -47,12 +47,15 @@ test.describe('Core (ADD-CORE-01..04)', () => {
         .getByText('Add Resources', { exact: true })
         .isVisible()
         .catch(() => false);
-      console.log(
-        'LIVE FINDING check -- Gallery still open:',
-        galleryStillOpen,
-        '| Add Resources picker also open:',
-        pickerAlsoOpen
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'LIVE FINDING check -- Gallery still open:',
+          galleryStillOpen,
+          '| Add Resources picker also open:',
+          pickerAlsoOpen,
+        ].join(' '),
+      });
       test.fail(
         galleryStillOpen && pickerAlsoOpen,
         'Reopening "+" while Gallery is open stacks a second Add Resources popup on top instead of closing Gallery first or being blocked'
@@ -81,8 +84,8 @@ test.describe('Core (ADD-CORE-01..04)', () => {
       await ar.openPicker();
       await ar.actions.gallery.click();
       await page.waitForTimeout(1000);
-      const galleryVisible = await page.locator('[data-qa-id="gallery-close-btn"]').isVisible();
-      expect(galleryVisible).toBe(true);
+      const galleryVisible = page.locator('[data-qa-id="gallery-close-btn"]');
+      await expect(galleryVisible).toBeVisible();
       await ar.galleryCloseBtn.click({ timeout: 5000 }).catch(() => {});
       await page.waitForTimeout(800);
       const galleryStillOpenAfterClose = await page
@@ -127,7 +130,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const saveOrDownloadVisible =
         (await ar.whiteboardSavePlaylistBtn.isVisible({ timeout: 5000 }).catch(() => false)) ||
         (await ar.whiteboardDownloadPdfBtn.isVisible({ timeout: 3000 }).catch(() => false));
-      console.log('Save/Download card shown for the current whiteboard (no navigation away):', saveOrDownloadVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Save/Download card shown for the current whiteboard (no navigation away):',
+          saveOrDownloadVisible,
+        ].join(' '),
+      });
       expect(saveOrDownloadVisible).toBe(true);
     }
   );
@@ -171,7 +180,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .first()
         .isVisible()
         .catch(() => false);
-      console.log('Clicking the disabled Chapter & Topic field opened any picker:', pickerOpened);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Clicking the disabled Chapter & Topic field opened any picker:', pickerOpened].join(' '),
+      });
       expect(pickerOpened).toBe(false);
       await expect(ar.chapterTopicInput).toBeDisabled();
       await expect(ar.gradeSubjectInput).toBeDisabled();
@@ -197,7 +209,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .getByText(/already exists|duplicate/i)
         .isVisible()
         .catch(() => false);
-      console.log('Client-side duplicate warning shown before any real submit:', duplicateWarningShown);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Client-side duplicate warning shown before any real submit:', duplicateWarningShown].join(' '),
+      });
       test.fail(
         true,
         'Verifying real de-duplication needs an actual double-submit, deliberately not executed on the shared QA account'
@@ -229,12 +244,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // overflow ("...") icon that reveals Remove separately.
       const nativeCount = await pl.resourceCards.count();
       const assetOverflowCount = await pl.assetOverflowIconBtn.count();
-      console.log(
-        'Native curriculum resource cards:',
-        nativeCount,
-        '| Add-Resource asset cards with an overflow icon:',
-        assetOverflowCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Native curriculum resource cards:',
+          nativeCount,
+          '| Add-Resource asset cards with an overflow icon:',
+          assetOverflowCount,
+        ].join(' '),
+      });
 
       let nativeRemovable = false;
       if (nativeCount > 0) {
@@ -258,12 +276,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           .catch(() => false);
         await page.keyboard.press('Escape');
       }
-      console.log(
-        'Native resource card has a reachable remove icon:',
-        nativeRemovable,
-        "| Asset card's overflow reveals a Remove option:",
-        assetRemovable
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Native resource card has a reachable remove icon:',
+          nativeRemovable,
+          "| Asset card's overflow reveals a Remove option:",
+          assetRemovable,
+        ].join(' '),
+      });
       test.fail(
         nativeCount === 0 && assetOverflowCount === 0,
         'No resource or asset cards present on the Playlist to test either remove path against'
@@ -293,14 +314,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           dropitBox.y + dropitBox.height < fabBox.y ||
           fabBox.y + fabBox.height < dropitBox.y
         );
-      console.log(
-        'Drop It Close button box:',
-        dropitBox,
-        '| Add Resource FAB box:',
-        fabBox,
-        '| overlapping:',
-        overlaps
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Drop It Close button box:',
+          dropitBox,
+          '| Add Resource FAB box:',
+          fabBox,
+          '| overlapping:',
+          overlaps,
+        ].join(' '),
+      });
       await ar.dropitCloseBtn.click({ timeout: 5000 }).catch(() => {});
       expect(dropitBox).not.toBeNull();
     }
@@ -322,7 +346,7 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const errorEl = ar.createForm.getByText(/size|10 ?mb|large/i).first();
       const errorVisible = await errorEl.isVisible().catch(() => false);
       const errorText = errorVisible ? (await errorEl.textContent()).trim() : null;
-      console.log('Oversized-file error text:', errorText);
+      test.info().annotations.push({ type: 'note', description: ['Oversized-file error text:', errorText].join(' ') });
       test.fail(!errorVisible, 'No error text shown for an oversized file to confirm the exact wording against');
       expect(errorVisible).toBe(true);
     }
@@ -340,7 +364,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
 
       const savePlaylistVisible = await ar.whiteboardSavePlaylistBtn.isVisible({ timeout: 5000 }).catch(() => false);
       const downloadPdfVisible = await ar.whiteboardDownloadPdfBtn.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('Save to Playlist visible:', savePlaylistVisible, '| Download PDF visible:', downloadPdfVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Save to Playlist visible:',
+          savePlaylistVisible,
+          '| Download PDF visible:',
+          downloadPdfVisible,
+        ].join(' '),
+      });
 
       let saveClickWorked = false;
       if (savePlaylistVisible) {
@@ -351,7 +383,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           .isVisible({ timeout: 3000 })
           .catch(() => false);
       }
-      console.log('Clicking Save to Playlist produced a visible confirmation:', saveClickWorked);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Clicking Save to Playlist produced a visible confirmation:', saveClickWorked].join(' '),
+      });
       test.fail(
         savePlaylistVisible && !saveClickWorked,
         'Save to Playlist is present but clicking it produces no visible confirmation -- confirmed non-functional'
@@ -367,7 +402,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
     async ({ page }) => {
       const pl = new PlaylistPage(page);
       const count = await pl.resourceCards.count();
-      console.log("This account's current resource-card count (workbook needs 200+):", count);
+      test.info().annotations.push({
+        type: 'note',
+        description: ["This account's current resource-card count (workbook needs 200+):", count].join(' '),
+      });
       test.fail(
         count < 200,
         `This account has only ${count} resource cards -- far short of the 200+ needed to observe overflow-menu behavior at scale, and there is no practical way to bulk-generate that many through the UI alone`
@@ -405,7 +443,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           await page.waitForTimeout(200);
         }
       }
-      console.log('Found a self-created asset with an Edit option and opened it:', editOpened);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Found a self-created asset with an Edit option and opened it:', editOpened].join(' '),
+      });
       test.fail(
         !editOpened,
         'No self-created asset with a reachable Edit option was found on the Playlist to test the Replace-File toggle against'
@@ -442,12 +483,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // Chapter & Topic is always pre-filled/disabled (per ADD-CRT-02/AR-CYP-01)
       // -- there is no reachable "unselected" state to submit against.
       const chapterTopicValue = await ar.chapterTopicInput.inputValue();
-      console.log('Chapter & Topic value (always pre-filled, confirmed disabled):', chapterTopicValue);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Chapter & Topic value (always pre-filled, confirmed disabled):', chapterTopicValue].join(' '),
+      });
       test.fail(
         chapterTopicValue.length > 0,
         'Chapter & Topic is always pre-filled and disabled -- there is no reachable unselected state to submit against, so this validation path cannot be exercised'
       );
-      expect(chapterTopicValue.length).toBe(0);
+      expect(chapterTopicValue).toHaveLength(0);
     }
   );
 
@@ -465,18 +509,21 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const filesBefore = await ar.fileInput.evaluate((el) => el.files.length);
       // Grade & Subject is confirmed disabled (ADD-CRT-02) -- there is no
       // reachable way to change it mid-form to test the orphaning concern.
-      const gradeSubjectDisabled = await ar.gradeSubjectInput.isDisabled();
-      console.log(
-        'File selected count:',
-        filesBefore,
-        '| Grade & Subject disabled (unchangeable):',
-        gradeSubjectDisabled
-      );
+      const gradeSubjectDisabled = ar.gradeSubjectInput;
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'File selected count:',
+          filesBefore,
+          '| Grade & Subject disabled (unchangeable):',
+          gradeSubjectDisabled,
+        ].join(' '),
+      });
       test.fail(
         gradeSubjectDisabled,
         'Grade & Subject is always disabled in this form -- there is no reachable way to change it mid-form to test whether it orphans an already-selected file'
       );
-      expect(gradeSubjectDisabled).toBe(false);
+      await expect(gradeSubjectDisabled).toBeEnabled();
     }
   );
 
@@ -498,12 +545,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .getByText(/no results|not found|no resources/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Results for a nonsense search:',
-        resultCount,
-        '| explicit no-results message shown:',
-        noResultsMessage
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Results for a nonsense search:',
+          resultCount,
+          '| explicit no-results message shown:',
+          noResultsMessage,
+        ].join(' '),
+      });
       test.fail(
         resultCount === 0 && !noResultsMessage,
         'A zero-result Library search shows neither results nor an explicit "no results" message -- indistinguishable from a silently broken search'
@@ -530,12 +580,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .getByText(/size|10 ?mb|large/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'A file just 100 bytes over 10MB -- submit disabled:',
-        submitDisabled,
-        '| error shown:',
-        errorVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'A file just 100 bytes over 10MB -- submit disabled:',
+          submitDisabled,
+          '| error shown:',
+          errorVisible,
+        ].join(' '),
+      });
       // Only the CLIENT-side check is verifiable in this environment (no tool
       // to bypass the browser's own file-size gate and hit the server
       // directly with a real upload) -- documenting that scope honestly.
@@ -565,12 +618,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .getByText(/no results|not found/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Search button disabled for whitespace-only query:',
-        searchDisabled,
-        '| treated as a real (nonsense) search:',
-        treatedAsValidSearch
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Search button disabled for whitespace-only query:',
+          searchDisabled,
+          '| treated as a real (nonsense) search:',
+          treatedAsValidSearch,
+        ].join(' '),
+      });
       test.fail(
         !searchDisabled && treatedAsValidSearch,
         'A whitespace-only query is submitted as a real search (producing a no-results state) instead of being treated as empty/blocked'
@@ -591,8 +647,11 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const longTitle = 'A'.repeat(220);
       await ar.titleInput.fill(longTitle);
       const actualValue = await ar.titleInput.inputValue();
-      console.log('Typed 220 chars, field retained:', actualValue.length, 'chars');
-      expect(actualValue.length).toBe(220);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Typed 220 chars, field retained:', actualValue.length, 'chars'].join(' '),
+      });
+      expect(actualValue).toHaveLength(220);
       // Verifying the CREATED card's layout needs an actual submit, deliberately
       // not executed on the shared QA account (same reasoning as ADD-CRT-09).
       test.fail(
@@ -625,14 +684,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .isVisible()
         .catch(() => false);
       const openCount = [libraryOpen, galleryOpen, aiAssistOpen].filter(Boolean).length;
-      console.log(
-        'After rapid Library -> Gallery -> AI-Assist clicks -- Library open:',
-        libraryOpen,
-        '| Gallery open:',
-        galleryOpen,
-        '| AI-Assist open:',
-        aiAssistOpen
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'After rapid Library -> Gallery -> AI-Assist clicks -- Library open:',
+          libraryOpen,
+          '| Gallery open:',
+          galleryOpen,
+          '| AI-Assist open:',
+          aiAssistOpen,
+        ].join(' '),
+      });
 
       test.fail(
         openCount !== 1 || !aiAssistOpen,

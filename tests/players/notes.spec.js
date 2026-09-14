@@ -49,9 +49,12 @@ test(
     // live confirmation that Flashcard is feature-complete and working --
     // directly contradicting Notes' own confirmed content-empty,
     // feature-incomplete state. Cross-referenced, not re-derived here.
-    console.log(
-      'Cross-reference: PLR-FLASH-01 in tests/player/flashcard.spec.js independently confirms Flashcard is a fully working, feature-complete player -- Notes (this file) is confirmed both content-empty and source-level unfinished. These are almost certainly NOT the same feature.'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Cross-reference: PLR-FLASH-01 in tests/player/flashcard.spec.js independently confirms Flashcard is a fully working, feature-complete player -- Notes (this file) is confirmed both content-empty and source-level unfinished. These are almost certainly NOT the same feature.',
+      ].join(' '),
+    });
     await expect(page.locator('[data-qa-id="toolbar-user-avatar"]')).toBeVisible({ timeout: 10000 });
   }
 );

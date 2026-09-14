@@ -68,7 +68,10 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     const bodyText = await page.evaluate(() => document.body.innerText);
-    console.log('Reader shows chapter title text:', /chapter fourteen|semiconductor/i.test(bodyText));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Reader shows chapter title text:', /chapter fourteen|semiconductor/i.test(bodyText)].join(' '),
+    });
     expect(bodyText).toMatch(/chapter fourteen|semiconductor/i);
   }
 );
@@ -80,7 +83,10 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     const result = await tryOpenDrawer(page, plr.ebookChapterDrawerToggle);
-    console.log('Chapter drawer state before/after toggle:', JSON.stringify(result));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter drawer state before/after toggle:', JSON.stringify(result)].join(' '),
+    });
 
     test.fail(
       !result.changed,
@@ -112,7 +118,10 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     const result = await tryOpenDrawer(page, plr.ebookResourceDrawerToggle);
-    console.log('Resource drawer state before/after toggle:', JSON.stringify(result));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Resource drawer state before/after toggle:', JSON.stringify(result)].join(' '),
+    });
 
     test.fail(
       !result.changed,
@@ -166,9 +175,15 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     const result1 = await tryOpenDrawer(page, plr.ebookChapterDrawerToggle);
-    console.log('First click (collapse) result:', JSON.stringify(result1));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['First click (collapse) result:', JSON.stringify(result1)].join(' '),
+    });
     const result2 = await tryOpenDrawer(page, plr.ebookChapterDrawerToggle);
-    console.log('Second click (re-expand attempt) result:', JSON.stringify(result2));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Second click (re-expand attempt) result:', JSON.stringify(result2)].join(' '),
+    });
     // Per the file's own header note, the chapter drawer never opens at all
     // in this environment (confirmed permanently display:none) -- this test
     // documents that same root cause rather than re-deriving a different one.
@@ -191,7 +206,10 @@ test(
       counts.push(await plr.ebookChapterItems.count());
       await page.waitForTimeout(300);
     }
-    console.log('Chapter item count sampled every 300ms over 1.5s:', JSON.stringify(counts));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter item count sampled every 300ms over 1.5s:', JSON.stringify(counts)].join(' '),
+    });
     // Documenting the loading pattern (any change across samples would
     // indicate sequential trickle-in) -- a stable/already-loaded count is
     // itself a valid, honestly reported outcome, not a failure.
@@ -206,7 +224,10 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     const resourceCardCount = await plr.ebookResourceCards.count();
-    console.log('Resources linked inside this ebook chapter:', resourceCardCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Resources linked inside this ebook chapter:', resourceCardCount].join(' '),
+    });
     test.fail(
       resourceCardCount === 0,
       "No linked resources found inside this ebook chapter's own resource list to test nested-player-opening against (matches PLR-EBK-07's own content-availability gap)"
@@ -218,10 +239,13 @@ test(
     await plr.openResourceCard(plr.ebookResourceCards);
     await page.waitForTimeout(2000);
     const closeIconCount = await plr.closeIcon.count();
-    console.log(
-      'Close-icon count after opening a nested resource (expect a real, non-crashed player):',
-      closeIconCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Close-icon count after opening a nested resource (expect a real, non-crashed player):',
+        closeIconCount,
+      ].join(' '),
+    });
     expect(closeIconCount).toBeGreaterThan(0);
   }
 );
@@ -233,7 +257,12 @@ test(
     const plr = new PlayerPage(page);
     await openEbook(page, plr);
     const count = await plr.ebookResourceCards.count();
-    console.log('Linked resources found on this ebook chapter:', count);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Linked resources found on this ebook chapter:', count].join(' '),
+      });
     test.fail(
       count >= 3,
       'Content-availability gap, not a defect: only ' +
@@ -262,7 +291,10 @@ test(
     await page.waitForTimeout(1500);
     const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
     const crashed = bodyText.trim().length === 0;
-    console.log('Reader crashed/blank after an absurd page number:', crashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Reader crashed/blank after an absurd page number:', crashed].join(' '),
+    });
     test.fail(
       crashed,
       'An out-of-range page number produced a blank/crashed reader instead of clamping or a clear error'
@@ -292,7 +324,10 @@ test(
     await prevBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
     const afterPrevText = await page.evaluate(() => document.body.innerText);
-    console.log('Content unchanged after Prev on page 1 (no wrap):', page1Text === afterPrevText);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Content unchanged after Prev on page 1 (no wrap):', page1Text === afterPrevText].join(' '),
+    });
     expect(afterPrevText).toBe(page1Text);
   }
 );

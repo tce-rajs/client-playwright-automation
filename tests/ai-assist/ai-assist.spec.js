@@ -71,14 +71,16 @@ test(
 
     // Exercise is the default tab -- checkboxes should already be present.
     const exerciseCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log('Exercise tab checkbox count:', exerciseCount);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Exercise tab checkbox count:', exerciseCount].join(' ') });
     expect(exerciseCount).toBeGreaterThan(0);
 
     // Per AIA-TABS-02's own confirmed 2-click lag, use clickTabTwice to reach
     // each tab's real content rather than re-deriving the bug here.
     await clickTabTwice(ar.aiAssistTabVideos);
     const videoCount = await ar.aiAssistVideoThumbs.count();
-    console.log('Videos tab thumbnail count:', videoCount);
+    test.info().annotations.push({ type: 'note', description: ['Videos tab thumbnail count:', videoCount].join(' ') });
     expect(videoCount).toBeGreaterThan(0);
 
     await clickTabTwice(ar.aiAssistTabTeachingTips);
@@ -87,7 +89,10 @@ test(
       .first()
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('Teaching Tips content visible:', teachingContentVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Teaching Tips content visible:', teachingContentVisible].join(' '),
+    });
     expect(teachingContentVisible).toBe(true);
 
     await ar.aiAssistCloseBtn.click();
@@ -102,26 +107,35 @@ test(
     await openAiAssist(page, ar);
 
     const videoMarkerBefore = await ar.aiAssistVideoThumbs.count();
-    console.log(
-      'Video thumbnails visible BEFORE clicking Videos tab (should be 0, still on Exercise):',
-      videoMarkerBefore
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Video thumbnails visible BEFORE clicking Videos tab (should be 0, still on Exercise):',
+        videoMarkerBefore,
+      ].join(' '),
+    });
 
     await ar.aiAssistTabVideos.click({ force: true });
     await page.waitForTimeout(700);
     const videoThumbsAfterFirstClick = await ar.aiAssistVideoThumbs.count();
     const exerciseChecksStillThere = await ar.aiAssistExerciseCheckboxes.count();
-    console.log(
-      'After FIRST click on Videos -- video thumbs:',
-      videoThumbsAfterFirstClick,
-      '| exercise checkboxes still present:',
-      exerciseChecksStillThere
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After FIRST click on Videos -- video thumbs:',
+        videoThumbsAfterFirstClick,
+        '| exercise checkboxes still present:',
+        exerciseChecksStillThere,
+      ].join(' '),
+    });
 
     await ar.aiAssistTabVideos.click({ force: true });
     await page.waitForTimeout(800);
     const videoThumbsAfterSecondClick = await ar.aiAssistVideoThumbs.count();
-    console.log('After SECOND click on Videos -- video thumbs:', videoThumbsAfterSecondClick);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['After SECOND click on Videos -- video thumbs:', videoThumbsAfterSecondClick].join(' '),
+    });
 
     const bugReproduced = videoThumbsAfterFirstClick === 0 && videoThumbsAfterSecondClick > 0;
     test.fail(
@@ -151,7 +165,12 @@ test(
       await chevron.click({ force: true });
       await page.waitForTimeout(500);
     }
-    console.log('Chevron control found and clicked:', chevronVisible);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Chevron control found and clicked:', chevronVisible].join(' '),
+      });
     test.fail(
       !chevronVisible,
       'No chevron/expand control was found near the question to reveal its answer -- could not verify the answer-reveal half of this case'
@@ -189,12 +208,15 @@ test(
           .textContent({ timeout: 3000 })
           .catch(() => '')) || '';
     }
-    console.log(
-      'Current topic label:',
-      currentTopicLabel.trim(),
-      '| AI Assist Exercise header text:',
-      headerText.trim()
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Current topic label:',
+        currentTopicLabel.trim(),
+        '| AI Assist Exercise header text:',
+        headerText.trim(),
+      ].join(' '),
+    });
 
     // A real topic-word overlap check: pull a distinguishing word from the
     // current topic label and see if it appears anywhere in the header text.
@@ -203,7 +225,15 @@ test(
       .split(/\s+/)
       .filter((w) => w.length > 4);
     const anyWordMatches = topicWords.some((w) => headerText.toLowerCase().includes(w.toLowerCase()));
-    console.log('Distinguishing topic words checked against header:', topicWords, '| any match:', anyWordMatches);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Distinguishing topic words checked against header:',
+        topicWords,
+        '| any match:',
+        anyWordMatches,
+      ].join(' '),
+    });
 
     test.fail(
       headerText.length > 0 && !anyWordMatches,
@@ -239,14 +269,17 @@ test(
     const toastVisible = await toastPromise;
     await page.waitForTimeout(1000);
     const countAfter = await pl.resourceCards.count();
-    console.log(
-      'Success toast shown after Add to Playlist:',
-      toastVisible,
-      '| Playlist resource count before/after:',
-      countBefore,
-      '->',
-      countAfter
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Success toast shown after Add to Playlist:',
+        toastVisible,
+        '| Playlist resource count before/after:',
+        countBefore,
+        '->',
+        countAfter,
+      ].join(' '),
+    });
     // Either signal (the toast, or a real resource-count increase) counts as
     // confirmation -- the toast alone proved too timing-sensitive to catch
     // reliably via isVisible() polling after the fact.
@@ -260,7 +293,7 @@ test('AIA-VIDEOS-01: Videos tab shows topic-relevant video thumbnails', { tag: '
   await clickTabTwice(ar.aiAssistTabVideos);
 
   const count = await ar.aiAssistVideoThumbs.count();
-  console.log('Video thumbnail count:', count);
+  test.info().annotations.push({ type: 'note', description: ['Video thumbnail count:', count].join(' ') });
   expect(count).toBeGreaterThan(0);
   await ar.aiAssistCloseBtn.click();
 });
@@ -283,12 +316,15 @@ test(
       .first()
       .isVisible()
       .catch(() => false);
-    console.log(
-      'YouTube iframe present in DOM:',
-      iframePresent,
-      '| still showing the static thumbnail card after click:',
-      stillShowingStaticThumb
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'YouTube iframe present in DOM:',
+        iframePresent,
+        '| still showing the static thumbnail card after click:',
+        stillShowingStaticThumb,
+      ].join(' '),
+    });
 
     test.fail(
       iframePresent && stillShowingStaticThumb,
@@ -323,14 +359,17 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'Activities:',
-      activitiesVisible,
-      '| Explanation:',
-      explanationVisible,
-      '| Real Life Example:',
-      realLifeVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Activities:',
+        activitiesVisible,
+        '| Explanation:',
+        explanationVisible,
+        '| Real Life Example:',
+        realLifeVisible,
+      ].join(' '),
+    });
     expect(activitiesVisible && explanationVisible && realLifeVisible).toBe(true);
     await ar.aiAssistCloseBtn.click();
   }
@@ -353,8 +392,14 @@ test(
     await page.waitForTimeout(800);
     const boxAfter = await titleLocator.boundingBox().catch(() => null);
     const closeBoxAfter = await ar.aiAssistCloseBtn.boundingBox().catch(() => null);
-    console.log('Close button box before:', closeBoxBefore, '| after:', closeBoxAfter);
-    console.log('Modal box before minimize click:', boxBefore, '| after:', boxAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Close button box before:', closeBoxBefore, '| after:', closeBoxAfter].join(' '),
+    });
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Modal box before minimize click:', boxBefore, '| after:', boxAfter].join(' '),
+    });
 
     const titleChanged =
       boxBefore &&
@@ -412,16 +457,19 @@ test(
       .isVisible({ timeout: 2000 })
       .catch(() => false);
     const contentLoadedAnyway = (await ar.aiAssistExerciseCheckboxes.count()) > 0;
-    console.log(
-      'Intercepted a matching AI request:',
-      intercepted,
-      '| error screen shown:',
-      errorScreenVisible,
-      '| error text visible:',
-      naturalErrorVisible,
-      '| content loaded anyway:',
-      contentLoadedAnyway
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Intercepted a matching AI request:',
+        intercepted,
+        '| error screen shown:',
+        errorScreenVisible,
+        '| error text visible:',
+        naturalErrorVisible,
+        '| content loaded anyway:',
+        contentLoadedAnyway,
+      ].join(' '),
+    });
     await page.unroute('**/*');
 
     test.fail(
@@ -475,14 +523,17 @@ test(
       await ar.aiAssistVideoCloseBtn.click({ timeout: 2000 }).catch(() => {});
       counts.push(await pl.resourceCards.count());
     }
-    console.log('Resource-card counts across repeated same-video adds:', counts);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Resource-card counts across repeated same-video adds:', counts].join(' '),
+    });
     // This is a real, best-effort single-session check -- the workbook's own
     // full claim needs cross-SESSION history this pass cannot construct.
     test.fail(
       false,
       "Documented as a single-session observation only -- see console log for the actual counts; the workbook's full de-dup claim needs cross-session history not reconstructable in one pass"
     );
-    expect(counts.length).toBe(4);
+    expect(counts).toHaveLength(4);
     await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
   }
 );
@@ -500,21 +551,24 @@ test(
     // checkbox count immediately after vs. 1.5s later.
     const spinner = page.locator('.spinner, [class*="loading"], [class*="spinner"]').first();
     await spinner.waitFor({ state: 'hidden', timeout: 20000 }).catch(() => {});
-    const checkboxesRightAfterSpinnerClears = await ar.aiAssistExerciseCheckboxes.count();
+    const checkboxesRightAfterSpinnerClears = ar.aiAssistExerciseCheckboxes;
     await page.waitForTimeout(1500);
     const checkboxesShortlyAfter = await ar.aiAssistExerciseCheckboxes.count();
-    console.log(
-      'Checkboxes right when spinner cleared:',
-      checkboxesRightAfterSpinnerClears,
-      '| 1.5s later:',
-      checkboxesShortlyAfter
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Checkboxes right when spinner cleared:',
+        checkboxesRightAfterSpinnerClears,
+        '| 1.5s later:',
+        checkboxesShortlyAfter,
+      ].join(' '),
+    });
 
     test.fail(
       checkboxesRightAfterSpinnerClears === 0 && checkboxesShortlyAfter > 0,
       "CONFIRMED: the loading spinner cleared before real content was actually populated -- a race condition matching the workbook's own adversarial concern"
     );
-    expect(checkboxesRightAfterSpinnerClears).toBe(checkboxesShortlyAfter);
+    await expect(checkboxesRightAfterSpinnerClears).toHaveCount(checkboxesShortlyAfter);
     await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
   }
 );
@@ -554,7 +608,10 @@ test(
     ]);
     await page.waitForTimeout(2000);
     toastCount = await toastLocator.count();
-    console.log('Toast count after rapid double-click on Add to Playlist:', toastCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Toast count after rapid double-click on Add to Playlist:', toastCount].join(' '),
+    });
     test.fail(
       toastCount > 1,
       'A rapid double-click on Add to Playlist produced more than one success toast -- not correctly debounced'
@@ -601,9 +658,12 @@ test(
             .getByText(/not enough content|no content|unable to generate/i)
             .isVisible()
             .catch(() => false);
-          console.log(
-            `${grade} ${division} ${subject} -- checkbox count: ${checkboxCount}, explicit no-content message: ${noContentMsg}`
-          );
+          test.info().annotations.push({
+            type: 'note',
+            description: [
+              `${grade} ${division} ${subject} -- checkbox count: ${checkboxCount}, explicit no-content message: ${noContentMsg}`,
+            ].join(' '),
+          });
           if (checkboxCount === 0) foundThinTopic = true;
           await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
         }
@@ -620,7 +680,10 @@ test(
     // switches). Left as a genuine hard failure rather than test.fail(), per
     // this project's established convention for confirmed reproducible
     // crashes (a crashed page makes its own teardown unreliable).
-    console.log('Page crashed during the class/subject sampling loop:', pageCrashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Page crashed during the class/subject sampling loop:', pageCrashed].join(' '),
+    });
     expect(pageCrashed, 'Repeatedly switching class/subject and opening Add Resources should not crash the page').toBe(
       false
     );
@@ -654,21 +717,27 @@ test(
       .getByText('AI Assist', { exact: true })
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'Topic before switch:',
-      topicABeforeSwitch.trim(),
-      '| AI Assist still open after switching class underneath it:',
-      stillOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Topic before switch:',
+        topicABeforeSwitch.trim(),
+        '| AI Assist still open after switching class underneath it:',
+        stillOpen,
+      ].join(' '),
+    });
     // Either a clean auto-close OR a correctly-regenerated view for the new
     // topic would be acceptable; only a STALE mislabeled-as-current view is a
     // real problem. Check for staleness only if it stayed open.
     if (stillOpen) {
       const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-      console.log(
-        'AI Assist stayed open after class switch -- exercise checkbox count (should reflect the NEW class, not be frozen):',
-        checkboxCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'AI Assist stayed open after class switch -- exercise checkbox count (should reflect the NEW class, not be frozen):',
+          checkboxCount,
+        ].join(' '),
+      });
     }
     // Documented as a real observation either way -- not asserting a specific
     // "correct" behavior since the workbook itself only asks to document it.
@@ -708,14 +777,17 @@ test(
       .locator('text=/uncaught|exception/i')
       .isVisible({ timeout: 500 })
       .catch(() => false);
-    console.log(
-      'Any rapid-spam click failed to find its target within 5s:',
-      anyClickTimedOut,
-      '| AI Assist modal still present:',
-      modalStillPresent,
-      '| any visible JS-error text:',
-      anyJsErrorDialog
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Any rapid-spam click failed to find its target within 5s:',
+        anyClickTimedOut,
+        '| AI Assist modal still present:',
+        modalStillPresent,
+        '| any visible JS-error text:',
+        anyJsErrorDialog,
+      ].join(' '),
+    });
     test.fail(
       anyClickTimedOut,
       'CONFIRMED: rapid multi-tab-switch spam caused at least one tab click to be unable to find its target within 5s -- a real responsiveness/DOM-stability issue under this exact adversarial sequence'
@@ -753,8 +825,14 @@ test(
         .textContent()
         .catch(() => '')) || '';
 
-    console.log('Class A first question text (truncated):', checkboxTextA.slice(0, 120));
-    console.log('Class B first question text (truncated):', checkboxTextB.slice(0, 120));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class A first question text (truncated):', checkboxTextA.slice(0, 120)].join(' '),
+    });
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class B first question text (truncated):', checkboxTextB.slice(0, 120)].join(' '),
+    });
     const identicalContent = checkboxTextA.length > 0 && checkboxTextA === checkboxTextB;
     test.fail(
       identicalContent,
@@ -793,14 +871,17 @@ test(
         .getByText(/error|failed|try again|retry/i)
         .isVisible({ timeout: 2000 })
         .catch(() => false));
-    console.log(
-      'Request aborted:',
-      aborted,
-      '| content loaded anyway despite the abort:',
-      contentLoadedAnyway,
-      '| a clear error shown:',
-      errorShown
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Request aborted:',
+        aborted,
+        '| content loaded anyway despite the abort:',
+        contentLoadedAnyway,
+        '| a clear error shown:',
+        errorShown,
+      ].join(' '),
+    });
     await page.unroute('**/*');
 
     test.fail(!aborted, 'No AI-generation request matched the interception pattern to abort');
@@ -845,7 +926,10 @@ test(
       .first()
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('Teaching Tips -- error shown:', errorVisible, '| real content loaded:', hasRealContent);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Teaching Tips -- error shown:', errorVisible, '| real content loaded:', hasRealContent].join(' '),
+    });
     expect(errorVisible).toBe(false);
     expect(hasRealContent).toBe(true);
     await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
@@ -898,8 +982,14 @@ test(
         .locator('xpath=ancestor::*[2]')
         .textContent()
         .catch(() => '')) || '';
-    console.log('Chapter 1 question text (truncated):', chapter1Text.slice(0, 120));
-    console.log('Chapter 2 question text (truncated):', chapter2Text.slice(0, 120));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter 1 question text (truncated):', chapter1Text.slice(0, 120)].join(' '),
+    });
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter 2 question text (truncated):', chapter2Text.slice(0, 120)].join(' '),
+    });
     const staleIdentical = chapter1Text.length > 0 && chapter1Text === chapter2Text;
     test.fail(
       staleIdentical,
@@ -936,12 +1026,15 @@ test(
     await openAiAssist(page, ar);
     const modalCount = await page.getByText('AI Assist', { exact: true }).count();
     const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log(
-      'AI Assist title-text count after 5 rapid open/close cycles:',
-      modalCount,
-      '| exercise checkboxes:',
-      checkboxCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'AI Assist title-text count after 5 rapid open/close cycles:',
+        modalCount,
+        '| exercise checkboxes:',
+        checkboxCount,
+      ].join(' '),
+    });
     test.fail(
       modalCount > 2 || checkboxCount === 0,
       'Rapid open/close cycling left either multiple stacked "AI Assist" title elements or a blank Exercise tab with zero checkboxes -- a real state-corruption bug under repeated fast open/close'
@@ -975,15 +1068,18 @@ test(
     await page.waitForTimeout(1000);
     const countAfter = await pl.resourceCards.count();
     const added = countAfter - countBefore;
-    console.log(
-      'Playlist resource count before/after 10 rapid Add-to-Playlist clicks:',
-      countBefore,
-      '->',
-      countAfter,
-      '(added:',
-      added,
-      ')'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Playlist resource count before/after 10 rapid Add-to-Playlist clicks:',
+        countBefore,
+        '->',
+        countAfter,
+        '(added:',
+        added,
+        ')',
+      ].join(' '),
+    });
     test.fail(
       added >= 5,
       `10 rapid clicks on Add to Playlist added ${added} new resource cards -- not de-duplicated/debounced, a real duplicate-resource-accumulation bug`
@@ -1019,7 +1115,10 @@ test(
     }
     await openAiAssist(page, ar, 30000);
     const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log('Exercise checkboxes on the fresh open after mid-generation reload:', checkboxCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Exercise checkboxes on the fresh open after mid-generation reload:', checkboxCount].join(' '),
+    });
     test.fail(
       checkboxCount === 0,
       'CONFIRMED: reloading while AI Assist generation was in flight left the next open permanently blank (zero checkboxes) instead of recovering cleanly'
@@ -1052,14 +1151,17 @@ test(
       .catch(() => false);
     await page.waitForTimeout(2000);
     const pageAlive = await page.evaluate(() => document.readyState).catch(() => null);
-    console.log(
-      'Total checkboxes selected:',
-      total,
-      '| Add-to-Playlist clicked:',
-      clicked,
-      '| page still responsive:',
-      !!pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Total checkboxes selected:',
+        total,
+        '| Add-to-Playlist clicked:',
+        clicked,
+        '| page still responsive:',
+        !!pageAlive,
+      ].join(' '),
+    });
     test.fail(
       !clicked || !pageAlive,
       'Selecting every exercise checkbox and clicking Add to Playlist made the button unclickable or crashed the page -- app cannot handle a fully-selected mass-add'
@@ -1068,7 +1170,15 @@ test(
     expect(pageAlive).toBeTruthy();
     await ar.aiAssistCloseBtn.click({ timeout: 3000 }).catch(() => {});
     const countAfter = await pl.resourceCards.count();
-    console.log('Playlist resource count before/after mass-select Add to Playlist:', countBefore, '->', countAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Playlist resource count before/after mass-select Add to Playlist:',
+        countBefore,
+        '->',
+        countAfter,
+      ].join(' '),
+    });
   }
 );
 
@@ -1085,7 +1195,10 @@ test(
       if (!stillStuck) await ar.actions.aiAssist.click({ force: true }).catch(() => {});
       await page.waitForTimeout(2500);
       const closeResponsive = await ar.aiAssistCloseBtn.isEnabled({ timeout: 3000 }).catch(() => false);
-      console.log(`Attempt ${attempt}: Close button responsive:`, closeResponsive);
+      test.info().annotations.push({
+        type: 'note',
+        description: [`Attempt ${attempt}: Close button responsive:`, closeResponsive].join(' '),
+      });
       expect(closeResponsive).toBe(true); // modal must stay operable even mid-repeated-failure
       await ar.aiAssistCloseBtn.click({ force: true, timeout: 3000 }).catch(() => {});
       await page.waitForTimeout(300);
@@ -1095,7 +1208,10 @@ test(
     // Final unrouted open should recover to real content.
     await openAiAssist(page, ar, 30000);
     const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log('Exercise checkboxes after clearing the route (recovery check):', checkboxCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Exercise checkboxes after clearing the route (recovery check):', checkboxCount].join(' '),
+    });
     test.fail(
       checkboxCount === 0,
       'After 3 consecutive forced network failures, clearing the route did not let AI Assist recover to real content on the next open'
@@ -1120,7 +1236,13 @@ test(
     }
     await openAiAssist(page, ar, 30000);
     const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log('Exercise checkboxes on the 4th (normal-wait) open after 3 instant-close cycles:', checkboxCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Exercise checkboxes on the 4th (normal-wait) open after 3 instant-close cycles:',
+        checkboxCount,
+      ].join(' '),
+    });
     test.fail(
       checkboxCount === 0,
       'CONFIRMED: 3 instant open+close cycles left the 4th legitimate open permanently blank'
@@ -1167,7 +1289,15 @@ test(
     await page.waitForTimeout(1000);
 
     const leaked = marker.length > 5 && (await page.getByText(marker, { exact: false }).count()) > 0;
-    console.log("Marker text from Class A's added exercise found on Class B's Playlist:", leaked, '| marker:', marker);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "Marker text from Class A's added exercise found on Class B's Playlist:",
+        leaked,
+        '| marker:',
+        marker,
+      ].join(' '),
+    });
     test.fail(
       leaked,
       "CONFIRMED SECURITY ISSUE: an exercise added to Playlist under one class is visible from a different class's Playlist -- cross-class data leak"
@@ -1205,12 +1335,15 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'After interleaved tab/close/reopen spam -- Exercise checkboxes visible:',
-      checkboxesVisible,
-      '| Video thumbs visible:',
-      videoThumbsVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After interleaved tab/close/reopen spam -- Exercise checkboxes visible:',
+        checkboxesVisible,
+        '| Video thumbs visible:',
+        videoThumbsVisible,
+      ].join(' '),
+    });
     const mutuallyExclusiveOrOneShown = !(checkboxesVisible && videoThumbsVisible);
     test.fail(
       !mutuallyExclusiveOrOneShown,
@@ -1251,12 +1384,15 @@ test(
         .locator('[data-qa-id="toolbar-user-avatar"]')
         .isVisible({ timeout: 3000 })
         .catch(() => false));
-    console.log(
-      'AI Assist modal still visible after 10x Escape:',
-      modalStillThere,
-      '| underlying page interactive:',
-      pageInteractive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'AI Assist modal still visible after 10x Escape:',
+        modalStillThere,
+        '| underlying page interactive:',
+        pageInteractive,
+      ].join(' '),
+    });
     test.fail(
       !pageInteractive,
       'CONFIRMED: rapid Escape-key spam while AI Assist was open left the underlying page non-interactive -- a half-torn-down overlay is blocking it'

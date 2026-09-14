@@ -8,7 +8,7 @@
 // tabs with no data-qa-id), so those use Playwright's role-based locators
 // instead.
 
-const { loginWithPin } = require('./auth.helper');
+const { loginWithPin } = require('../utils/auth.helper');
 
 class NavigationPage {
   constructor(page) {
@@ -41,7 +41,7 @@ class NavigationPage {
   }
 
   /** Log in with a PIN from Guest Mode — the starting point for every Navigation test.
-   * Retries once on the transient post-login-race timeout (see auth.helper.js). */
+   * Retries once on the transient post-login-race timeout (see utils/auth.helper.js). */
   async loginWithPin(pin, { toggleTimeout = 30000 } = {}) {
     await loginWithPin(this.page, pin, { toggleTimeout });
   }

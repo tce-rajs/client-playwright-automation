@@ -1,6 +1,11 @@
-// Dropit and AI-Assist -- both marked "Pending Verification, needs a
-// dedicated pass" in the workbook; this covers their basic entry behavior.
-// Source: CEP_TestCases/Add_Resource_Module_Test_Cases_Final.xlsx, cases ADD-DRP-01, ADD-AIA-01.
+// Dropit and AI-Assist each have their own dedicated workbook (DRP-*/AIA-* in
+// Drop_It_Module_Test_Cases_Final.xlsx / AI_Assist_Module_Test_Cases_Final.xlsx) --
+// this file is deliberately narrower and out-of-band from both: it only covers
+// that each source opens correctly FROM the Add Resource picker's entry point,
+// not their own deep functionality. IDs ADD-DRP-01/ADD-AIA-01 are this file's
+// own (checked: they exist in none of the 20 workbooks), chosen to read as
+// "Add Resource's Dropit/AI-Assist entry point" rather than colliding with the
+// dedicated modules' own numbering.
 
 const { test, expect } = require('../../fixtures/electron-app');
 const { PlaylistPage } = require('../../pages/playlist.page');
@@ -49,7 +54,10 @@ test(
     const errorScreenVisible = await ar.aiAssistErrorScreen.isVisible().catch(() => false);
     if (errorScreenVisible) {
       const msg = (await ar.aiAssistErrorMessage.textContent().catch(() => '')).trim();
-      console.log('AI-Assist returned an error screen instead of content:', msg);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['AI-Assist returned an error screen instead of content:', msg].join(' '),
+      });
       test.fail(true, `AI-Assist returned an error screen instead of content: "${msg}"`);
       expect(errorScreenVisible).toBe(false);
       return;

@@ -37,10 +37,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       expect(gradeCount).toBeGreaterThan(1);
       const allLabels = await nav.gradeButtons.allTextContents();
       const eceIndex = allLabels.findIndex((t) => /Early Childhood Education/i.test(t));
-      console.log(
-        'Grade pill labels:',
-        allLabels.map((t) => t.trim())
-      );
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Grade pill labels:', allLabels.map((t) => t.trim())].join(' '),
+        });
       expect(eceIndex).toBeGreaterThanOrEqual(0);
 
       // Same tag name, and a DIRECT SIBLING of every Class-N pill under one
@@ -54,7 +56,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           allSameTag: els.every((el) => el.tagName === target.tagName),
         };
       }, eceIndex);
-      console.log('ECE pill structure vs the rest of the Grade list:', JSON.stringify(structure));
+      test.info().annotations.push({
+        type: 'note',
+        description: ['ECE pill structure vs the rest of the Grade list:', JSON.stringify(structure)].join(' '),
+      });
       expect(structure.sameParentAsFirst).toBe(true);
       expect(structure.allSameTag).toBe(true);
     }
@@ -148,7 +153,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.openChaptersPopup();
       await expect(nav.chapterItems.first()).toBeVisible();
       const chapterCount = await nav.chapterItems.count();
-      console.log('Chapters available for the boundary check:', chapterCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Chapters available for the boundary check:', chapterCount].join(' '),
+      });
       expect(chapterCount).toBeGreaterThan(2);
       await nav._closeChaptersPopupIfOpen();
 
@@ -165,14 +173,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await selectChapterAndLandOnTopic(nav, page, middleIndex);
 
       const first = await selectChapterAndLandOnTopic(nav, page, 0);
-      console.log(
-        'First chapter:',
-        first.chapterText,
-        '| topics list shown:',
-        first.topicsShown,
-        '| final label:',
-        first.finalLabel
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'First chapter:',
+          first.chapterText,
+          '| topics list shown:',
+          first.topicsShown,
+          '| final label:',
+          first.finalLabel,
+        ].join(' '),
+      });
       expect(first.landedOnRequestedChapter).toBe(true);
 
       // Confirmed live: this subject's trailing chapters (29, then 28 too) are
@@ -189,14 +200,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         last = await selectChapterAndLandOnTopic(nav, page, idx);
         if (last.landedOnRequestedChapter) break;
       }
-      console.log(
-        'True last chapter:',
-        trueLastText,
-        '| Chapter actually verified (walked back if needed):',
-        last.chapterText,
-        '| final label:',
-        last.finalLabel
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'True last chapter:',
+          trueLastText,
+          '| Chapter actually verified (walked back if needed):',
+          last.chapterText,
+          '| final label:',
+          last.finalLabel,
+        ].join(' '),
+      });
       expect(last.landedOnRequestedChapter).toBe(true);
     }
   );
@@ -238,7 +252,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .first()
         .isVisible()
         .catch(() => false);
-      console.log('Class Popup still open after a second click on its own trigger:', stillOpen);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Class Popup still open after a second click on its own trigger:', stillOpen].join(' '),
+      });
       expect(stillOpen).toBe(false);
     }
   );
@@ -256,7 +273,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       });
       await page.reload();
       await nav.userAvatar.waitFor({ state: 'visible', timeout: 15000 });
-      console.log('Curriculum-related requests fired by a full page reload:', curriculumRequestCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Curriculum-related requests fired by a full page reload:', curriculumRequestCount].join(' '),
+      });
 
       // CONFIRMED LIVE: a full page reload fires ZERO curriculum requests --
       // the data is served entirely from a client-side cache before the
@@ -311,10 +331,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           if (subjCount === 0) foundZeroSubjectCombo = true;
         }
       }
-      console.log(
-        "Found a Grade/Division with zero Subjects in this account's real assignment:",
-        foundZeroSubjectCombo
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          "Found a Grade/Division with zero Subjects in this account's real assignment:",
+          foundZeroSubjectCombo,
+        ].join(' '),
+      });
 
       test.fail(
         !foundZeroSubjectCombo,
@@ -346,14 +369,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .getByText(/error|retry|failed to load/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Class before:',
-        beforeClass,
-        '| after (content fetch aborted):',
-        afterClass,
-        '| error state shown:',
-        errorStateVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Class before:',
+          beforeClass,
+          '| after (content fetch aborted):',
+          afterClass,
+          '| error state shown:',
+          errorStateVisible,
+        ].join(' '),
+      });
 
       const halfSwitched = afterClass !== beforeClass && !errorStateVisible;
       test.fail(
@@ -421,12 +447,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(3000);
 
       const finalClass = (await nav.currentClassBtn.textContent()).trim();
-      console.log(
-        'Rapidly clicked first then last Subject; final Current Class:',
-        finalClass,
-        '| expected last-clicked subject:',
-        lastSubjectText
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Rapidly clicked first then last Subject; final Current Class:',
+          finalClass,
+          '| expected last-clicked subject:',
+          lastSubjectText,
+        ].join(' '),
+      });
       expect(finalClass).toContain(lastSubjectText);
     }
   );
@@ -452,10 +481,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         const match = subjTexts.find((t) => /[&/'-]/.test(t));
         if (match) specialSubjectText = match.trim();
       }
-      console.log(
-        "Found a Subject name with special characters in this account's real curriculum:",
-        specialSubjectText
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          "Found a Subject name with special characters in this account's real curriculum:",
+          specialSubjectText,
+        ].join(' '),
+      });
 
       test.fail(
         !specialSubjectText,
@@ -503,7 +535,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         await attendanceOption.click({ timeout: 5000 }).catch(() => {});
         await page.waitForTimeout(1500);
       }
-      console.log('Magnet-gated panel opened before switching class:', magnetOpened);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Magnet-gated panel opened before switching class:', magnetOpened].join(' '),
+      });
 
       await nav.openClassPopup();
       const items = nav.recentClassButtons;
@@ -557,12 +592,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // Checkpoint's End button). Left as a hard failure rather than
       // test.fail(): a real crash makes Playwright's own teardown unreliable
       // either way, so a hard failure is the more honest signal.
-      console.log(
-        'Page crashed while switching through',
-        combos.length,
-        'distinct classes in succession:',
-        pageCrashed
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Page crashed while switching through',
+          combos.length,
+          'distinct classes in succession:',
+          pageCrashed,
+        ].join(' '),
+      });
       expect(pageCrashed, 'Switching through several distinct classes in succession should not crash the page').toBe(
         false
       );
@@ -576,7 +614,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.recentClassesTab.click({ timeout: 5000 }).catch(() => {});
       await page.waitForTimeout(300);
       const finalCount = await nav.recentClassButtons.count();
-      console.log('Recent Classes entries after switching through', combos.length, 'distinct classes:', finalCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Recent Classes entries after switching through',
+          combos.length,
+          'distinct classes:',
+          finalCount,
+        ].join(' '),
+      });
       expect(finalCount).toBeLessThanOrEqual(20);
       expect(finalCount).toBeGreaterThan(0);
     }
@@ -616,12 +662,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.recentClassButtons.first().click({ timeout: 5000 });
       await page.waitForTimeout(1000);
       const afterClass = (await nav.currentClassBtn.textContent()).trim();
-      console.log(
-        'Class before/after clicking Recent Classes right after rapid tab toggling:',
-        beforeClass,
-        '->',
-        afterClass
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Class before/after clicking Recent Classes right after rapid tab toggling:',
+          beforeClass,
+          '->',
+          afterClass,
+        ].join(' '),
+      });
       await expect(nav.currentClassBtn).toBeVisible();
     }
   );
@@ -638,7 +687,9 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(500);
 
       const subjCount = await nav.subjectButtons.count();
-      console.log('Class 11 real Subject count:', subjCount);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Class 11 real Subject count:', subjCount].join(' ') });
       expect(subjCount).toBeGreaterThan(5);
 
       const lastSubjectText = (await nav.subjectButtons.last().textContent()).trim();
@@ -663,7 +714,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await nav.allMyClassesTab.click({ timeout: 10000 }).catch(() => {});
       await page.waitForTimeout(800);
       const gradeCount = await nav.gradeButtons.count();
-      console.log('Grades rendered when the popup was opened immediately after a hard refresh:', gradeCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Grades rendered when the popup was opened immediately after a hard refresh:', gradeCount].join(
+          ' '
+        ),
+      });
       expect(gradeCount).toBeGreaterThan(0);
     }
   );

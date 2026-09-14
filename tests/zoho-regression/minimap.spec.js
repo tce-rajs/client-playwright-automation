@@ -64,7 +64,10 @@ test(
     }
     const canvasVisible = await mm.canvas.isVisible({ timeout: 5000 }).catch(() => false);
     const canvasBox = canvasVisible ? await mm.canvas.boundingBox() : null;
-    console.log('Minimap canvas visible:', canvasVisible, '| box:', JSON.stringify(canvasBox));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap canvas visible:', canvasVisible, '| box:', JSON.stringify(canvasBox)].join(' '),
+    });
 
     const bugReproduces = !canvasVisible || !canvasBox || canvasBox.width === 0 || canvasBox.height === 0;
     test.fail(
@@ -93,7 +96,10 @@ test(
     await nextTopicBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1500);
     const stillOpen = await mm.isOpen();
-    console.log('Minimap still open after switching to the next topic:', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap still open after switching to the next topic:', stillOpen].join(' '),
+    });
 
     test.fail(
       stillOpen,
@@ -132,14 +138,22 @@ test(
     }
     await am.signOutBtn.click({ force: true });
     await page.waitForTimeout(1500);
-    const backToGuest = await page.getByText(/guest mode/i).isVisible({ timeout: 8000 }).catch(() => false);
+    const backToGuest = await page
+      .getByText(/guest mode/i)
+      .isVisible({ timeout: 8000 })
+      .catch(() => false);
     test.fail(!backToGuest, 'Sign-out did not return to Guest Mode -- cannot test the post-logout Minimap state');
     if (!backToGuest) {
       expect(backToGuest).toBe(true);
       return;
     }
-    const minimapVisibleAfterLogout = await mm.container.evaluate((el) => el.classList.contains('visible')).catch(() => false);
-    console.log('Minimap still visible on screen after logout:', minimapVisibleAfterLogout);
+    const minimapVisibleAfterLogout = await mm.container
+      .evaluate((el) => el.classList.contains('visible'))
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap still visible on screen after logout:', minimapVisibleAfterLogout].join(' '),
+    });
 
     test.fail(
       minimapVisibleAfterLogout,

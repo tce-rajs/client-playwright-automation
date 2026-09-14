@@ -8,7 +8,7 @@
 // <webview> tag, which Electron exposes to Playwright as its OWN separate
 // window. So every test here uses THAT window as `page`, not the shell.
 //
-// Setup this required (see docs/CLIENT_AUTOMATION_NOTES.md for the full story):
+// Setup this required:
 //   1. This machine has ELECTRON_RUN_AS_NODE=1 set globally, which makes any
 //      Electron exe run as plain Node instead of opening its GUI. We strip it
 //      from the launched process's env.
@@ -24,12 +24,11 @@
 const fs = require('fs');
 const base = require('@playwright/test');
 const { _electron: electron } = base;
+const { BASE_URL } = require('../config/env');
 
 const CLIENT_EXE_PATH =
   process.env.CLASSEDGE_CLIENT_EXE ||
   'C:\\Users\\v_crystalQA3\\AppData\\Local\\Programs\\tceclient\\Tata ClassEdge School.exe';
-
-const BASE_URL = process.env.BASE_URL || 'https://ce-qa-school.devstudi.com/teach/';
 
 // Every spec was written against a plain browser `page`, where Playwright's
 // own `baseURL` config option lets `page.goto('./')` resolve automatically.
@@ -154,59 +153,138 @@ async function launchClient() {
 // given the cheap retry already handles the common case.
 const MAX_LAUNCH_ATTEMPTS = 2;
 
+// Without this check, a missing client just fails with Playwright's own
+// generic "Process failed to launch!" (confirmed live -- no path, no
+// reason, nothing actionable), repeated identically on every single test.
+// Fail fast with a message that says what's actually wrong.
+function assertClientInstalled() {
+  if (!fs.existsSync(CLIENT_EXE_PATH)) {
+    throw new Error(
+      `Tata ClassEdge School client not found at: ${CLIENT_EXE_PATH}\n` +
+        `Install the desktop client on this machine, or set CLASSEDGE_CLIENT_EXE ` +
+        `in .env to point at its real install location.`
+    );
+  }
+}
+
+// Same launch-and-recover loop the fixture always used, extracted so both
+// the worker's initial launch and a mid-worker recovery relaunch (see the
+// `page` fixture below) share one implementation.
+async function launchWithRetry() {
+  assertClientInstalled();
+
+  let app, teachWindow;
+  for (let attempt = 1; attempt <= MAX_LAUNCH_ATTEMPTS; attempt++) {
+    ({ app, teachWindow } = await launchClient());
+
+    if (await isConnectionErrorShowing(app)) {
+      // Cheap recovery first: a plain Playwright-level goto on the SAME
+      // window, bypassing the app's own broken internal retry. Confirmed
+      // live this reliably restores real content within a few seconds.
+      try {
+        await teachWindow.goto(resolveUrl(BASE_URL), { timeout: 20000, waitUntil: 'domcontentloaded' });
+      } catch {
+        // fall through to the real-content check below regardless
+      }
+    }
+
+    if (await hasRealContent(teachWindow)) break;
+
+    await app.close().catch(() => {});
+    if (attempt === MAX_LAUNCH_ATTEMPTS) {
+      throw new Error(
+        `BLOCKER: the client's teach window is still empty/broken after ${MAX_LAUNCH_ATTEMPTS} ` +
+          `fresh launches, each with a recovery retry attempted. This is a genuine failure to ` +
+          `load real content, not the known cosmetic startup-race overlay (which recovers on ` +
+          `retry) -- so this test is failing rather than working around it. Check the QA ` +
+          `server/network before re-running.`
+      );
+    }
+  }
+
+  const originalGoto = teachWindow.goto.bind(teachWindow);
+  teachWindow.goto = (url, options) => originalGoto(resolveUrl(url), options);
+  return { app, teachWindow };
+}
+
+// AUD-08: the client used to be relaunched from scratch for every single
+// test (~1,000+ full Electron launches per full run, confirmed the
+// suite's biggest runtime cost). Launching once per WORKER instead and
+// resetting session state between tests keeps each test's actual
+// precondition (every spec already logs in itself via loginWithPin, or
+// -- for Guest Mode tests like entry.spec.js -- expects to start signed
+// out) while cutting relaunches from "per test" to "per worker".
+//
+// The one real behavioral risk this introduces: reusing the SAME window
+// means a test that leaves it signed in, or genuinely broken (e.g.
+// entry.spec.js's ENT-07, which documents a confirmed permanent blank
+// page after an uncaught router error), would otherwise poison every
+// later test in the same worker -- something a fresh-per-test launch
+// could never do. resetSession() below handles the sign-in case
+// explicitly (sign out via the real UI, the same way a teacher would);
+// isWindowHealthy() catches the broken/blank case and forces a full
+// relaunch rather than silently handing a bad window to the next test.
+
+/** If currently signed in, signs out via the real UI (avatar -> Sign Out)
+ * so the next test starts from the same signed-out Guest Mode baseline a
+ * fresh launch would have provided. A no-op if already signed out. */
+async function resetSession(teachWindow) {
+  const avatar = teachWindow.locator('[data-qa-id="toolbar-user-avatar"]');
+  const isSignedIn = await avatar.isVisible({ timeout: 3000 }).catch(() => false);
+  if (!isSignedIn) return;
+
+  await avatar.click({ force: true, timeout: 5000 });
+  const signOutBtn = teachWindow.locator('[data-qa-id="toolbar-profile-signout-btn"]');
+  await signOutBtn.waitFor({ state: 'visible', timeout: 5000 });
+  await signOutBtn.click({ force: true });
+  await avatar.waitFor({ state: 'hidden', timeout: 10000 });
+}
+
+/** Cheap health check before reusing a window for the next test -- reuses
+ * the same hasRealContent() signal the initial launch already trusts, plus
+ * an explicit isClosed() check (a crashed webview can close its own window
+ * without the whole Electron app going down). */
+async function isWindowHealthy(teachWindow) {
+  if (teachWindow.isClosed()) return false;
+  return hasRealContent(teachWindow);
+}
+
 const test = base.test.extend({
-  page: [
+  // One real launch per worker process, not per test.
+  workerApp: [
     async ({}, use) => {
-      // Without this check, a missing client just fails with Playwright's own
-      // generic "Process failed to launch!" (confirmed live -- no path, no
-      // reason, nothing actionable), repeated identically on every single
-      // test. Fail fast with a message that says what's actually wrong.
-      if (!fs.existsSync(CLIENT_EXE_PATH)) {
-        throw new Error(
-          `Tata ClassEdge School client not found at: ${CLIENT_EXE_PATH}\n` +
-            `Install the desktop client on this machine, or set CLASSEDGE_CLIENT_EXE ` +
-            `in .env to point at its real install location.`
-        );
-      }
-
-      let app, teachWindow;
-      for (let attempt = 1; attempt <= MAX_LAUNCH_ATTEMPTS; attempt++) {
-        ({ app, teachWindow } = await launchClient());
-
-        if (await isConnectionErrorShowing(app)) {
-          // Cheap recovery first: a plain Playwright-level goto on the SAME
-          // window, bypassing the app's own broken internal retry. Confirmed
-          // live this reliably restores real content within a few seconds.
-          try {
-            await teachWindow.goto(resolveUrl(BASE_URL), { timeout: 20000, waitUntil: 'domcontentloaded' });
-          } catch {
-            // fall through to the real-content check below regardless
-          }
-        }
-
-        if (await hasRealContent(teachWindow)) break;
-
-        await app.close().catch(() => {});
-        if (attempt === MAX_LAUNCH_ATTEMPTS) {
-          throw new Error(
-            `BLOCKER: the client's teach window is still empty/broken after ${MAX_LAUNCH_ATTEMPTS} ` +
-              `fresh launches, each with a recovery retry attempted. This is a genuine failure to ` +
-              `load real content, not the known cosmetic startup-race overlay (which recovers on ` +
-              `retry) -- so this test is failing rather than working around it. Check the QA ` +
-              `server/network before re-running.`
-          );
-        }
-      }
-
-      const originalGoto = teachWindow.goto.bind(teachWindow);
-      teachWindow.goto = (url, options) => originalGoto(resolveUrl(url), options);
-
-      await use(teachWindow);
-
-      await app.close().catch(() => {});
+      const initial = await launchWithRetry();
+      // A plain object, mutated in place (not reassigned) by the `page`
+      // fixture below if a mid-worker recovery relaunch is ever needed --
+      // every test in this worker reads through the same reference.
+      const state = { app: initial.app, teachWindow: initial.teachWindow };
+      await use(state);
+      await state.app.close().catch(() => {});
     },
-    { timeout: 100000 },
-  ], // 2 launch attempts worst-case (~10-20s each incl. recovery retry) needs more than Playwright's fixture-timeout default
+    { scope: 'worker', timeout: 100000 },
+  ],
+
+  page: [
+    async ({ workerApp }, use) => {
+      let healthy = false;
+      try {
+        await resetSession(workerApp.teachWindow);
+        healthy = await isWindowHealthy(workerApp.teachWindow);
+      } catch {
+        healthy = false;
+      }
+
+      if (!healthy) {
+        await workerApp.app.close().catch(() => {});
+        const recovered = await launchWithRetry();
+        workerApp.app = recovered.app;
+        workerApp.teachWindow = recovered.teachWindow;
+      }
+
+      await use(workerApp.teachWindow);
+    },
+    { timeout: 100000 }, // covers the rare mid-worker recovery relaunch, same as workerApp's own launch
+  ],
 });
 
 module.exports = { test, expect: base.expect, devices: base.devices };

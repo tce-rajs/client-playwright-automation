@@ -46,7 +46,10 @@ test(
     await page.waitForTimeout(1000);
     const afterOnePass = await tb.pathCount();
 
-    console.log('Paths: after draw =', afterDraw, '| after one erase pass =', afterOnePass);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Paths: after draw =', afterDraw, '| after one erase pass =', afterOnePass].join(' '),
+    });
     test.fail(
       afterOnePass > 0 && afterOnePass >= afterDraw,
       'A single erase pass directly over a short stroke leaves fragments behind rather than fully clearing it'

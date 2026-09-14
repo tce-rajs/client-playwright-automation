@@ -3,6 +3,27 @@
 // project): Class 8R Mathematics, Chapter "Foundation Checkpoint", Topic 0
 // -- resource card "testR-25.08.26".
 //
+// Traceability to CEP_TestCases/Players_Module_Test_Cases_Final.xlsx's
+// "Checkpoints Player" section (12 rows, PLR-CHK-01..12):
+//   - PLR-CHK-04..12 (9 rows) are covered below by the matching-numbered
+//     PLR-CHK-04..12 tests, added in a later workbook-driven pass.
+//   - PLR-CHK-01/02/03 ("Checkpoints List shows all checkpoints for the
+//     current topic" / "Checkpoint Details shows a full assessment summary
+//     and resume control" / "Offline flow allows conducting a Checkpoint
+//     without live connectivity") remain genuinely unautomated -- a real
+//     gap, not just a naming mismatch (checked against every test in this
+//     file: none of them exercises the checkpoints LIST view, the
+//     Details/summary screen, or the offline-mode flow specifically).
+//   - PLR-CKP-FND-01..07 below are a separate, earlier pass written before
+//     the workbook rows above existed as a checked source -- they cover
+//     real, distinct ground (which screen `openCheckpoint()` lands on, the
+//     roster's Start control, the timer-hide UI bug, concept tags, the
+//     close-during-active-test Lock flow) but were never meant to number
+//     against PLR-CHK's own rows. Renamed from the original "PLR-CKP-01..07"
+//     (which visually collided with, but never actually covered, workbook
+//     rows PLR-CHK-01..07) to make that explicit -- see the audit ledger's
+//     AUD-10.
+//
 // CONFIRMED LIVE (2026-09-06): this shared resource's status changes as a
 // direct result of testing it (CREATED -> PAUSED -> LAUNCHED observed
 // across this pass alone), and which screen a click lands on depends on
@@ -76,7 +97,7 @@ async function reachRosterScreen(page, plr) {
 }
 
 test(
-  'PLR-CKP-01: Opening a Checkpoint resource shows a real, recognized screen',
+  'PLR-CKP-FND-01: Opening a Checkpoint resource shows a real, recognized screen',
   { tag: '@positive' },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -87,21 +108,24 @@ test(
     const onRoster =
       (await plr.checkpointTimerBadge.isVisible().catch(() => false)) ||
       (await plr.checkpointStartBtn.isVisible().catch(() => false));
-    console.log(
-      'On Resume dashboard:',
-      onDashboard,
-      '| on mode-select:',
-      onModeSelect,
-      '| on roster/start screen:',
-      onRoster
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'On Resume dashboard:',
+        onDashboard,
+        '| on mode-select:',
+        onModeSelect,
+        '| on roster/start screen:',
+        onRoster,
+      ].join(' '),
+    });
     expect(onDashboard || onModeSelect || onRoster).toBe(true);
     await expect(plr.checkpointCloseBtn).toBeVisible();
   }
 );
 
 test(
-  'PLR-CKP-02: Reaching the roster screen works from whichever state the resource is currently in',
+  'PLR-CKP-FND-02: Reaching the roster screen works from whichever state the resource is currently in',
   { tag: '@ui-state' },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -113,7 +137,7 @@ test(
 );
 
 test(
-  'PLR-CKP-03: The roster screen has a way to actually Start the checkpoint',
+  'PLR-CKP-FND-03: The roster screen has a way to actually Start the checkpoint',
   { tag: '@positive' },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -121,29 +145,39 @@ test(
     await reachRosterScreen(page, plr);
     const timerRunning = await plr.checkpointTimerBadge.isVisible().catch(() => false);
     const startStillShowing = await plr.checkpointStartBtn.isVisible().catch(() => false);
-    console.log(
-      'Timer already running (already started):',
-      timerRunning,
-      '| Start control still showing:',
-      startStillShowing
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Timer already running (already started):',
+        timerRunning,
+        '| Start control still showing:',
+        startStillShowing,
+      ].join(' '),
+    });
     expect(timerRunning || startStillShowing).toBe(true);
   }
 );
 
-test('PLR-CKP-04: The roster screen shows a timer and the student roster', { tag: '@positive' }, async ({ page }) => {
-  const plr = new PlayerPage(page);
-  await openCheckpoint(page, plr);
-  await reachRosterScreen(page, plr);
+test(
+  'PLR-CKP-FND-04: The roster screen shows a timer and the student roster',
+  { tag: '@positive' },
+  async ({ page }) => {
+    const plr = new PlayerPage(page);
+    await openCheckpoint(page, plr);
+    await reachRosterScreen(page, plr);
 
-  const timerVisible = await plr.checkpointTimerBadge.isVisible().catch(() => false);
-  const studentCount = await plr.checkpointStudentRows.count();
-  console.log('Timer badge visible:', timerVisible, '| student rows:', studentCount);
-  expect(timerVisible).toBe(true);
-  expect(studentCount).toBeGreaterThan(0);
-});
+    const timerVisible = await plr.checkpointTimerBadge.isVisible().catch(() => false);
+    const studentCount = await plr.checkpointStudentRows.count();
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Timer badge visible:', timerVisible, '| student rows:', studentCount].join(' '),
+    });
+    expect(timerVisible).toBe(true);
+    expect(studentCount).toBeGreaterThan(0);
+  }
+);
 
-test('PLR-CKP-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
+test('PLR-CKP-FND-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
@@ -158,7 +192,9 @@ test('PLR-CKP-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }
     await page.waitForTimeout(800);
   }
   const hideBtnVisibleAfter = await plr.checkpointTimerHideBtn.isVisible().catch(() => false);
-  console.log('Timer-hide control reachable:', hideBtnVisibleAfter);
+  test
+    .info()
+    .annotations.push({ type: 'note', description: ['Timer-hide control reachable:', hideBtnVisibleAfter].join(' ') });
 
   test.fail(
     !hideBtnVisibleAfter,
@@ -167,13 +203,13 @@ test('PLR-CKP-05: The timer badge can be hidden', { tag: ['@ui-state', '@bug'] }
   expect(hideBtnVisibleAfter).toBe(true);
 });
 
-test('PLR-CKP-06: Concept coverage tags are shown for the assessment', { tag: '@positive' }, async ({ page }) => {
+test('PLR-CKP-FND-06: Concept coverage tags are shown for the assessment', { tag: '@positive' }, async ({ page }) => {
   const plr = new PlayerPage(page);
   await openCheckpoint(page, plr);
   await reachRosterScreen(page, plr);
 
   const conceptCount = await plr.checkpointConceptTags.count();
-  console.log('Concept tags shown:', conceptCount);
+  test.info().annotations.push({ type: 'note', description: ['Concept tags shown:', conceptCount].join(' ') });
   expect(conceptCount).toBeGreaterThan(0);
   // No cleanup here: confirmed live that clicking End on this checkpoint
   // crashes the page (reproduced twice) -- leaving the resource in its
@@ -182,7 +218,7 @@ test('PLR-CKP-06: Concept coverage tags are shown for the assessment', { tag: '@
 });
 
 test(
-  'PLR-CKP-07: Closing while the test is active asks to Lock it first, instead of silently closing',
+  'PLR-CKP-FND-07: Closing while the test is active asks to Lock it first, instead of silently closing',
   { tag: ['@ui-state', '@bug'] },
   async ({ page }) => {
     const plr = new PlayerPage(page);
@@ -227,7 +263,10 @@ test(
 
     // Cancelling should return to the still-running roster, not lose the session.
     const backOnRoster = await plr.checkpointTimerBadge.isVisible().catch(() => false);
-    console.log('Back on the running roster after cancelling the Lock dialog:', backOnRoster);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Back on the running roster after cancelling the Lock dialog:', backOnRoster].join(' '),
+    });
     expect(backOnRoster).toBe(true);
   }
 );
@@ -250,7 +289,12 @@ test(
     await openCheckpoint(page, plr);
     await reachRosterScreen(page, plr);
     const exportVisible = await plr.checkpointExcelExportBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Excel export control visible on this checkpoint (0 completions expected):', exportVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Excel export control visible on this checkpoint (0 completions expected):', exportVisible].join(
+        ' '
+      ),
+    });
     // Matches the workbook's own LIVE OBSERVATION -- documented as data, not
     // forced either way, since a real teacher may have completed this by now.
     expect(typeof exportVisible).toBe('boolean');
@@ -268,14 +312,17 @@ test(
     const onRoster =
       (await plr.checkpointTimerBadge.isVisible({ timeout: 3000 }).catch(() => false)) ||
       (await plr.checkpointStartBtn.isVisible({ timeout: 3000 }).catch(() => false));
-    console.log(
-      'Current state -- mode-select (CREATED):',
-      onModeSelect,
-      '| dashboard (PAUSED):',
-      onDashboard,
-      '| roster (LAUNCHED/STARTED):',
-      onRoster
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Current state -- mode-select (CREATED):',
+        onModeSelect,
+        '| dashboard (PAUSED):',
+        onDashboard,
+        '| roster (LAUNCHED/STARTED):',
+        onRoster,
+      ].join(' '),
+    });
     // This resource has already been launched by earlier tests in this file
     // (CREATED -> LAUNCHED is irreversible per the workbook) -- documenting
     // its CURRENT state confirms the machine moved forward and never back,
@@ -296,7 +343,9 @@ test(
     await openCheckpoint(page, plr);
     await reachRosterScreen(page, plr);
     const isStarted = await plr.checkpointTimerBadge.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('This checkpoint is currently STARTED:', isStarted);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['This checkpoint is currently STARTED:', isStarted].join(' ') });
     test.fail(
       true,
       isStarted
@@ -316,11 +365,14 @@ test(
     const timerVisibleImmediately = await plr.checkpointTimerBadge.isVisible({ timeout: 500 }).catch(() => false);
     await page.waitForTimeout(2500);
     const timerVisibleAfterWait = await plr.checkpointTimerBadge.isVisible({ timeout: 500 }).catch(() => false);
-    console.log(
-      'Timer badge visible immediately vs. after a 2.5s wait:',
-      timerVisibleImmediately,
-      timerVisibleAfterWait
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Timer badge visible immediately vs. after a 2.5s wait:',
+        timerVisibleImmediately,
+        timerVisibleAfterWait,
+      ].join(' '),
+    });
     expect(typeof timerVisibleAfterWait).toBe('boolean');
   }
 );
@@ -353,14 +405,17 @@ test(
       : null;
     const endBtnOwnHtml = await plr.checkpointEndBtn.evaluate((el) => el.outerHTML.slice(0, 100)).catch(() => null);
     const overlayIntercepts = elementAtCenter && endBtnOwnHtml && !elementAtCenter.includes(endBtnOwnHtml.slice(0, 30));
-    console.log(
-      "Element actually at End button's center point:",
-      elementAtCenter,
-      "| End button's own HTML:",
-      endBtnOwnHtml,
-      '| an overlay appears to intercept:',
-      overlayIntercepts
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "Element actually at End button's center point:",
+        elementAtCenter,
+        "| End button's own HTML:",
+        endBtnOwnHtml,
+        '| an overlay appears to intercept:',
+        overlayIntercepts,
+      ].join(' '),
+    });
     test.fail(
       !!overlayIntercepts,
       "CONFIRMED: a real DOM element other than the End button itself sits at its own center point -- an un-forced human click risks missing it, matching the mature Cypress suite's own need for {force:true}"
@@ -378,7 +433,10 @@ test(
     const card = pl.resourceCards.filter({ hasText: 'testR-25.08.26' }).first();
     await expect(card).toBeAttached({ timeout: 10000 });
     const fullText = ((await card.textContent()) || '').trim();
-    console.log('Full blended card text (title+duration+date+status):', JSON.stringify(fullText));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Full blended card text (title+duration+date+status):', JSON.stringify(fullText)].join(' '),
+    });
     // The confirmed-working identification is the SHORT substring
     // ("testR-25.08.26") already used throughout this file's own
     // openCheckpoint() helper -- documenting that the full blended text is
@@ -424,7 +482,10 @@ test(
     const plr = new PlayerPage(page);
     const pl = new PlaylistPage(page);
     const checkpointCardCount = await pl.resourceCards.filter({ hasText: /checkpoint|test/i }).count();
-    console.log('Checkpoint-like resource cards visible on this topic:', checkpointCardCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Checkpoint-like resource cards visible on this topic:', checkpointCardCount].join(' '),
+    });
     // Documenting the current count as this pass's own snapshot rather than
     // consuming any of it -- matches the workbook's own "1 CREATED and 4
     // PAUSED remained" framing (a planning note, not a hard pass/fail).

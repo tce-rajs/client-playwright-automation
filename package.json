@@ -1,7 +1,16 @@
 {
-  "name": "new-approch-playwright",
+  "name": "cep2-playwright-automation",
   "version": "1.0.0",
-  "main": "index.js",
+  "private": true,
+  "description": "Playwright end-to-end test suite for Tata ClassEdge CEP v2's teach webapp.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/tce-rajs/client-playwright-automation.git"
+  },
+  "license": "UNLICENSED",
+  "engines": {
+    "node": ">=20"
+  },
   "scripts": {
     "test": "playwright test",
     "test:headed": "playwright test --headed",
@@ -10,12 +19,19 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix",
     "format": "prettier --write .",
-    "format:check": "prettier --check ."
+    "format:check": "prettier --check .",
+    "prepare": "husky"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "description": "",
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write"
+    ],
+    "*.{json,md}": [
+      "prettier --write"
+    ]
+  },
   "devDependencies": {
     "@playwright/test": "^1.62.1",
     "dotenv": "^17.4.2",
@@ -23,6 +39,8 @@
     "eslint-config-prettier": "^10.1.8",
     "eslint-plugin-playwright": "^2.11.0",
     "globals": "^15.15.0",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.5.1",
     "prettier": "^3.9.6"
   },
   "dependencies": {

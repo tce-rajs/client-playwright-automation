@@ -28,12 +28,15 @@ test(
 
     const drilldownCount = await acc.drilldownTrigger.count();
     const signOutCount = await acc.signOutBtn.count();
-    console.log(
-      'After 6x rapid avatar clicks -- drilldown trigger count:',
-      drilldownCount,
-      '| Sign Out button count:',
-      signOutCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 6x rapid avatar clicks -- drilldown trigger count:',
+        drilldownCount,
+        '| Sign Out button count:',
+        signOutCount,
+      ].join(' '),
+    });
 
     test.fail(
       drilldownCount > 1 || signOutCount > 1,
@@ -68,7 +71,10 @@ test(
       .isVisible()
       .catch(() => false);
     const url = page.url();
-    console.log('After Back with User Profile modal open -- page usable:', pageUsable, '| URL:', url);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['After Back with User Profile modal open -- page usable:', pageUsable, '| URL:', url].join(' '),
+    });
     test.fail(!pageUsable, 'Pressing Back while the User Profile modal is open leaves the page unusable');
     expect(pageUsable).toBe(true);
   }
@@ -98,14 +104,17 @@ test(
       .locator('body')
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Dark Mode -- initial checked:',
-      initialChecked,
-      '| final checked (after 10 clicks) :',
-      finalChecked,
-      '| body alive:',
-      bodyIsAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Dark Mode -- initial checked:',
+        initialChecked,
+        '| final checked (after 10 clicks) :',
+        finalChecked,
+        '| body alive:',
+        bodyIsAlive,
+      ].join(' '),
+    });
 
     test.fail(!bodyIsAlive, 'Rapidly toggling Dark Mode 10 times crashes the page');
     expect(bodyIsAlive).toBe(true);
@@ -143,7 +152,10 @@ test(
     await page.waitForTimeout(500);
 
     const formCount = await acc.changePasswordForm.count();
-    console.log('Change Password form instance count after 5x rapid open/cancel cycles:', formCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Change Password form instance count after 5x rapid open/cancel cycles:', formCount].join(' '),
+    });
     test.fail(
       formCount > 1,
       'Rapidly opening/cancelling the Change Password form 5 times leaves more than one form instance mounted'
@@ -176,7 +188,13 @@ test(
     await acc.avatarTrigger.click({ force: true, timeout: 5000 }).catch(() => {});
     await page.waitForTimeout(500);
     const signOutVisible = await acc.signOutBtn.isVisible({ timeout: 4000 }).catch(() => false);
-    console.log('Sign Out button reachable while the Add Subjects picker is still open underneath:', signOutVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Sign Out button reachable while the Add Subjects picker is still open underneath:',
+        signOutVisible,
+      ].join(' '),
+    });
 
     if (!signOutVisible) {
       // A genuine, real finding either way: the outer menu (and therefore
@@ -198,7 +216,10 @@ test(
       .getByText('You are currently in Guest Mode.')
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('Guest Mode text visible after mid-action Sign Out:', guestModeVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Guest Mode text visible after mid-action Sign Out:', guestModeVisible].join(' '),
+    });
     test.fail(
       !guestModeVisible,
       'Signing out while the Add Subjects picker is open does not cleanly drop back to Guest Mode'
@@ -211,10 +232,16 @@ test(
       .loginWithPin(process.env.VALID_PIN)
       .then(() => true)
       .catch((e) => {
-        console.log('Re-login after mid-action Sign Out failed:', e.message.split('\n')[0]);
+        test.info().annotations.push({
+          type: 'note',
+          description: ['Re-login after mid-action Sign Out failed:', e.message.split('\n')[0]].join(' '),
+        });
         return false;
       });
-    console.log('Re-login after Sign Out during an open Add Subjects picker succeeded:', reloginWorked);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Re-login after Sign Out during an open Add Subjects picker succeeded:', reloginWorked].join(' '),
+    });
     test.fail(
       !reloginWorked,
       'After signing out while the Add Subjects picker was open, a fresh login does not work cleanly'

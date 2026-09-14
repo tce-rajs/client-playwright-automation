@@ -77,7 +77,10 @@ test(
     }
 
     const backToGuest = await signOut(page);
-    test.fail(!backToGuest, 'Sign-out did not return to Guest Mode -- cannot test the post-logout panel residue at all');
+    test.fail(
+      !backToGuest,
+      'Sign-out did not return to Guest Mode -- cannot test the post-logout panel residue at all'
+    );
     if (!backToGuest) {
       expect(backToGuest).toBe(true);
       return;
@@ -85,7 +88,10 @@ test(
 
     await page.waitForTimeout(1000);
     const panelStillVisible = await tb.panel.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Pen tool settings panel still visible after logout:', panelStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Pen tool settings panel still visible after logout:', panelStillVisible].join(' '),
+    });
 
     test.fail(
       panelStillVisible,
@@ -112,7 +118,10 @@ test(
     await plr.openResourceCard(plr.ebookTriggerBtn);
     await plr.ebookLaunchBtn.first().waitFor({ state: 'visible', timeout: 10000 });
     await plr.openResourceCard(plr.ebookLaunchBtn.first());
-    const opened = await plr.closeIcon.first().isVisible({ timeout: 25000 }).catch(() => false);
+    const opened = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 25000 })
+      .catch(() => false);
     test.fail(!opened, 'Ebook reader never opened this pass -- cannot test the post-close/logout residue');
     if (!opened) {
       expect(opened).toBe(true);
@@ -123,15 +132,24 @@ test(
     await page.waitForTimeout(1000);
 
     const backToGuest = await signOut(page);
-    test.fail(!backToGuest, 'Sign-out did not return to Guest Mode -- cannot test the post-logout ebook residue at all');
+    test.fail(
+      !backToGuest,
+      'Sign-out did not return to Guest Mode -- cannot test the post-logout ebook residue at all'
+    );
     if (!backToGuest) {
       expect(backToGuest).toBe(true);
       return;
     }
 
     await page.waitForTimeout(1000);
-    const ebookStillVisible = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Ebook reader (close icon) still visible after close + logout:', ebookStillVisible);
+    const ebookStillVisible = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Ebook reader (close icon) still visible after close + logout:', ebookStillVisible].join(' '),
+    });
 
     test.fail(
       ebookStillVisible,
@@ -140,4 +158,3 @@ test(
     expect(ebookStillVisible).toBe(false);
   }
 );
-

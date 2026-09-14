@@ -51,7 +51,10 @@ test(
 
     const toolbarBox = await page.locator('.toolbar-container').first().boundingBox();
     const filterBox = await ar.galleryFilterSelect.boundingBox().catch(() => null);
-    console.log('Toolbar bounding box:', toolbarBox, '| Gallery filter bounding box:', filterBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Toolbar bounding box:', toolbarBox, '| Gallery filter bounding box:', filterBox].join(' '),
+    });
 
     const overlaps =
       toolbarBox &&
@@ -62,9 +65,7 @@ test(
       toolbarBox.y + toolbarBox.height > filterBox.y;
 
     const filterClickable = filterBox
-      ? await ar.galleryFilterSelect
-          .evaluate((el) => getComputedStyle(el).pointerEvents !== 'none')
-          .catch(() => false)
+      ? await ar.galleryFilterSelect.evaluate((el) => getComputedStyle(el).pointerEvents !== 'none').catch(() => false)
       : false;
 
     test.fail(
@@ -105,7 +106,10 @@ test(
     const ar = new AddResourcePage(page);
     const { stillStuck } = await ar.openPickerReliably(ar.actions.library);
     if (!stillStuck) await ar.actions.library.click({ force: true });
-    const libraryOpen = await ar.libraryResults.first().isVisible({ timeout: 10000 }).catch(() => false);
+    const libraryOpen = await ar.libraryResults
+      .first()
+      .isVisible({ timeout: 10000 })
+      .catch(() => false);
     test.fail(!libraryOpen, 'The Library picker did not open reliably this pass');
     if (!libraryOpen) {
       expect(libraryOpen).toBe(true);
@@ -123,9 +127,23 @@ test(
     const newCard = pl.resourceCards.last();
     await plr.openResourceCard(newCard);
     await page.waitForTimeout(2500);
-    const stillLoading = await page.getByText(/loading/i).isVisible({ timeout: 3000 }).catch(() => false);
-    const closeIconVisible = await plr.closeIcon.first().isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Still showing a loading state:', stillLoading, '| content opened (closeIcon visible):', closeIconVisible);
+    const stillLoading = await page
+      .getByText(/loading/i)
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    const closeIconVisible = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Still showing a loading state:',
+        stillLoading,
+        '| content opened (closeIcon visible):',
+        closeIconVisible,
+      ].join(' '),
+    });
 
     test.fail(
       stillLoading || !closeIconVisible,
@@ -153,7 +171,10 @@ test(
       .locator('[data-qa-id="playlist-filter-menu-select"]')
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    test.fail(filterVisibleAfterClose, 'The filter panel did not actually close this pass -- cannot test the auto-reappear claim');
+    test.fail(
+      filterVisibleAfterClose,
+      'The filter panel did not actually close this pass -- cannot test the auto-reappear claim'
+    );
     if (filterVisibleAfterClose) {
       expect(filterVisibleAfterClose).toBe(false);
       return;
@@ -165,7 +186,12 @@ test(
       .locator('[data-qa-id="playlist-filter-menu-select"]')
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Filter panel reappeared automatically after opening an unrelated asset:', filterReappeared);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Filter panel reappeared automatically after opening an unrelated asset:', filterReappeared].join(
+        ' '
+      ),
+    });
 
     test.fail(
       filterReappeared,

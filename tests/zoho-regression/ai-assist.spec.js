@@ -65,7 +65,15 @@ test(
       .isVisible({ timeout: 3000 })
       .catch(() => false);
     const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log('"No Data Available" text visible:', noDataVisible, '| exercise checkboxes rendered:', checkboxCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        '"No Data Available" text visible:',
+        noDataVisible,
+        '| exercise checkboxes rendered:',
+        checkboxCount,
+      ].join(' '),
+    });
 
     test.fail(
       noDataVisible || checkboxCount === 0,
@@ -103,14 +111,17 @@ test(
     await page.waitForTimeout(1500);
     const countAfter = await pl.resourceCards.count();
     const savedSuccessfully = toastVisible || countAfter > countBefore;
-    console.log(
-      'Success toast shown:',
-      toastVisible,
-      '| Playlist count before/after:',
-      countBefore,
-      '->',
-      countAfter
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Success toast shown:',
+        toastVisible,
+        '| Playlist count before/after:',
+        countBefore,
+        '->',
+        countAfter,
+      ].join(' '),
+    });
 
     test.fail(
       !savedSuccessfully,
@@ -128,7 +139,12 @@ test(
       .getByText(/no valid question/i)
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('"No valid question found" shown on reopening the saved exercise:', noValidQuestionVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"No valid question found" shown on reopening the saved exercise:', noValidQuestionVisible].join(
+        ' '
+      ),
+    });
 
     test.fail(
       noValidQuestionVisible,
@@ -166,14 +182,17 @@ test(
         .isVisible({ timeout: 3000 })
         .catch(() => false);
     }
-    console.log(
-      '"File Not Found" on AI Assist:',
-      fileNotFoundOnAiAssist,
-      '| Weblink/Browser cards available:',
-      weblinkCardCount,
-      '| "File Not Found" on Weblink:',
-      fileNotFoundOnWeblink
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        '"File Not Found" on AI Assist:',
+        fileNotFoundOnAiAssist,
+        '| Weblink/Browser cards available:',
+        weblinkCardCount,
+        '| "File Not Found" on Weblink:',
+        fileNotFoundOnWeblink,
+      ].join(' '),
+    });
 
     test.fail(
       fileNotFoundOnAiAssist || fileNotFoundOnWeblink,
@@ -182,4 +201,3 @@ test(
     expect(fileNotFoundOnAiAssist || fileNotFoundOnWeblink).toBe(false);
   }
 );
-

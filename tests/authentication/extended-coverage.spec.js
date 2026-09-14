@@ -69,7 +69,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         await page.waitForTimeout(3000);
       }
       const elapsedMs = Date.now() - start;
-      console.log('Session dropped to Guest Mode during active use:', droppedToGuest, '| after (ms):', elapsedMs);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Session dropped to Guest Mode during active use:',
+          droppedToGuest,
+          '| after (ms):',
+          elapsedMs,
+        ].join(' '),
+      });
       test.fail(
         droppedToGuest,
         `CONFIRMED (previously flagged Critical): the session dropped back to Guest Mode after only ~${elapsedMs}ms of active use -- far sooner than a teacher mid-lesson would expect`
@@ -93,11 +101,14 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .pinDigitBox(0)
         .boundingBox()
         .catch(() => null);
-      console.log(
-        'PIN digit box 0 position before/after a short settle wait:',
-        JSON.stringify(before),
-        JSON.stringify(after)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'PIN digit box 0 position before/after a short settle wait:',
+          JSON.stringify(before),
+          JSON.stringify(after),
+        ].join(' '),
+      });
       const repositioned = before && after && (before.x !== after.x || before.y !== after.y);
       test.fail(
         repositioned,
@@ -145,10 +156,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('[data-qa-id="toolbar-profile-trigger"]')
         .isVisible({ timeout: 5000 })
         .catch(() => false);
-      console.log(
-        'Profile drilldown (where Change Password/PIN live, covered by USR-PWD-*/USR-PIN-* in User Profile) reachable:',
-        drilldownVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Profile drilldown (where Change Password/PIN live, covered by USR-PWD-*/USR-PIN-* in User Profile) reachable:',
+          drilldownVisible,
+        ].join(' '),
+      });
       expect(drilldownVisible).toBe(true);
     }
   );
@@ -178,7 +192,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // Out has NO separate confirmation dialog -- it signs out immediately.
       await page.waitForTimeout(1000);
       const guestVisible = await login.guestModeText.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('Returned to Guest Mode after the confirmed sign-out chain:', guestVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Returned to Guest Mode after the confirmed sign-out chain:', guestVisible].join(' '),
+      });
       expect(guestVisible).toBe(true);
     }
   );
@@ -207,12 +224,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .textContent()
         .then((t) => (t || '').length === 0)
         .catch(() => true);
-      console.log(
-        'Returned to a graceful Guest Mode/re-login state after clearing auth keys:',
-        guestVisible,
-        '| page rendered no content at all (broken UI):',
-        brokenUi
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Returned to a graceful Guest Mode/re-login state after clearing auth keys:',
+          guestVisible,
+          '| page rendered no content at all (broken UI):',
+          brokenUi,
+        ].join(' '),
+      });
       test.fail(
         !guestVisible && !brokenUi,
         'Clearing the token/clientId localStorage keys did not produce a graceful re-login/Guest Mode state -- may be a silent failure instead'
@@ -229,7 +249,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(1500);
       const login = new LoginPage(page);
       const modalReachable = await login.signInLink.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('App still loads normally with a query-param override attempt present:', modalReachable);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['App still loads normally with a query-param override attempt present:', modalReachable].join(
+          ' '
+        ),
+      });
       // Documenting the confirmed hard constraint -- no override path exists,
       // so the app should load exactly as it would with no query param at all.
       expect(modalReachable).toBe(true);
@@ -284,7 +309,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .click({ timeout: 3000 })
         .catch(() => {});
       await page.waitForTimeout(2000);
-      console.log('Login/auth POST requests fired after a rapid double-tap on the 5th PIN digit:', loginRequestCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Login/auth POST requests fired after a rapid double-tap on the 5th PIN digit:',
+          loginRequestCount,
+        ].join(' '),
+      });
       test.fail(
         loginRequestCount > 1,
         'CONFIRMED: a rapid double-tap on the 5th PIN digit box fired more than one login request via the auto-submit mechanic'
@@ -317,13 +348,16 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .pinDigitFormField(0)
         .evaluate((el) => el.className.includes('mat-form-field-invalid'))
         .catch(() => false);
-      console.log(
-        'PIN box 0/1 values after a PIN -> Password -> PIN round trip:',
-        box0Value,
-        box1Value,
-        '| leftover invalid/error state:',
-        invalidStateShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'PIN box 0/1 values after a PIN -> Password -> PIN round trip:',
+          box0Value,
+          box1Value,
+          '| leftover invalid/error state:',
+          invalidStateShown,
+        ].join(' '),
+      });
       test.fail(
         !!(box0Value || box1Value) || invalidStateShown,
         'Toggling PIN <-> Password view mid-entry left stale digits or a leftover error state instead of a fresh, empty PIN entry'
@@ -367,10 +401,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('[data-qa-id="toolbar-user-avatar"]')
         .isVisible({ timeout: 5000 })
         .catch(() => false);
-      console.log(
-        'Copying token/clientId into a fresh browser context granted an authenticated session there:',
-        hijackSucceeded
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Copying token/clientId into a fresh browser context granted an authenticated session there:',
+          hijackSucceeded,
+        ].join(' '),
+      });
       test.fail(
         hijackSucceeded,
         'SECURITY FINDING: copying the token/clientId localStorage keys into a second, previously-unauthenticated browser context successfully hijacked the session -- no device/fingerprint binding confirmed'
@@ -404,7 +441,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .pinDigitBox(0)
         .inputValue()
         .catch(() => '');
-      console.log('PIN box 0 value after attempting to type a SQLi-style string:', JSON.stringify(value));
+      test.info().annotations.push({
+        type: 'note',
+        description: ['PIN box 0 value after attempting to type a SQLi-style string:', JSON.stringify(value)].join(' '),
+      });
       test.fail(
         /[^0-9]/.test(value),
         'A non-numeric character reached the PIN box -- the confirmed numeric-only input constraint may have a bypass'
@@ -457,14 +497,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           .locator('[data-qa-id="playlist-current-grade-subject-btn"]')
           .textContent()
           .catch(() => '')) || '';
-      console.log(
-        'Tab 1 still authenticated after Tab 2 signed in as a different account:',
-        tab1StillAuthenticated,
-        '| class text before/after:',
-        classTextTab1Before.trim(),
-        '|',
-        classTextTab1After.trim()
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Tab 1 still authenticated after Tab 2 signed in as a different account:',
+          tab1StillAuthenticated,
+          '| class text before/after:',
+          classTextTab1Before.trim(),
+          '|',
+          classTextTab1After.trim(),
+        ].join(' '),
+      });
       test.fail(
         !tab1StillAuthenticated,
         "Signing in as a second account in a new tab de-authenticated or corrupted the first tab's own session"
@@ -482,18 +525,21 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await login.openSignIn();
       await login.pinDigitBox(0).click();
       await page.keyboard.type('123456789');
-      const box5Exists = await login.pinDigitBox(5).count();
+      const box5Exists = login.pinDigitBox(5);
       const box0Value = await login
         .pinDigitBox(0)
         .inputValue()
         .catch(() => '');
-      console.log(
-        'A 6th PIN box exists (should be 0):',
-        box5Exists,
-        '| box 0 retained (should be 1 char):',
-        JSON.stringify(box0Value)
-      );
-      expect(box5Exists).toBe(0);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'A 6th PIN box exists (should be 0):',
+          box5Exists,
+          '| box 0 retained (should be 1 char):',
+          JSON.stringify(box0Value),
+        ].join(' '),
+      });
+      await expect(box5Exists).toHaveCount(0);
       expect(box0Value.length).toBeLessThanOrEqual(1);
     }
   );
@@ -532,7 +578,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('[data-qa-id="toolbar-user-avatar"]')
         .isVisible({ timeout: 3000 })
         .catch(() => false);
-      console.log('A shuffled-order PIN (same digits, wrong sequence) unexpectedly logged in:', avatarVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['A shuffled-order PIN (same digits, wrong sequence) unexpectedly logged in:', avatarVisible].join(
+          ' '
+        ),
+      });
       test.fail(
         avatarVisible,
         'SECURITY FINDING: a shuffled-order permutation of the correct PIN digits successfully logged in -- the PIN may be checked as an unordered digit set, not an exact sequence'
@@ -564,12 +615,18 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await login.usernameInput.fill('   ');
       await login.passwordInput.fill('   ');
       const submitDisabled = await login.submitButton.isDisabled().catch(() => null);
-      console.log('Sign In disabled with whitespace-only User ID/Password:', submitDisabled);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Sign In disabled with whitespace-only User ID/Password:', submitDisabled].join(' '),
+      });
       if (submitDisabled === false) {
         await login.submitButton.click({ force: true });
         await page.waitForTimeout(1500);
         const errorVisible = await login.passwordErrorMessage.isVisible({ timeout: 3000 }).catch(() => false);
-        console.log('Server-side rejection error shown instead:', errorVisible);
+        test.info().annotations.push({
+          type: 'note',
+          description: ['Server-side rejection error shown instead:', errorVisible].join(' '),
+        });
         expect(errorVisible).toBe(true);
       } else {
         expect(submitDisabled).toBe(true);
@@ -593,12 +650,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const storageDump = await page.evaluate(() => JSON.stringify({ ...localStorage, ...sessionStorage }));
       const pinLeakedInConsole = consoleTexts.some((t) => t.includes(String(process.env.VALID_PIN)));
       const pinLeakedInStorage = storageDump.includes(String(process.env.VALID_PIN));
-      console.log(
-        'Raw PIN found in console output:',
-        pinLeakedInConsole,
-        '| found in localStorage/sessionStorage:',
-        pinLeakedInStorage
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Raw PIN found in console output:',
+          pinLeakedInConsole,
+          '| found in localStorage/sessionStorage:',
+          pinLeakedInStorage,
+        ].join(' '),
+      });
       test.fail(
         pinLeakedInConsole || pinLeakedInStorage,
         'SECURITY FINDING: the raw PIN value was found in plaintext in the console output or browser storage after login'
@@ -632,12 +692,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .pinDigitBox(0)
         .isVisible({ timeout: 3000 })
         .catch(() => false);
-      console.log(
-        'Stuck loading spinner after rapid view-toggle mid-request:',
-        stuckSpinner,
-        '| PIN view still responsive:',
-        modalStillResponsive
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Stuck loading spinner after rapid view-toggle mid-request:',
+          stuckSpinner,
+          '| PIN view still responsive:',
+          modalStillResponsive,
+        ].join(' '),
+      });
       test.fail(
         stuckSpinner || !modalStillResponsive,
         'Rapidly toggling views while a login request was in flight left a stuck spinner or an unresponsive form'
@@ -656,7 +719,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .pinDigitBox(0)
         .getAttribute('autocomplete')
         .catch(() => null);
-      console.log('PIN digit box 0 autocomplete attribute:', autocompleteAttr);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['PIN digit box 0 autocomplete attribute:', autocompleteAttr].join(' '),
+      });
       // This browser-automation profile has no saved autofill data to trigger a
       // real suggestion -- documenting the attribute-level defense instead.
       expect(true).toBe(true);
@@ -675,12 +741,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('[data-qa-id="toolbar-user-avatar"]')
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log(
-        'Guest Mode shown on a deep-link while logged out:',
-        guestVisible,
-        '| authenticated content shown instead (should be false):',
-        avatarVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Guest Mode shown on a deep-link while logged out:',
+          guestVisible,
+          '| authenticated content shown instead (should be false):',
+          avatarVisible,
+        ].join(' '),
+      });
       test.fail(
         avatarVisible,
         'A deep authenticated route exposed authenticated content while logged out, instead of redirecting to Guest Mode/Sign In'
@@ -701,7 +770,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const longPassword = 'X'.repeat(220);
       await login.passwordInput.fill(longPassword);
       const value = await login.passwordInput.inputValue();
-      console.log('Password field retained', value.length, 'of 220 typed characters');
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Password field retained', value.length, 'of 220 typed characters'].join(' '),
+      });
       const formStillUsable = await login.submitButton.isVisible().catch(() => false);
       expect(formStillUsable).toBe(true);
     }
@@ -712,10 +784,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
     { tag: ['@negative', '@bug'] },
     async ({ page, context }) => {
       const cookiesBefore = await context.cookies();
-      console.log(
-        'Cookies visible before any forgery attempt:',
-        cookiesBefore.map((c) => c.name)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Cookies visible before any forgery attempt:', cookiesBefore.map((c) => c.name)].join(' '),
+      });
       test.fail(
         true,
         'Needs the exact session-cookie name/format identified first (this app appears to rely primarily on localStorage token/clientId per AUTH-CYP-02, not a clearly-identified session cookie) plus cookie-manipulation tooling -- not attempted this pass'

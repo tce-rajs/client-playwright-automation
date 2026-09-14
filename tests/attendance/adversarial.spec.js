@@ -49,12 +49,15 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log(
-      'With attendance network fully blocked -- spinner showing:',
-      spinnerShowing,
-      '| distinguishable error text visible:',
-      anyErrorTextVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'With attendance network fully blocked -- spinner showing:',
+        spinnerShowing,
+        '| distinguishable error text visible:',
+        anyErrorTextVisible,
+      ].join(' '),
+    });
 
     // The adversarial concern: a fully-blocked network call and a genuinely
     // slow/broken backend (ATT-PANEL-01's own baseline) should NOT look
@@ -88,14 +91,17 @@ test(
     const containerStillPresent = await att.container.isVisible({ timeout: 2000 }).catch(() => false);
     const spinnerStillPresent = await att.loaderSpinner.isVisible({ timeout: 2000 }).catch(() => false);
     const newClassLabel = await nav.currentClassBtn.textContent().catch(() => '');
-    console.log(
-      'After switching class mid-Attendance-load -- container still visible:',
-      containerStillPresent,
-      '| spinner still visible:',
-      spinnerStillPresent,
-      '| current class label:',
-      newClassLabel
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After switching class mid-Attendance-load -- container still visible:',
+        containerStillPresent,
+        '| spinner still visible:',
+        spinnerStillPresent,
+        '| current class label:',
+        newClassLabel,
+      ].join(' '),
+    });
 
     const leftoverOverlay = containerStillPresent || spinnerStillPresent;
     test.fail(
@@ -124,12 +130,15 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible()
       .catch(() => false);
-    console.log(
-      'After reload mid-Attendance-load -- attendance-container count:',
-      containerCount,
-      '| page alive/usable:',
-      pageIsAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After reload mid-Attendance-load -- attendance-container count:',
+        containerCount,
+        '| page alive/usable:',
+        pageIsAlive,
+      ].join(' '),
+    });
 
     test.fail(
       containerCount > 1 || !pageIsAlive,
@@ -153,7 +162,13 @@ test(
     await page.waitForTimeout(1000);
 
     const attendanceItemCount = await att.magnetAttendanceItem.count();
-    console.log('After 6 rapid Magnet toggle clicks -- Attendance menu item instance count:', attendanceItemCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 6 rapid Magnet toggle clicks -- Attendance menu item instance count:',
+        attendanceItemCount,
+      ].join(' '),
+    });
 
     test.fail(
       attendanceItemCount > 1,
@@ -178,7 +193,12 @@ test(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
     );
     const containerBox = await att.container.boundingBox().catch(() => null);
-    console.log('At 375px width -- horizontal overflow:', overflowsViewport, '| container box:', containerBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['At 375px width -- horizontal overflow:', overflowsViewport, '| container box:', containerBox].join(
+        ' '
+      ),
+    });
 
     test.fail(
       overflowsViewport,

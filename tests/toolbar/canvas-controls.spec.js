@@ -21,7 +21,9 @@ test('TB-ZOOM-01: The zoom control changes the canvas zoom level', { tag: '@posi
   await tb.zoomInBtn.click({ force: true });
   await page.waitForTimeout(500);
   const after = await tb.zoomSlider.getAttribute('aria-valuetext');
-  console.log('Zoom before:', before, '| after Zoom In:', after);
+  test
+    .info()
+    .annotations.push({ type: 'note', description: ['Zoom before:', before, '| after Zoom In:', after].join(' ') });
   expect(Number(after)).toBeGreaterThan(Number(before));
 
   await tb.zoomResetBtn.click({ force: true });
@@ -35,7 +37,9 @@ test(
   async ({ page }) => {
     const tb = new ToolbarPage(page);
     const sideClassBefore = (await tb.container.getAttribute('class')) || '';
-    console.log('Toolbar container class before:', sideClassBefore);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Toolbar container class before:', sideClassBefore].join(' ') });
 
     // No confirmed data-qa-id or selector for this toggle exists (neither
     // this pass's own live search nor a Cypress reference project's e2e

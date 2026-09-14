@@ -129,8 +129,8 @@ test('SEC-05: Reflected XSS via school name / error rendering', { tag: '@securit
 
   expect(dialogFired).toBe(false);
   // The payload should render as inert text if echoed anywhere, never as markup.
-  const scriptTagCount = await page.locator('script:has-text("alert(1)")').count();
-  expect(scriptTagCount).toBe(0);
+  const scriptTagCount = page.locator('script:has-text("alert(1)")');
+  await expect(scriptTagCount).toHaveCount(0);
 });
 
 test(
@@ -187,12 +187,15 @@ test('SEC-07: Autofill / password-manager compatibility', { tag: '@boundary' }, 
   await expect(login.passwordInput).toHaveAttribute('type', 'password');
   const usernameAutocomplete = await login.usernameInput.getAttribute('autocomplete');
   const passwordAutocomplete = await login.passwordInput.getAttribute('autocomplete');
-  console.log(
-    'username autocomplete attr:',
-    usernameAutocomplete,
-    '| password autocomplete attr:',
-    passwordAutocomplete
-  );
+  test.info().annotations.push({
+    type: 'note',
+    description: [
+      'username autocomplete attr:',
+      usernameAutocomplete,
+      '| password autocomplete attr:',
+      passwordAutocomplete,
+    ].join(' '),
+  });
   // Document what's actually there rather than assuming a specific value.
   expect(typeof usernameAutocomplete === 'string' || usernameAutocomplete === null).toBe(true);
 });

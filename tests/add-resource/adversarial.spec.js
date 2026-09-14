@@ -33,13 +33,24 @@ test(
       .isVisible({ timeout: 2000 })
       .catch(() => false);
     const submitEnabled = await ar.submitBtn.isEnabled().catch(() => false);
-    console.log('Zero-byte file -- validation error shown:', fileErrorVisible, '| Submit enabled:', submitEnabled);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Zero-byte file -- validation error shown:',
+        fileErrorVisible,
+        '| Submit enabled:',
+        submitEnabled,
+      ].join(' '),
+    });
 
     if (submitEnabled) {
       await ar.submitBtn.click();
       await page.waitForTimeout(2000);
       const formStillOpen = await ar.createForm.isVisible().catch(() => false);
-      console.log('Form still open after submitting a zero-byte file:', formStillOpen);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Form still open after submitting a zero-byte file:', formStillOpen].join(' '),
+      });
       // Documenting actual behavior either way is the goal here -- a silent
       // "success" with a zero-byte file would itself be the adversarial finding.
       // formStillOpen === false means the form closed (i.e. the submission was
@@ -74,12 +85,15 @@ test(
       .isVisible({ timeout: 2000 })
       .catch(() => false);
     const submitEnabled = await ar.submitBtn.isEnabled().catch(() => false);
-    console.log(
-      'Double-extension "notes.pdf.exe" -- validation error shown:',
-      fileErrorVisible,
-      '| Submit enabled:',
-      submitEnabled
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Double-extension "notes.pdf.exe" -- validation error shown:',
+        fileErrorVisible,
+        '| Submit enabled:',
+        submitEnabled,
+      ].join(' '),
+    });
 
     test.fail(
       submitEnabled && !fileErrorVisible,
@@ -107,12 +121,15 @@ test(
     const overflowsViewport = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
     );
-    console.log(
-      'Form still responsive after emoji+150char filename:',
-      formStillResponsive,
-      '| horizontal overflow:',
-      overflowsViewport
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Form still responsive after emoji+150char filename:',
+        formStillResponsive,
+        '| horizontal overflow:',
+        overflowsViewport,
+      ].join(' '),
+    });
 
     test.fail(
       !formStillResponsive || overflowsViewport,
@@ -145,14 +162,17 @@ test(
 
     const createOpened = await ar.createForm.isVisible({ timeout: 3000 }).catch(() => false);
     const pickerStillOpen = await ar.actions.create.isVisible({ timeout: 1000 }).catch(() => false);
-    console.log(
-      'Immediate post-FAB click result:',
-      clickResult,
-      '| Create form opened:',
-      createOpened,
-      '| raw picker still showing:',
-      pickerStillOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Immediate post-FAB click result:',
+        clickResult,
+        '| Create form opened:',
+        createOpened,
+        '| raw picker still showing:',
+        pickerStillOpen,
+      ].join(' '),
+    });
 
     // Either outcome (opened cleanly, or the click legitimately missed and
     // nothing happened) is acceptable -- the adversarial failure mode is a
@@ -212,12 +232,18 @@ test(
     ]);
     await page.waitForTimeout(3000);
 
-    console.log('Tab 1 submit result:', res1, '| Tab 2 submit result:', res2);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Tab 1 submit result:', res1, '| Tab 2 submit result:', res2].join(' '),
+    });
     const cardA = page.locator('text=Concurrent-tab resource A').first();
     const cardB = page.locator('text=Concurrent-tab resource B').first();
     const aVisible = await cardA.isVisible({ timeout: 8000 }).catch(() => false);
     const bVisible = await cardB.isVisible({ timeout: 8000 }).catch(() => false);
-    console.log('Resource A visible somewhere:', aVisible, '| Resource B visible somewhere:', bVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Resource A visible somewhere:', aVisible, '| Resource B visible somewhere:', bVisible].join(' '),
+    });
 
     test.fail(
       !aVisible || !bVisible,

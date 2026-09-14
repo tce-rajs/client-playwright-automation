@@ -28,7 +28,9 @@ test(
     await pl.contentsSearchInput.fill('<img src=x onerror="window.__plXss=true">');
     await page.waitForTimeout(800);
     const xssRan = await page.evaluate(() => !!window.__plXss);
-    console.log('Contents/TOC search XSS payload executed:', xssRan);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Contents/TOC search XSS payload executed:', xssRan].join(' ') });
     test.fail(xssRan, 'An HTML/script-tag string in the Contents/TOC search box executes as real markup');
     expect(xssRan).toBe(false);
   }
@@ -75,19 +77,22 @@ test(
     }
     await page.waitForTimeout(500);
 
-    const finalCardCount = await pl.resourceCards.count();
-    console.log(
-      'Baseline resource-card count:',
-      baselineCardCount,
-      '| after 3x rapid toggle-all-off/on cycles (restored):',
-      finalCardCount
-    );
+    const finalCardCount = pl.resourceCards;
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Baseline resource-card count:',
+        baselineCardCount,
+        '| after 3x rapid toggle-all-off/on cycles (restored):',
+        finalCardCount,
+      ].join(' '),
+    });
 
     test.fail(
       finalCardCount !== baselineCardCount,
       `3 rapid toggle-all cycles left the resource-card count at ${finalCardCount} instead of the original ${baselineCardCount}, even after re-checking every filter`
     );
-    expect(finalCardCount).toBe(baselineCardCount);
+    await expect(finalCardCount).toHaveCount(baselineCardCount);
   }
 );
 
@@ -105,7 +110,12 @@ test(
       .isVisible({ timeout: 2000 })
       .catch(() => false);
     const contentsVisible = await pl.contentsPopup.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Playlist Options visible:', optionsVisible, '| Contents popup visible:', contentsVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Playlist Options visible:', optionsVisible, '| Contents popup visible:', contentsVisible].join(
+        ' '
+      ),
+    });
 
     const bothOpenAtOnce = optionsVisible && contentsVisible;
     test.fail(
@@ -147,12 +157,15 @@ test(
       .isVisible({ timeout: 5000 })
       .then(() => true)
       .catch(() => false);
-    console.log(
-      'Active chapter marker count after 8x rapid chapter clicks:',
-      activeChapterCount,
-      '| a resource card rendered afterward:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Active chapter marker count after 8x rapid chapter clicks:',
+        activeChapterCount,
+        '| a resource card rendered afterward:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(
       activeChapterCount > 1,

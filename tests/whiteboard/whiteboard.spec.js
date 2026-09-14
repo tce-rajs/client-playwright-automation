@@ -54,7 +54,10 @@ test(
     await expect(wb.calendar).toBeVisible();
     await expect(wb.currentClassBtn).toBeVisible();
     const classText = (await wb.currentClassBtn.textContent()) || '';
-    console.log('Active class/subject shown on Whiteboard context bar:', classText.trim());
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Active class/subject shown on Whiteboard context bar:', classText.trim()].join(' '),
+    });
     expect(classText.trim().length).toBeGreaterThan(0);
     await expect(wb.currentChapterTopicBtn).toBeVisible();
   }
@@ -82,12 +85,15 @@ test(
       return { visibility: cs.visibility, opacity: cs.opacity, display: cs.display };
     });
     const playwrightSaysVisible = await wb.welcomeBackContainer.isVisible();
-    console.log(
-      'Welcome Back computed style:',
-      JSON.stringify(style),
-      '| Playwright isVisible():',
-      playwrightSaysVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Welcome Back computed style:',
+        JSON.stringify(style),
+        '| Playwright isVisible():',
+        playwrightSaysVisible,
+      ].join(' '),
+    });
     // CONFIRMED cross-repo (two independent DOM-dump investigation rounds,
     // unresolved): computed style can read hidden/opacity:0 while a
     // screenshot at the same moment shows it rendered on screen. Documenting
@@ -113,11 +119,19 @@ test(
     const before = await tb.pathCount();
     await tb.drawStroke({ x: 300, y: 300 }, { x: 500, y: 300 });
     const after = await tb.pathCount();
-    console.log('Path count before/after one stroke:', before, after);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Path count before/after one stroke:', before, after].join(' '),
+      });
     expect(after).toBeGreaterThan(before);
 
     const lastPathD = await wb.paths.last().getAttribute('d');
-    console.log('Last path d attribute (should start with an M moveto command):', lastPathD);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Last path d attribute (should start with an M moveto command):', lastPathD].join(' '),
+    });
     expect(lastPathD).toMatch(/^M\s?-?\d/);
   }
 );
@@ -128,7 +142,10 @@ test(
   async ({ page }) => {
     const wb = new WhiteboardPage(page);
     const present = await wb.chooseAClassBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('.choose-class prompt reachable on this (non-first-time) account:', present);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['.choose-class prompt reachable on this (non-first-time) account:', present].join(' '),
+    });
     if (!present) {
       // This account already has an active class, so the first-time prompt
       // legitimately doesn't render -- the dead-no-op finding itself is a
@@ -148,7 +165,15 @@ test(
       .locator('[data-qa-id="playlist-chapter-tp-popup"], .cdk-overlay-container mat-dialog-container')
       .isVisible()
       .catch(() => false);
-    console.log('URL changed:', page.url() !== urlBefore, '| any popup/dialog opened after click:', anyPopupOpened);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'URL changed:',
+        page.url() !== urlBefore,
+        '| any popup/dialog opened after click:',
+        anyPopupOpened,
+      ].join(' '),
+    });
     test.fail(
       !anyPopupOpened,
       'CONFIRMED: .choose-class click is a no-op (onChooseAClass() empty method body) -- no popup/navigation occurs'
@@ -204,7 +229,10 @@ test(
     await ar.actions.whiteboard.click({ force: true });
     await page.waitForTimeout(1000);
     const saveBtnVisible = await wb.addResourceWhiteboardSaveBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('add-resource-whiteboard-save-playlist-btn reachable:', saveBtnVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['add-resource-whiteboard-save-playlist-btn reachable:', saveBtnVisible].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED cross-cutting: whether or not this button renders, its handler routes through WhiteboardSaveService.save() (WB-SAVE-DEAD-01), which has zero callers/is unreachable -- clicking it cannot produce a real saved Playlist card'
@@ -220,7 +248,15 @@ test(
     const wb = new WhiteboardPage(page);
     const outer = await wb.outerTransform();
     const inner = await wb.innerPanGroupTransform();
-    console.log('Outer wb-drawing-container transform:', outer, '| inner panGroup transform attribute:', inner);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Outer wb-drawing-container transform:',
+        outer,
+        '| inner panGroup transform attribute:',
+        inner,
+      ].join(' '),
+    });
     // Documenting presence/distinctness of the two mechanisms, not asserting
     // specific values (both legitimately start at identity/none on a fresh load).
     expect(outer !== undefined).toBe(true);
@@ -238,7 +274,10 @@ test(
       const active = document.activeElement;
       return !!(active && active.closest && active.closest('.text-input-container[contenteditable="true"]'));
     });
-    console.log('Newly inserted text object auto-focused:', editorFocused);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Newly inserted text object auto-focused:', editorFocused].join(' '),
+    });
     // CONFIRMED LIVE (non-deterministic, observed both ways across repeated
     // runs this pass -- true in 2 runs, false in 1): whether the new text
     // object is already focused on insertion is NOT consistent, which is
@@ -288,7 +327,10 @@ test(
       throw err;
     }
 
-    console.log('Editor reopened on committed text via dblclick:', editorOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Editor reopened on committed text via dblclick:', editorOpen].join(' '),
+    });
     // CONFIRMED LIVE on this app instance, on 3 separate isolated repro runs
     // (contradicts the workbook's own cross-repo Cypress-suite claim that NO
     // gesture reopens it): a plain dblclick on committed text DOES reopen the
@@ -317,12 +359,15 @@ test(
     await wb.openClearWhiteboardConfirm();
     const cancelVisible = await wb.clearConfirmDialogCancelBtn.isVisible({ timeout: 5000 }).catch(() => false);
     const confirmVisible = await wb.clearConfirmDialogConfirmBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log(
-      'Clear Whiteboard confirm dialog -- Cancel visible:',
-      cancelVisible,
-      '| Confirm visible:',
-      confirmVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Clear Whiteboard confirm dialog -- Cancel visible:',
+        cancelVisible,
+        '| Confirm visible:',
+        confirmVisible,
+      ].join(' '),
+    });
     test.fail(
       !(cancelVisible && confirmVisible),
       'Expected a genuine confirmation dialog (Cancel + Clear Whiteboard buttons) before clearing -- not found'
@@ -333,23 +378,29 @@ test(
     await wb.clearConfirmDialogConfirmBtn.click({ force: true });
     await page.waitForTimeout(1500);
     const pathsAfter = await tb.pathCount();
-    console.log('Path count after confirming Clear Whiteboard:', pathsAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Path count after confirming Clear Whiteboard:', pathsAfter].join(' '),
+    });
     expect(pathsAfter).toBe(0);
 
     await page.reload();
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     const pathsAfterReload = await tb.pathCount();
-    const resourceCountAfter = await wb.playlistResourceCards.count();
-    console.log(
-      'Path count after hard refresh:',
-      pathsAfterReload,
-      '| Playlist resource count before/after:',
-      resourceCountBefore,
-      resourceCountAfter
-    );
+    const resourceCountAfter = wb.playlistResourceCards;
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count after hard refresh:',
+        pathsAfterReload,
+        '| Playlist resource count before/after:',
+        resourceCountBefore,
+        resourceCountAfter,
+      ].join(' '),
+    });
     expect(pathsAfterReload).toBe(0);
-    expect(resourceCountAfter).toBe(resourceCountBefore);
+    await expect(resourceCountAfter).toHaveCount(resourceCountBefore);
   }
 );
 
@@ -376,9 +427,20 @@ test(
     const calendarAfter = await box(wb.calendar);
     const classAfter = await box(wb.currentClassBtn);
     const chapterAfter = await box(wb.currentChapterTopicBtn);
-    console.log('Logo box before/after:', JSON.stringify(logoBefore), JSON.stringify(logoAfter));
-    console.log('Class-bar box before/after:', JSON.stringify(classBefore), JSON.stringify(classAfter));
-    console.log('Chapter-bar box before/after:', JSON.stringify(chapterBefore), JSON.stringify(chapterAfter));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Logo box before/after:', JSON.stringify(logoBefore), JSON.stringify(logoAfter)].join(' '),
+    });
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class-bar box before/after:', JSON.stringify(classBefore), JSON.stringify(classAfter)].join(' '),
+    });
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapter-bar box before/after:', JSON.stringify(chapterBefore), JSON.stringify(chapterAfter)].join(
+        ' '
+      ),
+    });
 
     // Header logo/calendar: confirmed stable, matches the workbook's claim.
     expect(stable(logoBefore, logoAfter)).toBe(true);
@@ -427,16 +489,19 @@ test(
     await page.waitForTimeout(500);
     const afterSvg = await tb.pathCount();
 
-    console.log(
-      'Path count -- before wrapper dispatch:',
-      beforeWrapper,
-      'after wrapper dispatch:',
-      afterWrapper,
-      '| before svg dispatch:',
-      beforeSvg,
-      'after svg dispatch:',
-      afterSvg
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count -- before wrapper dispatch:',
+        beforeWrapper,
+        'after wrapper dispatch:',
+        afterWrapper,
+        '| before svg dispatch:',
+        beforeSvg,
+        'after svg dispatch:',
+        afterSvg,
+      ].join(' '),
+    });
     expect(afterWrapper).toBe(beforeWrapper); // wrapper dispatch: confirmed no-op
     expect(afterSvg).toBeGreaterThan(beforeSvg); // inner svg dispatch: confirmed real stroke
   }
@@ -452,9 +517,12 @@ test(
     // entry rather than being silently dropped from the suite.
     const wb = new WhiteboardPage(page);
     await expect(wb.wbContainer).toBeVisible();
-    console.log(
-      "Two source workbooks existed for Whiteboard historically (22/23-case original vs 100-case Updated); this project's WB-* IDs target the broader scope per the workbook's own conflict note."
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "Two source workbooks existed for Whiteboard historically (22/23-case original vs 100-case Updated); this project's WB-* IDs target the broader scope per the workbook's own conflict note.",
+      ].join(' '),
+    });
   }
 );
 
@@ -514,7 +582,12 @@ test(
     await page.waitForTimeout(2000);
 
     const after = await tb.pathCount();
-    console.log('Path count before/after 500 rapid strokes:', before, after, '| page crashed:', pageCrashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Path count before/after 500 rapid strokes:', before, after, '| page crashed:', pageCrashed].join(
+        ' '
+      ),
+    });
     expect(pageCrashed).toBe(false);
     expect(after).toBeGreaterThan(before);
 
@@ -524,7 +597,10 @@ test(
     const beforeExtra = await tb.pathCount();
     await tb.drawStroke({ x: 900, y: 300 }, { x: 1000, y: 300 });
     const afterExtra = await tb.pathCount();
-    console.log('One more stroke after the stress batch -- before/after:', beforeExtra, afterExtra);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['One more stroke after the stress batch -- before/after:', beforeExtra, afterExtra].join(' '),
+    });
     expect(afterExtra).toBeGreaterThan(beforeExtra);
   }
 );
@@ -553,12 +629,15 @@ test(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 20
     );
     const toolbarStillVisible = await tb.container.isVisible().catch(() => false);
-    console.log(
-      'Overflows viewport at max zoom:',
-      overflowsAtMaxZoom,
-      '| toolbar still visible/not overlapped-away:',
-      toolbarStillVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Overflows viewport at max zoom:',
+        overflowsAtMaxZoom,
+        '| toolbar still visible/not overlapped-away:',
+        toolbarStillVisible,
+      ].join(' '),
+    });
 
     if (zoomInVisible) {
       for (let i = 0; i < 15; i++) {
@@ -567,7 +646,10 @@ test(
     }
     await page.waitForTimeout(500);
     const positionAfter = await wb.paths.last().getAttribute('d');
-    console.log('Stroke path d before zoom stress / after reset:', positionBefore, positionAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Stroke path d before zoom stress / after reset:', positionBefore, positionAfter].join(' '),
+    });
 
     test.fail(
       overflowsAtMaxZoom || !toolbarStillVisible,
@@ -631,13 +713,16 @@ test(
 
     const after = await tb.pathCount();
     const dAttrs = await wb.paths.evaluateAll((els) => els.slice(-3).map((e) => e.getAttribute('d')));
-    console.log(
-      'Path count before/after two overlapping pointers:',
-      before,
-      after,
-      '| last few d attrs:',
-      JSON.stringify(dAttrs)
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before/after two overlapping pointers:',
+        before,
+        after,
+        '| last few d attrs:',
+        JSON.stringify(dAttrs),
+      ].join(' '),
+    });
     // A real failure here would be a crash or exactly one merged path spanning
     // both locations; either 2 independent strokes or the 2nd pointer being
     // cleanly ignored are both acceptable outcomes.
@@ -676,14 +761,17 @@ test(
     await tb.selectTool('gtPen');
     await tb.drawStroke({ x: 300, y: 850 }, { x: 450, y: 850 });
     const afterRecoveryStroke = await tb.pathCount();
-    console.log(
-      'Path count before mid-drag tool-switch:',
-      before,
-      '| right after:',
-      after,
-      '| after a normal recovery stroke:',
-      afterRecoveryStroke
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before mid-drag tool-switch:',
+        before,
+        '| right after:',
+        after,
+        '| after a normal recovery stroke:',
+        afterRecoveryStroke,
+      ].join(' '),
+    });
     expect(afterRecoveryStroke).toBeGreaterThan(after);
   }
 );
@@ -709,22 +797,25 @@ test(
     await page.waitForTimeout(800);
 
     const renderedText = (await textObj.textContent()) || '';
-    const hasLiveImgTag = await textObj.locator('img[src="x"]').count();
-    console.log(
-      'Rendered text content:',
-      renderedText,
-      '| live <img src=x> element count (would indicate real HTML injection):',
-      hasLiveImgTag,
-      '| alert() dialog fired:',
-      dialogFired
-    );
+    const hasLiveImgTag = textObj.locator('img[src="x"]');
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Rendered text content:',
+        renderedText,
+        '| live <img src=x> element count (would indicate real HTML injection):',
+        hasLiveImgTag,
+        '| alert() dialog fired:',
+        dialogFired,
+      ].join(' '),
+    });
 
     test.fail(
       dialogFired || hasLiveImgTag > 0,
       'Text-tool payload executed as real HTML/script instead of rendering as literal text'
     );
     expect(dialogFired).toBe(false);
-    expect(hasLiveImgTag).toBe(0);
+    await expect(hasLiveImgTag).toHaveCount(0);
     expect(renderedText).toContain('onerror');
   }
 );
@@ -740,12 +831,15 @@ test(
     if (panelVisible) {
       textInputCount = await tb.panel.locator('input[type="text"], textarea, [contenteditable="true"]').count();
     }
-    console.log(
-      'Shapes panel visible:',
-      panelVisible,
-      '| raw-text/markup input fields found inside it:',
-      textInputCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Shapes panel visible:',
+        panelVisible,
+        '| raw-text/markup input fields found inside it:',
+        textInputCount,
+      ].join(' '),
+    });
     // Confirms (rather than assumes) whether an injection surface exists at
     // all -- matching the workbook's own "needs confirming... before this can
     // be fully executed" framing. No such field being found is itself the
@@ -771,11 +865,14 @@ test(
     const before = await tb.pathCount();
     await tb.penStroke({ x: 150, y: 850 }, { x: 250, y: 900 });
     const after = await tb.pathCount();
-    console.log(
-      "Paths before/after a Pen stroke drawn via ToolbarPage on the Whiteboard module's own page object context:",
-      before,
-      after
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "Paths before/after a Pen stroke drawn via ToolbarPage on the Whiteboard module's own page object context:",
+        before,
+        after,
+      ].join(' '),
+    });
     // Confirms the Toolbar module's own tool mechanics (see
     // tests/toolbar/gap-analysis.spec.js for the full per-tool suite) act on
     // this exact same wb-drawing-container surface that WB-DRAW-01/
@@ -811,7 +908,15 @@ test(
     await tb.selectTool('gtErase');
     await tb.drawStroke(longStrokeStart, longStrokeEnd);
     const countAfterErase = await tb.pathCount();
-    console.log('Paths after drawing a ~750px stroke:', countAfterDraw, '| after erasing along it:', countAfterErase);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Paths after drawing a ~750px stroke:',
+        countAfterDraw,
+        '| after erasing along it:',
+        countAfterErase,
+      ].join(' '),
+    });
     test.fail(
       countAfterErase >= countAfterDraw,
       "CONFIRMED (cross-ref TB-CYP-03): the eraser does not remove a Pen stroke once it exceeds roughly 700px in length, reproduced here on the Whiteboard module's own surface"
@@ -837,14 +942,17 @@ test(
     await tb.drawStroke(wordOnePoint, { x: wordOnePoint.x + 150, y: wordOnePoint.y + 20 });
     const countAfterErase = await tb.pathCount();
     const bothErased = countAfterDraw - countAfterErase >= 2;
-    console.log(
-      'Paths before erase:',
-      countAfterDraw,
-      '| after erasing only the first word:',
-      countAfterErase,
-      '| both words removed:',
-      bothErased
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Paths before erase:',
+        countAfterDraw,
+        '| after erasing only the first word:',
+        countAfterErase,
+        '| both words removed:',
+        bothErased,
+      ].join(' '),
+    });
     test.fail(
       bothErased,
       "CONFIRMED (cross-ref TB-CYP-04): erasing one word also removed an adjacent, un-targeted word, reproduced here on the Whiteboard module's own surface"
@@ -879,7 +987,12 @@ test(
         .isVisible()
         .catch(() => false);
     }
-    console.log('Right-docked before:', rightDockedBefore, '| Left-docked after toggle:', leftDockedAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Right-docked before:', rightDockedBefore, '| Left-docked after toggle:', leftDockedAfter].join(
+        ' '
+      ),
+    });
     expect(leftDockedAfter).toBe(true);
     // Toggle back to leave the shared board in its original dock state.
     await toggleBtn.click({ force: true, timeout: 5000 }).catch(() => {});

@@ -36,7 +36,15 @@ test(
 
     const searchStillResponsive = await ar.gallerySearchInput.isVisible().catch(() => false);
     const cardCount = await ar.galleryImageCards.count();
-    console.log('250-char Gallery search -- input still visible:', searchStillResponsive, '| result cards:', cardCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        '250-char Gallery search -- input still visible:',
+        searchStillResponsive,
+        '| result cards:',
+        cardCount,
+      ].join(' '),
+    });
 
     test.fail(
       !searchStillResponsive,
@@ -57,7 +65,9 @@ test(
     await page.waitForTimeout(1500);
 
     const xssRan = await page.evaluate(() => !!window.__galXss);
-    console.log('Gallery search XSS payload executed:', xssRan);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Gallery search XSS payload executed:', xssRan].join(' ') });
     test.fail(xssRan, 'An HTML/script-tag string in the Gallery search box executes as real markup');
     expect(xssRan).toBe(false);
   }
@@ -74,7 +84,15 @@ test(
 
     const searchStillResponsive = await ar.gallerySearchInput.isVisible().catch(() => false);
     const cardCount = await ar.galleryImageCards.count();
-    console.log('Emoji/Unicode Gallery search -- responsive:', searchStillResponsive, '| result cards:', cardCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Emoji/Unicode Gallery search -- responsive:',
+        searchStillResponsive,
+        '| result cards:',
+        cardCount,
+      ].join(' '),
+    });
     test.fail(!searchStillResponsive, 'Emoji/Unicode Gallery search input crashes the search box');
     expect(searchStillResponsive).toBe(true);
   }
@@ -93,7 +111,15 @@ test(
 
     const cardCount = await ar.galleryImageCards.count();
     const stillResponsive = await ar.gallerySearchInput.isVisible().catch(() => false);
-    console.log('After 5x rapid Search clicks -- responsive:', stillResponsive, '| final card count:', cardCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 5x rapid Search clicks -- responsive:',
+        stillResponsive,
+        '| final card count:',
+        cardCount,
+      ].join(' '),
+    });
     test.fail(!stillResponsive, 'Rapidly clicking Gallery Search 5 times leaves the UI unresponsive/broken');
     expect(stillResponsive).toBe(true);
   }

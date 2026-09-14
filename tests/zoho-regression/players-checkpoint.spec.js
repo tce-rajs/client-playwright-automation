@@ -97,9 +97,15 @@ test(
       (await plr.checkpointTimerBadge.isVisible({ timeout: 2000 }).catch(() => false)) ||
       (await plr.checkpointResumeBtn.isVisible({ timeout: 2000 }).catch(() => false)) ||
       (await plr.checkpointModeOnlineBtn.isVisible({ timeout: 2000 }).catch(() => false));
-    console.log('Checkpoint screen still visible after auto sign-out:', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Checkpoint screen still visible after auto sign-out:', stillOpen].join(' '),
+    });
 
-    test.fail(stillOpen, 'CONFIRMED (matches Zoho TCN-I16724): the Checkpoint screen remains open after an automatic sign-out');
+    test.fail(
+      stillOpen,
+      'CONFIRMED (matches Zoho TCN-I16724): the Checkpoint screen remains open after an automatic sign-out'
+    );
     expect(stillOpen).toBe(false);
   }
 );
@@ -131,7 +137,10 @@ test(
     await cmp.triggerBtn.click({ force: true });
     await page.waitForTimeout(800);
     const closedOnFirstClick = await cmp.revisionTestsItem.isHidden({ timeout: 3000 }).catch(() => false);
-    console.log('Revision Test popup closed on the first click of the trigger:', closedOnFirstClick);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Revision Test popup closed on the first click of the trigger:', closedOnFirstClick].join(' '),
+    });
 
     test.fail(
       !closedOnFirstClick,
@@ -146,7 +155,10 @@ test(
     }
     await page.waitForTimeout(1000);
     const popupStillVisible = await cmp.revisionTestsItem.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Revision Test popup still visible after sign-out:', popupStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Revision Test popup still visible after sign-out:', popupStillVisible].join(' '),
+    });
 
     test.fail(
       popupStillVisible,
@@ -156,4 +168,3 @@ test(
     expect(popupStillVisible).toBe(false);
   }
 );
-

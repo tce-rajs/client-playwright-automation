@@ -36,7 +36,10 @@ test(
     await page.waitForTimeout(2000);
 
     const stillOpen = await mm.isOpen();
-    console.log('Minimap still marked "visible" after switching class:', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Minimap still marked "visible" after switching class:', stillOpen].join(' '),
+    });
     test.fail(
       stillOpen,
       "CONFIRMED (same bug class as ATT-BREAK-02/DRP-BREAK-01): switching class while the Minimap panel is open leaves it stuck visible over the new class's whiteboard"
@@ -61,12 +64,15 @@ test(
 
     const containerCount = await mm.container.count();
     const finalOpen = await mm.isOpen();
-    console.log(
-      'Minimap container instance count after 8x rapid open/close:',
-      containerCount,
-      '| still open at the end:',
-      finalOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Minimap container instance count after 8x rapid open/close:',
+        containerCount,
+        '| still open at the end:',
+        finalOpen,
+      ].join(' '),
+    });
 
     test.fail(
       containerCount > 1,
@@ -100,7 +106,10 @@ test(
       .locator('body')
       .isVisible()
       .catch(() => false);
-    console.log('Page usable after Back with Minimap open:', pageUsable, '| URL:', page.url());
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Page usable after Back with Minimap open:', pageUsable, '| URL:', page.url()].join(' '),
+    });
     test.fail(!pageUsable, 'Pressing Back while the Minimap is open leaves the page unusable');
     expect(pageUsable).toBe(true);
   }
@@ -136,12 +145,15 @@ test(
       .click({ timeout: 3000 })
       .then(() => true)
       .catch(() => false);
-    console.log(
-      'Minimap canvas still visible after 10x rapid pan clicks:',
-      stillResponsive,
-      '| Reset still clickable afterward:',
-      resetStillWorks
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Minimap canvas still visible after 10x rapid pan clicks:',
+        stillResponsive,
+        '| Reset still clickable afterward:',
+        resetStillWorks,
+      ].join(' '),
+    });
 
     test.fail(
       !stillResponsive || !resetStillWorks,

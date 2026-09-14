@@ -43,8 +43,8 @@ test(
     // needed, not exact latency, so wait generously without reloading.
     const newCard = pl.resourceCards.filter({ hasText: uniqueTitle });
     await expect(newCard).toBeVisible({ timeout: 10000 });
-    const afterCount = await pl.resourceCards.count();
-    expect(afterCount).toBe(beforeCount + 1);
+    const afterCount = pl.resourceCards;
+    await expect(afterCount).toHaveCount(beforeCount + 1);
 
     // Cleanup: remove the test resource so the shared QA playlist isn't
     // permanently altered. Cards added via Add Resource are their own
@@ -69,8 +69,8 @@ test(
       await finishEditingBtn.last().click({ timeout: 10000 });
     }
     await page.waitForTimeout(500);
-    const finalCount = await pl.resourceCards.count();
-    expect(finalCount).toBe(beforeCount);
+    const finalCount = pl.resourceCards;
+    await expect(finalCount).toHaveCount(beforeCount);
   }
 );
 
@@ -93,7 +93,10 @@ test(
       .getByText(/error|failed|try again|something went wrong/i)
       .isVisible()
       .catch(() => false);
-    console.log('Create form closed after failed submit:', formClosed, '| error shown:', errorShown);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Create form closed after failed submit:', formClosed, '| error shown:', errorShown].join(' '),
+    });
 
     test.fail(
       formClosed && !errorShown,
@@ -126,14 +129,17 @@ test(
       .getByText(/error|retry|failed to load|something went wrong/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Results:',
-      resultCount,
-      '| "No result found" (zero-result empty state) shown:',
-      noResultMsg,
-      '| distinct error/retry state shown:',
-      errorStateVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Results:',
+        resultCount,
+        '| "No result found" (zero-result empty state) shown:',
+        noResultMsg,
+        '| distinct error/retry state shown:',
+        errorStateVisible,
+      ].join(' '),
+    });
 
     test.fail(
       noResultMsg && !errorStateVisible,
@@ -169,7 +175,10 @@ test(
     ]);
     await page.waitForTimeout(1500);
 
-    console.log('Create requests fired from a rapid double-click on Submit:', createRequestCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Create requests fired from a rapid double-click on Submit:', createRequestCount].join(' '),
+    });
     test.fail(
       createRequestCount > 1,
       `Double-clicking Submit fired ${createRequestCount} create-resource requests instead of exactly one`

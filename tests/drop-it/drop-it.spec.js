@@ -78,7 +78,10 @@ test(
         .locator('.qrcode img')
         .isVisible()
         .catch(() => false));
-    console.log('Pairing graphic (canvas/svg/img) visible inside .qrcode:', graphicVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Pairing graphic (canvas/svg/img) visible inside .qrcode:', graphicVisible].join(' '),
+    });
     expect(graphicVisible).toBe(true);
     await ar.dropitCloseBtn.click();
   }
@@ -97,7 +100,10 @@ test(
     // flickering/animating canvas).
     await page.waitForTimeout(1500);
     const stillFirst = await getDataUrl();
-    console.log('QR canvas stable within one open (1.5s apart):', first === stillFirst);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['QR canvas stable within one open (1.5s apart):', first === stillFirst].join(' '),
+    });
     expect(first).toBe(stillFirst);
 
     // Close and reopen 3 times, collect a dataURL each time.
@@ -109,11 +115,14 @@ test(
       urls.push(await getDataUrl());
     }
     const uniqueCount = new Set(urls).size;
-    console.log(
-      'Unique QR canvas renders across 4 separate opens:',
-      uniqueCount,
-      "(workbook's DRP-QR-01 expected exactly 1 -- a static image)"
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Unique QR canvas renders across 4 separate opens:',
+        uniqueCount,
+        "(workbook's DRP-QR-01 expected exactly 1 -- a static image)",
+      ].join(' '),
+    });
     // REAL FINDING, opposite of the workbook: every open produced a distinct
     // render, consistent with a genuine per-session pairing code, not a
     // static placeholder.
@@ -208,16 +217,19 @@ test(
       .first()
       .waitFor({ state: 'visible', timeout: 5000 })
       .catch(() => {});
-    const closeBtnCount = await ar.dropitCloseBtn.count();
-    const qrCanvasCount = await ar.dropitQrCanvas.count();
-    console.log(
-      'After rapid close+reopen -- Close-button instances:',
-      closeBtnCount,
-      '| QR-canvas instances:',
-      qrCanvasCount
-    );
-    expect(closeBtnCount).toBe(1);
-    expect(qrCanvasCount).toBe(1);
+    const closeBtnCount = ar.dropitCloseBtn;
+    const qrCanvasCount = ar.dropitQrCanvas;
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After rapid close+reopen -- Close-button instances:',
+        closeBtnCount,
+        '| QR-canvas instances:',
+        qrCanvasCount,
+      ].join(' '),
+    });
+    await expect(closeBtnCount).toHaveCount(1);
+    await expect(qrCanvasCount).toHaveCount(1);
     await expect(ar.dropitConnectionStatus).toBeVisible();
     await ar.dropitCloseBtn.click();
   }
@@ -232,10 +244,13 @@ test(
     await page.reload();
     await page.waitForTimeout(2000);
     const dropitStillOpen = await ar.dropitCloseBtn.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      'Drop It panel still showing after a hard refresh (should be false -- closed, not restored):',
-      dropitStillOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Drop It panel still showing after a hard refresh (should be false -- closed, not restored):',
+        dropitStillOpen,
+      ].join(' '),
+    });
     expect(dropitStillOpen).toBe(false);
     // The app itself should recover cleanly, not be left on a blank/error page.
     await expect(ar.addResourcesTrigger).toBeVisible({ timeout: 10000 });
@@ -256,10 +271,13 @@ test(
     });
     await openDropit(page, ar);
     await page.waitForTimeout(2000);
-    console.log(
-      'Real-time Firestore Listen/Write channel requests observed while Drop It is open:',
-      wsOrChannelUrls.length
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Real-time Firestore Listen/Write channel requests observed while Drop It is open:',
+        wsOrChannelUrls.length,
+      ].join(' '),
+    });
 
     // Full end-to-end scoping (a leaked QR from one session being rejected
     // when presented to a different session) still needs a second real
@@ -323,23 +341,26 @@ test(
     // honestly-scoped proxy for "left open and idle for an extended period",
     // documented here rather than silently substituted.
     await page.waitForTimeout(20000);
-    const statusDuringIdle = await ar.dropitConnectionStatus.textContent();
+    const statusDuringIdle = ar.dropitConnectionStatus;
 
     await ar.dropitCloseBtn.click();
     await page.waitForTimeout(500);
     await openDropit(page, ar);
-    const statusAfterReopen = await ar.dropitConnectionStatus.textContent();
+    const statusAfterReopen = ar.dropitConnectionStatus;
 
-    console.log(
-      'Status before idle wait:',
-      statusBefore,
-      '| after 20s idle:',
-      statusDuringIdle,
-      '| after close+reopen:',
-      statusAfterReopen
-    );
-    expect(statusDuringIdle).toBe(statusBefore); // no stale/garbled text while idle
-    expect(statusAfterReopen).toBe(statusBefore); // fresh reopen shows the same consistent initial state
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Status before idle wait:',
+        statusBefore,
+        '| after 20s idle:',
+        statusDuringIdle,
+        '| after close+reopen:',
+        statusAfterReopen,
+      ].join(' '),
+    });
+    await expect(statusDuringIdle).toHaveText(statusBefore); // no stale/garbled text while idle
+    await expect(statusAfterReopen).toHaveText(statusBefore); // fresh reopen shows the same consistent initial state
     await ar.dropitCloseBtn.click();
   }
 );

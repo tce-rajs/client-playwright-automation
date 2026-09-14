@@ -20,10 +20,16 @@ test.beforeEach(async ({ page }) => {
 
 async function openComposerViaAltEntry(page, pl, ls) {
   const bootstrapped = await ls.ensureOwnedVideoAsset(pl, new AddResourcePage(page));
-  console.log('[openComposerViaAltEntry] bootstrapped (owned video asset present):', bootstrapped);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['[openComposerViaAltEntry] bootstrapped (owned video asset present):', bootstrapped].join(' '),
+  });
   if (!bootstrapped) return false;
   const videoCard = await ls.findOwnedVideoAssetCard(pl);
-  console.log('[openComposerViaAltEntry] video card found:', !!videoCard);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['[openComposerViaAltEntry] video card found:', !!videoCard].join(' '),
+  });
   if (!videoCard) return false;
   // CONFIRMED LIVE (this pass): the existing suite's own identical hover()
   // call also currently fails the same way -- not something this session's
@@ -38,7 +44,13 @@ async function openComposerViaAltEntry(page, pl, ls) {
   await videoCard.scrollIntoViewIfNeeded().catch(() => {});
   await page.waitForTimeout(500);
   const cardBoxDiag = await videoCard.boundingBox().catch(() => null);
-  console.log('[openComposerViaAltEntry] video card boundingBox after explicit scroll:', JSON.stringify(cardBoxDiag));
+  test.info().annotations.push({
+    type: 'note',
+    description: [
+      '[openComposerViaAltEntry] video card boundingBox after explicit scroll:',
+      JSON.stringify(cardBoxDiag),
+    ].join(' '),
+  });
   const realHoverWorked = await videoCard
     .hover({ timeout: 4000 })
     .then(() => true)
@@ -65,24 +77,33 @@ async function openComposerViaAltEntry(page, pl, ls) {
           })
           .catch(() => null)
       : null;
-  console.log(
-    '[openComposerViaAltEntry] overflow icon count:',
-    overflowCount,
-    '| visible:',
-    overflowVisible,
-    '| computed style:',
-    JSON.stringify(overflowStyle)
-  );
+  test.info().annotations.push({
+    type: 'note',
+    description: [
+      '[openComposerViaAltEntry] overflow icon count:',
+      overflowCount,
+      '| visible:',
+      overflowVisible,
+      '| computed style:',
+      JSON.stringify(overflowStyle),
+    ].join(' '),
+  });
   if (!overflowVisible) return false;
   await overflow.click({ force: true });
   await page.waitForTimeout(500);
   const sendVisible = await ls.assetSendBtn.isVisible({ timeout: 3000 }).catch(() => false);
-  console.log('[openComposerViaAltEntry] Send button visible:', sendVisible);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['[openComposerViaAltEntry] Send button visible:', sendVisible].join(' '),
+  });
   if (!sendVisible) return false;
   await ls.assetSendBtn.click({ force: true });
   await page.waitForTimeout(1200);
   const titleVisible = await ls.titleInput.isVisible({ timeout: 8000 }).catch(() => false);
-  console.log('[openComposerViaAltEntry] Title input (composer) visible:', titleVisible);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['[openComposerViaAltEntry] Title input (composer) visible:', titleVisible].join(' '),
+  });
   return titleVisible;
 }
 
@@ -101,7 +122,12 @@ test(
     await ls.titleInput.fill('<img src=x onerror="window.__lsXss=true">');
     await page.waitForTimeout(500);
     const xssRan = await page.evaluate(() => !!window.__lsXss);
-    console.log('Learning Shorts title XSS payload executed:', xssRan);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Learning Shorts title XSS payload executed:', xssRan].join(' '),
+      });
     test.fail(xssRan, 'An HTML/script-tag string in the Title field executes as real markup');
     expect(xssRan).toBe(false);
   }
@@ -130,7 +156,10 @@ test(
     if (!lastOpened) return;
 
     const titleInputCount = await ls.titleInput.count();
-    console.log('Title input instance count after 5x rapid open/discard cycles:', titleInputCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Title input instance count after 5x rapid open/discard cycles:', titleInputCount].join(' '),
+    });
     test.fail(
       titleInputCount > 1,
       'Rapidly opening/discarding the composer 5 times leaves more than one composer instance mounted'
@@ -173,12 +202,15 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log(
-      'Class checkbox count:',
-      count,
-      '| still responsive after 3x rapid toggle-all cycles:',
-      stillResponsive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Class checkbox count:',
+        count,
+        '| still responsive after 3x rapid toggle-all cycles:',
+        stillResponsive,
+      ].join(' '),
+    });
     test.fail(!stillResponsive, 'Rapidly toggling all class checkboxes 3 times leaves the composer unresponsive');
     expect(stillResponsive).toBe(true);
   }
@@ -205,7 +237,15 @@ test(
       .locator('body')
       .isVisible()
       .catch(() => false);
-    console.log('Page usable after Back with Learning Shorts composer open:', pageUsable, '| URL:', page.url());
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Page usable after Back with Learning Shorts composer open:',
+        pageUsable,
+        '| URL:',
+        page.url(),
+      ].join(' '),
+    });
     test.fail(!pageUsable, 'Pressing Back while the Learning Shorts composer is open leaves the page unusable');
     expect(pageUsable).toBe(true);
   }
@@ -226,7 +266,10 @@ test(
     await ls.titleInput.fill('Adversarial dual-save test');
     const saveVisible = await ls.savePlaylistBtn.isVisible({ timeout: 3000 }).catch(() => false);
     const revisionVisible = await ls.saveRevisionBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Save to Playlist visible:', saveVisible, '| Save Revision visible:', revisionVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Save to Playlist visible:', saveVisible, '| Save Revision visible:', revisionVisible].join(' '),
+    });
     // Deliberately NOT clicking either -- a real dispatch would create a
     // permanent asset on the shared QA account (same caution as the existing
     // suite's LS-SAVE-01/LS-SEND-01). Documenting reachability/distinctness

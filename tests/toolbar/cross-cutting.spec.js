@@ -40,19 +40,28 @@ test(
     await otherTopic.click();
     await page.waitForTimeout(1000);
     if (page.isClosed() || crashed) {
-      console.log(
-        'Page crashed while switching Topic on the whiteboard -- treating as a genuine app crash, not a test defect.'
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Page crashed while switching Topic on the whiteboard -- treating as a genuine app crash, not a test defect.',
+        ].join(' '),
+      });
     }
     const nowOnTopic = (await pl.contentsTile.textContent()).trim();
-    console.log('Switched from', originalTopic, 'to', nowOnTopic, '(target was:', otherTopicText, ')');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Switched from', originalTopic, 'to', nowOnTopic, '(target was:', otherTopicText, ')'].join(' '),
+    });
     expect(nowOnTopic).not.toBe(originalTopic);
 
     const strokesVisibleOnOtherTopic = await tb.pathCount();
-    console.log(
-      'Path count on the other topic (expect 0 leaked strokes, ignoring whatever this topic already had):',
-      strokesVisibleOnOtherTopic
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count on the other topic (expect 0 leaked strokes, ignoring whatever this topic already had):',
+        strokesVisibleOnOtherTopic,
+      ].join(' '),
+    });
 
     // Switch back and confirm the original content is still there (this
     // also distinguishes "isolated" from "lost").
@@ -64,7 +73,10 @@ test(
       .catch(() => {});
     await page.waitForTimeout(1000);
     const afterReturn = await tb.pathCount();
-    console.log('Path count after returning to the original topic:', afterReturn);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Path count after returning to the original topic:', afterReturn].join(' '),
+    });
     expect(afterReturn).toBeGreaterThanOrEqual(before + 1);
   }
 );
@@ -87,7 +99,10 @@ test(
     await page.waitForTimeout(2000);
 
     const afterReload = await tb.pathCount();
-    console.log('Paths before reload:', afterDraw, '| after reload:', afterReload);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Paths before reload:', afterDraw, '| after reload:', afterReload].join(' '),
+    });
     expect(afterReload).toBe(afterDraw);
   }
 );
