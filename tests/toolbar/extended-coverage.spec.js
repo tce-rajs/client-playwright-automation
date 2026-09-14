@@ -81,7 +81,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
     await page.waitForTimeout(800);
 
     const panelVisible = await tb.textMenuBoldBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Rich inline panel appeared on right-click:', panelVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Rich inline panel appeared on right-click:', panelVisible].join(' '),
+    });
     expect(panelVisible).toBe(true);
   });
 
@@ -93,7 +96,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await tb.tool('gtZoom').click({ force: true });
       await page.waitForTimeout(800);
       const panelAfterSingleTap = await tb.panel.isVisible().catch(() => false);
-      console.log('Zoom panel open after a SINGLE tap:', panelAfterSingleTap);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Zoom panel open after a SINGLE tap:', panelAfterSingleTap].join(' '),
+      });
       test.fail(
         panelAfterSingleTap,
         'A single tap already opens the tool panel -- expected a single tap to only select the tool, requiring a double tap to open its panel'
@@ -129,7 +135,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // against the shared QA account's persistent canvas content, same
       // reasoning as other destructive actions left unexecuted elsewhere in
       // this suite.
-      console.log('Paths on canvas before (not clearing):', beforeCount);
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Paths on canvas before (not clearing):', beforeCount].join(' '),
+        });
       test.fail(
         true,
         "Clear Whiteboard is reachable, but actually clicking it is deliberately not executed -- it would permanently wipe the shared QA account's persistent whiteboard content for every other test/session"
@@ -163,7 +174,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.mouse.up();
       await page.waitForTimeout(800);
       const countAfterErase = await tb.pathCount();
-      console.log('Paths after drawing the long stroke:', countAfterDraw, '| after erasing along it:', countAfterErase);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Paths after drawing the long stroke:',
+          countAfterDraw,
+          '| after erasing along it:',
+          countAfterErase,
+        ].join(' '),
+      });
       test.fail(
         countAfterErase >= countAfterDraw,
         'The eraser does not remove a Pen stroke once it exceeds roughly 700px in length -- confirmed reproducible'
@@ -193,14 +212,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const countAfterErase = await tb.pathCount();
 
       const bothErased = countAfterDraw - countAfterErase >= 2;
-      console.log(
-        'Paths before erase:',
-        countAfterDraw,
-        '| after erasing only the first word:',
-        countAfterErase,
-        '| both words removed:',
-        bothErased
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Paths before erase:',
+          countAfterDraw,
+          '| after erasing only the first word:',
+          countAfterErase,
+          '| both words removed:',
+          bothErased,
+        ].join(' '),
+      });
       test.fail(
         bothErased,
         'Erasing one word also removed an adjacent, un-targeted word -- confirmed over-erase behavior'
@@ -225,12 +247,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .isToolActive('gtPen')
         .isVisible()
         .catch(() => false);
-      console.log(
-        'After dismissing Zoom panel -- Select tool active:',
-        selectActive,
-        '| Pen tool still active:',
-        penActive
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'After dismissing Zoom panel -- Select tool active:',
+          selectActive,
+          '| Pen tool still active:',
+          penActive,
+        ].join(' '),
+      });
       expect(selectActive).toBe(true);
       expect(penActive).toBe(false);
     }
@@ -255,12 +280,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await tb.tool('gtZoom').click({ force: true });
       await page.waitForTimeout(600);
       const stillOpenAfterSecondClick = await tb.panel.isVisible().catch(() => false);
-      console.log(
-        'Panel still open after 1st re-click on its own icon:',
-        stillOpenAfterSingleClick,
-        '| after 2nd re-click:',
-        stillOpenAfterSecondClick
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Panel still open after 1st re-click on its own icon:',
+          stillOpenAfterSingleClick,
+          '| after 2nd re-click:',
+          stillOpenAfterSecondClick,
+        ].join(' '),
+      });
       const neverClosedViaOwnIcon = stillOpenAfterSingleClick && stillOpenAfterSecondClick;
       test.fail(
         neverClosedViaOwnIcon,
@@ -294,7 +322,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await tb.tool('gtUndo').click({ force: true });
       await page.waitForTimeout(800);
       const countAfterUndo = await tb.pathCount();
-      console.log('Paths after 2 draws:', countAfterDrawTwo, '| after moving stroke 2 then Undo:', countAfterUndo);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Paths after 2 draws:',
+          countAfterDrawTwo,
+          '| after moving stroke 2 then Undo:',
+          countAfterUndo,
+        ].join(' '),
+      });
       // If Undo skipped the move and undid the DRAW instead, path count drops
       // by one; if it correctly undid the move, count stays the same.
       test.fail(
@@ -318,7 +354,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.mouse.dblclick(box.x + point.x, box.y + point.y);
       await page.waitForTimeout(800);
       const editorReopened = await tb.textEditor.isVisible({ timeout: 2000 }).catch(() => false);
-      console.log('Text editor reopened via double-click on committed text:', editorReopened);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Text editor reopened via double-click on committed text:', editorReopened].join(' '),
+      });
       test.fail(
         editorReopened,
         'A gesture DID reopen the editor on already-committed text -- conflicts with this workbook\'s own confirmed "no gesture works" finding'
@@ -367,12 +406,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // panel crashed the page (reproduced). Left as a genuine failure rather
       // than test.fail() -- see NAV-NET-02's comment elsewhere in this suite
       // for why a real crash can't be tracked softly.
-      console.log('Page crashed while clicking Bold:', pageCrashed);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Page crashed while clicking Bold:', pageCrashed].join(' ') });
       expect(pageCrashed, "Clicking Bold on a text object's formatting panel should not crash the page").toBe(false);
       if (pageCrashed) return;
 
       const weightAfter = await textElement.evaluate((el) => getComputedStyle(el).fontWeight).catch(() => null);
-      console.log('Computed font-weight before Bold:', weightBefore, '| after Bold:', weightAfter);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Computed font-weight before Bold:', weightBefore, '| after Bold:', weightAfter].join(' '),
+      });
       test.fail(
         weightBefore === weightAfter,
         'Clicking Bold produces no actual computed font-weight change on the text object'
@@ -393,15 +437,16 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.mouse.click(box.x + point.x + 50, box.y + point.y + 30);
       await page.waitForTimeout(500);
 
-      const resizeHandleCount = await page
-        .locator('.resize-handle, [class*="resize-handle"], [data-qa-id*="resize-handle"]')
-        .count();
-      console.log('Resize-handle elements found on a selected object:', resizeHandleCount);
+      const resizeHandleCount = page.locator('.resize-handle, [class*="resize-handle"], [data-qa-id*="resize-handle"]');
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Resize-handle elements found on a selected object:', resizeHandleCount].join(' '),
+      });
       test.fail(
         resizeHandleCount > 0,
         'Resize handles WERE found -- conflicts with this workbook\'s own confirmed "no drag-to-resize" finding'
       );
-      expect(resizeHandleCount).toBe(0);
+      await expect(resizeHandleCount).toHaveCount(0);
     }
   );
 
@@ -433,7 +478,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('.toolbar-container.left')
         .isVisible()
         .catch(() => false);
-      console.log('Right-docked before:', rightDockedBefore, '| Left-docked after toggle:', leftDockedAfter);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Right-docked before:', rightDockedBefore, '| Left-docked after toggle:', leftDockedAfter].join(
+          ' '
+        ),
+      });
       expect(leftDockedAfter).toBe(true);
       // Toggle back to leave the shared board in its original dock state.
       await toggleBtn.click({ force: true }).catch(() => {});
@@ -463,7 +513,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const before = await tb.pathCount();
       await tb.penStroke(point, { x: point.x + 80, y: point.y + 40 });
       const after = await tb.pathCount();
-      console.log('Isolated single coordinate-based stroke check -- paths before:', before, '| after:', after);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Isolated single coordinate-based stroke check -- paths before:', before, '| after:', after].join(
+          ' '
+        ),
+      });
       expect(after).toBeGreaterThan(before);
     }
   );
@@ -513,16 +568,19 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .first()
         .isVisible({ timeout: 1000 })
         .catch(() => false);
-      console.log(
-        'Magnet menu items visible for this class/subject -- Notice:',
-        noticeVisible,
-        '| Learning Shorts:',
-        shortsVisible,
-        '| Homework:',
-        homeworkVisible,
-        '| Attendance:',
-        attendanceVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Magnet menu items visible for this class/subject -- Notice:',
+          noticeVisible,
+          '| Learning Shorts:',
+          shortsVisible,
+          '| Homework:',
+          homeworkVisible,
+          '| Attendance:',
+          attendanceVisible,
+        ].join(' '),
+      });
       expect(noticeVisible && shortsVisible && homeworkVisible).toBe(true);
     }
   );
@@ -551,7 +609,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.mouse.up();
       await page.waitForTimeout(800);
       const afterCount = await tb.pathCount();
-      console.log('Paths before inserting a Rectangle:', beforeCount, '| after:', afterCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Paths before inserting a Rectangle:', beforeCount, '| after:', afterCount].join(' '),
+      });
       expect(afterCount).toBeGreaterThan(beforeCount);
     }
   );
@@ -586,12 +647,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const countAfterRefresh = await tb.wbContainer
         .locator('.text-input-container', { hasText: `edit3-${tag}` })
         .count();
-      console.log(
-        'The 3rd rapid edit present right before refresh:',
-        countBeforeRefresh,
-        '| still present after refresh:',
-        countAfterRefresh
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'The 3rd rapid edit present right before refresh:',
+          countBeforeRefresh,
+          '| still present after refresh:',
+          countAfterRefresh,
+        ].join(' '),
+      });
       test.fail(
         countAfterRefresh === 0,
         'An immediate refresh after rapid consecutive edits lost the most recent unsaved changes, with no warning'
@@ -612,12 +676,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       .catch(() => {});
     await page.waitForTimeout(500);
     const bodyText = await page.textContent('body');
-    console.log(
-      'Redo disabled with an empty redo stack:',
-      redoDisabled,
-      '| page still responsive after clicking it anyway:',
-      bodyText.length > 0
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Redo disabled with an empty redo stack:',
+        redoDisabled,
+        '| page still responsive after clicking it anyway:',
+        bodyText.length > 0,
+      ].join(' '),
+    });
     expect(bodyText.length).toBeGreaterThan(0);
   });
 
@@ -636,14 +703,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .getByText(/failed to save|save error|could not save/i)
         .isVisible({ timeout: 2000 })
         .catch(() => false);
-      console.log(
-        '"Saving..." toast shown:',
-        savingToastShown,
-        '| "Saved" toast shown despite blocked request:',
-        savedToastShown,
-        '| explicit failure indicator shown:',
-        failureIndicatorShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          '"Saving..." toast shown:',
+          savingToastShown,
+          '| "Saved" toast shown despite blocked request:',
+          savedToastShown,
+          '| explicit failure indicator shown:',
+          failureIndicatorShown,
+        ].join(' '),
+      });
       test.fail(
         savedToastShown && !failureIndicatorShown,
         'A "Whiteboard Saved!" toast appears even though the autosave request was blocked/failed, with no failure indicator shown'
@@ -673,7 +743,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.mouse.click(box.x + point.x, box.y + point.y); // click, no drag
       await page.waitForTimeout(800);
       const afterCount = await tb.pathCount();
-      console.log('Paths before a zero-size click:', beforeCount, '| after:', afterCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Paths before a zero-size click:', beforeCount, '| after:', afterCount].join(' '),
+      });
       test.fail(
         afterCount > beforeCount,
         'A zero-size click (no drag) with a Shape tool active inserted a degenerate shape object'
@@ -700,13 +773,18 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // No typing -- click away immediately.
       await page.mouse.click(box.x + point.x + 400, box.y + point.y + 300);
       await page.waitForTimeout(1000);
-      const afterCount = await tb.wbContainer.locator('.text-input-container').count();
-      console.log('Text objects before an empty text-object attempt:', beforeCount, '| after:', afterCount);
+      const afterCount = tb.wbContainer.locator('.text-input-container');
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Text objects before an empty text-object attempt:', beforeCount, '| after:', afterCount].join(
+          ' '
+        ),
+      });
       test.fail(
         afterCount > beforeCount,
         'An empty, untyped text object was left on the canvas after clicking away without typing'
       );
-      expect(afterCount).toBe(beforeCount);
+      await expect(afterCount).toHaveCount(beforeCount);
     }
   );
 
@@ -730,7 +808,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const beforeCount = await tb.pathCount();
       await tb.drawStroke(point, { x: point.x + 120, y: point.y + 60 });
       const afterCount = await tb.pathCount();
-      console.log('Paths before/after a max-size Pen stroke:', beforeCount, afterCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Paths before/after a max-size Pen stroke:', beforeCount, afterCount].join(' '),
+      });
       expect(afterCount).toBeGreaterThan(beforeCount);
     }
   );
@@ -759,14 +840,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(800);
       const countAfterErase = await tb.pathCount();
       const otherStrokeUnaffected = countBeforeErase - countAfterErase <= 1;
-      console.log(
-        'Paths before erase:',
-        countBeforeErase,
-        '| after erasing near the FIRST stroke only:',
-        countAfterErase,
-        '| second (far) stroke unaffected:',
-        otherStrokeUnaffected
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Paths before erase:',
+          countBeforeErase,
+          '| after erasing near the FIRST stroke only:',
+          countAfterErase,
+          '| second (far) stroke unaffected:',
+          otherStrokeUnaffected,
+        ].join(' '),
+      });
       test.fail(
         !otherStrokeUnaffected,
         'A max-size eraser click removed more than the intended nearby stroke, over-erasing beyond its visible radius'
@@ -792,7 +876,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .isVisible()
         .catch(() => false);
       const toolbarVisible = await tb.container.isVisible().catch(() => false);
-      console.log('At minimum zoom -- context bar visible:', contextBarVisible, '| toolbar visible:', toolbarVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'At minimum zoom -- context bar visible:',
+          contextBarVisible,
+          '| toolbar visible:',
+          toolbarVisible,
+        ].join(' '),
+      });
       expect(contextBarVisible).toBe(true);
       expect(toolbarVisible).toBe(true);
       // Reset zoom for subsequent tests sharing this board.
@@ -819,7 +911,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         .locator('.toolbar-container.right')
         .isVisible()
         .catch(() => false);
-      console.log('After 12 rapid dock toggles -- left docked:', leftDocked, '| right docked:', rightDocked);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['After 12 rapid dock toggles -- left docked:', leftDocked, '| right docked:', rightDocked].join(
+          ' '
+        ),
+      });
       test.fail(
         leftDocked === rightDocked,
         'Toolbar settled in an ambiguous/broken state after rapid dock toggling -- neither cleanly left nor right (or both)'
@@ -903,12 +1000,18 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       }
       await page.waitForTimeout(1500);
       const afterCount = await tb.pathCount();
-      console.log('Shapes before:', beforeCount, '| after inserting 50:', afterCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Shapes before:', beforeCount, '| after inserting 50:', afterCount].join(' '),
+      });
       const selectStart = Date.now();
       await tb.selectTool('gtSelect');
       await page.mouse.click(box.x + 65, box.y + 65);
       const selectDuration = Date.now() - selectStart;
-      console.log('Time to select an object after 50+ insertions (ms):', selectDuration);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Time to select an object after 50+ insertions (ms):', selectDuration].join(' '),
+      });
       expect(afterCount).toBeGreaterThan(beforeCount);
       test.fail(
         selectDuration > 5000,
@@ -939,12 +1042,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const actualTransform = await tb.wbSvg
         .evaluate((svg) => getComputedStyle(svg.parentElement).transform)
         .catch(() => null);
-      console.log(
-        'Displayed zoom % after rapid alternating clicks:',
-        displayedPercent,
-        '| actual computed transform:',
-        actualTransform
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Displayed zoom % after rapid alternating clicks:',
+          displayedPercent,
+          '| actual computed transform:',
+          actualTransform,
+        ].join(' '),
+      });
       expect(displayedPercent).not.toBeNull();
     }
   );
@@ -973,7 +1079,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
         const after = await tb.pathCount();
         if (after < before) successfulUndos++;
       }
-      console.log('Actions drawn:', countAfterDraws, '| successful Undos out of 20 attempts:', successfulUndos);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Actions drawn:',
+          countAfterDraws,
+          '| successful Undos out of 20 attempts:',
+          successfulUndos,
+        ].join(' '),
+      });
       test.fail(
         successfulUndos < 15,
         'The Undo stack ran out or silently stopped working well before 20 sequential actions'
@@ -1033,12 +1147,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const widgetInstanceLocator = page.locator('[data-qa-id^="wb-widget-instance-"], .widget-instance').first();
       const instanceAppeared = await widgetInstanceLocator.isVisible({ timeout: 3000 }).catch(() => false);
       const droppedNearTarget = instanceAppeared ? await widgetInstanceLocator.boundingBox().catch(() => null) : null;
-      console.log(
-        'Drop target (page coords):',
-        { x: wbBox.x + dropTarget.x, y: wbBox.y + dropTarget.y },
-        '| actual widget landing box:',
-        droppedNearTarget
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Drop target (page coords):',
+          { x: wbBox.x + dropTarget.x, y: wbBox.y + dropTarget.y },
+          '| actual widget landing box:',
+          droppedNearTarget,
+        ].join(' '),
+      });
       test.fail(
         !droppedNearTarget,
         'Confirmed tooling limit: no synthetic drag or click technique available here reproduces whatever real gesture inserts a Widgets-browser tile onto the canvas (tried plain mouse-drag, native HTML5 DataTransfer drag events, a CDK-drag-style threshold sequence, and a plain click) -- cannot confirm drop-landing position without a real physical pointer device, same tooling-limit class as TB-GAP-01'
@@ -1075,16 +1192,19 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       }
       await historyBtn.click({ force: true });
       await page.waitForTimeout(800);
-      const historyEntries = await page.locator('[data-qa-id*="history-entry"], .history-entry').count();
-      console.log(
-        'History entries visible while on a DIFFERENT class (Class 11A) than where the stroke was drawn (Class 5A):',
-        historyEntries
-      );
+      const historyEntries = page.locator('[data-qa-id*="history-entry"], .history-entry');
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'History entries visible while on a DIFFERENT class (Class 11A) than where the stroke was drawn (Class 5A):',
+          historyEntries,
+        ].join(' '),
+      });
       test.fail(
         historyEntries > 0,
         'CONFIRMED CRITICAL: Whiteboard History shows entries from a different class/chapter than the one currently active -- content leaks across classes, scoped per-teacher-account globally instead of per-class'
       );
-      expect(historyEntries).toBe(0);
+      await expect(historyEntries).toHaveCount(0);
     }
   );
 
@@ -1107,7 +1227,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const tb = new ToolbarPage(page);
       await tb.openToolPanel('gtPen');
       const selectedColor = await tb.penColorSelected.count();
-      console.log('A pre-selected pen color exists (suggesting a persisted preference):', selectedColor > 0);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['A pre-selected pen color exists (suggesting a persisted preference):', selectedColor > 0].join(
+          ' '
+        ),
+      });
       test.fail(
         true,
         'Confirming this preference is scoped per-account (not a global/shared setting) needs a second account to compare against -- not available in this project'

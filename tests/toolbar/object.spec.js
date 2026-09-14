@@ -61,15 +61,18 @@ test(
       .isVisible()
       .catch(() => false);
     const afterDelete = await tb.pathCount();
-    console.log(
-      'Confirmation dialog appeared:',
-      confirmDialogAppeared,
-      '| paths after delete:',
-      afterDelete,
-      '(was',
-      afterDraw,
-      ')'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Confirmation dialog appeared:',
+        confirmDialogAppeared,
+        '| paths after delete:',
+        afterDelete,
+        '(was',
+        afterDraw,
+        ')',
+      ].join(' '),
+    });
     test.fail(
       !confirmDialogAppeared && afterDelete < afterDraw,
       'Deleting a canvas object removes it immediately with no confirmation dialog -- a single misclick permanently removes content, recoverable only via Undo'

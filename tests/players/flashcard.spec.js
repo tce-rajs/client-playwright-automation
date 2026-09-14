@@ -81,12 +81,15 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'Flashcard player opened (close visible):',
-      closeVisible,
-      '| pagination indicator visible:',
-      paginationVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Flashcard player opened (close visible):',
+        closeVisible,
+        '| pagination indicator visible:',
+        paginationVisible,
+      ].join(' '),
+    });
     expect(closeVisible).toBe(true);
   }
 );
@@ -108,7 +111,10 @@ test(
     await plr.openResourceCard(card);
     await page.waitForTimeout(2000);
     const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
-    console.log('Real content text length inside the opened Flashcard player:', bodyText.trim().length);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Real content text length inside the opened Flashcard player:', bodyText.trim().length].join(' '),
+    });
     expect(bodyText.trim().length).toBeGreaterThan(20);
   }
 );

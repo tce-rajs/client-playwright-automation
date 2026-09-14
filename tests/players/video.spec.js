@@ -68,7 +68,10 @@ test(
       .first()
       .isVisible({ timeout: 8000 })
       .catch(() => false);
-    console.log('A player frame/chrome opened (close icon visible):', frameOpened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A player frame/chrome opened (close icon visible):', frameOpened].join(' '),
+    });
     expect(frameOpened).toBe(true);
   }
 );
@@ -79,14 +82,17 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { crashed, playerInitialized, errors } = await openVideoTrackingCrash(page, plr);
-    console.log(
-      'Crashed (targetContainer error):',
-      crashed,
-      '| player initialized:',
-      playerInitialized,
-      '| all pageerrors:',
-      JSON.stringify(errors)
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Crashed (targetContainer error):',
+        crashed,
+        '| player initialized:',
+        playerInitialized,
+        '| all pageerrors:',
+        JSON.stringify(errors),
+      ].join(' '),
+    });
     test.fail(
       crashed || !playerInitialized,
       crashed
@@ -108,16 +114,19 @@ test(
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     const second = await openVideoTrackingCrash(page, plr);
-    console.log(
-      'First attempt -- crashed:',
-      first.crashed,
-      'initialized:',
-      first.playerInitialized,
-      '| second attempt (after reload) -- crashed:',
-      second.crashed,
-      'initialized:',
-      second.playerInitialized
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'First attempt -- crashed:',
+        first.crashed,
+        'initialized:',
+        first.playerInitialized,
+        '| second attempt (after reload) -- crashed:',
+        second.crashed,
+        'initialized:',
+        second.playerInitialized,
+      ].join(' '),
+    });
     // CONFIRMED LIVE (verifier pass, re-checked 3/3 isolated runs): on THIS
     // specific resource (Class 12A Computer Science, "14. Project Based
     // Learning"), the exact "targetContainer is not defined" pageerror text
@@ -168,7 +177,10 @@ test(
       .first()
       .isVisible({ timeout: 1000 })
       .catch(() => false));
-    console.log('Still no real playback after clicking the stuck icon:', stillNoPlayback);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Still no real playback after clicking the stuck icon:', stillNoPlayback].join(' '),
+    });
     expect(stillNoPlayback).toBe(true);
   }
 );
@@ -179,10 +191,13 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { crashed } = await openVideoTrackingCrash(page, plr);
-    console.log(
-      'This resource (Class 12A Computer Science, "14. Project Based Learning") reproduced the systemic crash:',
-      crashed
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'This resource (Class 12A Computer Science, "14. Project Based Learning") reproduced the systemic crash:',
+        crashed,
+      ].join(' '),
+    });
     test.fail(
       crashed,
       'CONFIRMED SYSTEMIC (per workbook, previously reproduced on 4 separate resources across 2 subjects): the hybrid-player crash reproduced again here, on a 5th distinct resource -- consistent with a shared root-cause defect in tce-player-hybrid.js, not a single corrupt asset'
@@ -263,7 +278,10 @@ test(
       .first()
       .isVisible({ timeout: 1000 })
       .catch(() => false);
-    console.log('Video element still present/playing after switching class:', videoStillPresent);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Video element still present/playing after switching class:', videoStillPresent].join(' '),
+    });
     expect(videoStillPresent).toBe(false);
   }
 );
@@ -289,7 +307,10 @@ test(
     const plr = new PlayerPage(page);
     const pl = new PlaylistPage(page);
     const viaIcon = await plr.videoCards.count();
-    console.log('Video resources found via type-icon selector:', viaIcon);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Video resources found via type-icon selector:', viaIcon].join(' '),
+    });
     expect(viaIcon).toBeGreaterThan(0);
 
     await pl.openOptionsMenu().catch(() => {});
@@ -299,13 +320,19 @@ test(
       await videoFilterOption.click({ force: true }).catch(() => {});
       await page.waitForTimeout(1000);
       const cardsAfterFilter = await pl.resourceCards.count();
-      console.log(
-        'Cards visible after applying the "Video" filter:',
-        cardsAfterFilter,
-        '(a silent no-op would show ALL resource types, not just Video)'
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Cards visible after applying the "Video" filter:',
+          cardsAfterFilter,
+          '(a silent no-op would show ALL resource types, not just Video)',
+        ].join(' '),
+      });
     } else {
-      console.log('No explicit "Video" filter option found in the Options menu this pass.');
+      test.info().annotations.push({
+        type: 'note',
+        description: ['No explicit "Video" filter option found in the Options menu this pass.'].join(' '),
+      });
     }
     await pl.closeOptionsMenu().catch(() => {});
   }
@@ -324,12 +351,15 @@ test(
     await plr.openResourceCard(plr.videoCards);
     await page.waitForTimeout(3000);
     const tcevideoHit = urls.some((u) => /tcevideo/i.test(u));
-    console.log(
-      'Any request URL containing "tcevideo":',
-      tcevideoHit,
-      '| sample URLs:',
-      JSON.stringify(urls.slice(0, 5))
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Any request URL containing "tcevideo":',
+        tcevideoHit,
+        '| sample URLs:',
+        JSON.stringify(urls.slice(0, 5)),
+      ].join(' '),
+    });
     // Documenting presence/absence -- not itself a pass/fail condition per
     // the workbook's own framing (a mapping fact, not a bug).
     expect(urls.length).toBeGreaterThanOrEqual(0);
@@ -342,7 +372,12 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { crashed } = await openVideoTrackingCrash(page, plr);
-    console.log('Class 12A Computer Science "14. Project Based Learning" Video resource crashed:', crashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class 12A Computer Science "14. Project Based Learning" Video resource crashed:', crashed].join(
+        ' '
+      ),
+    });
     test.fail(
       crashed,
       'This resource (a DIFFERENT resource from the ones originally confirming the crash) also crashed -- narrows the reconciliation question: the crash is NOT scoped to only the previously-tested resources, it affects this one too'
@@ -366,12 +401,15 @@ test(
     await plr.openResourceCard(plr.videoCards);
     await page.waitForTimeout(2000);
     const closeIconCountAfterSecond = await plr.closeIcon.count();
-    console.log(
-      'Close-icon count after 1st open:',
-      closeIconCountAfterFirst,
-      '| after reopening (2nd click):',
-      closeIconCountAfterSecond
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Close-icon count after 1st open:',
+        closeIconCountAfterFirst,
+        '| after reopening (2nd click):',
+        closeIconCountAfterSecond,
+      ].join(' '),
+    });
     test.fail(
       closeIconCountAfterSecond > closeIconCountAfterFirst,
       'A second open produced MORE player chrome instances instead of replacing the first -- contradicts the workbook\'s confirmed "replaces, does not stack" finding. (Note: only one distinct Video resource is confirmed on this account/topic, so this re-opens the SAME resource rather than a genuinely different one.)'
@@ -406,7 +444,12 @@ test(
       .getByText(/close all resources/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('"Close All Resources" control found:', closeAllVisible);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['"Close All Resources" control found:', closeAllVisible].join(' '),
+      });
     test.fail(
       closeAllVisible,
       'A "Close All Resources" control was expected to be absent per the workbook\'s own confirmed finding, but was actually found -- re-check whether this contradicts the prior finding'
@@ -427,10 +470,13 @@ test(
     });
     await page.waitForTimeout(2500);
     const closeIconCount = await plr.closeIcon.count();
-    console.log(
-      'Close-icon count after a rapid double-click (should reflect exactly one open instance):',
-      closeIconCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Close-icon count after a rapid double-click (should reflect exactly one open instance):',
+        closeIconCount,
+      ].join(' '),
+    });
     test.fail(
       closeIconCount > 1,
       'CONFIRMED: same class of duplicate-stacked-instance race already confirmed on the Quiz Player (PLR-QZ-19) also reproduces here on Video'
@@ -463,14 +509,17 @@ test(
       .getByText(/unable to load|playback error|something went wrong/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'Crashed anyway (pre-existing bug masking this test):',
-      crashed,
-      '| player initialized:',
-      playerInitialized,
-      '| explicit error message shown:',
-      errorMessageVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Crashed anyway (pre-existing bug masking this test):',
+        crashed,
+        '| player initialized:',
+        playerInitialized,
+        '| explicit error message shown:',
+        errorMessageVisible,
+      ].join(' '),
+    });
     test.fail(
       !errorMessageVisible,
       crashed

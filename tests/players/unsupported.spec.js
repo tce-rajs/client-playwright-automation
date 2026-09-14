@@ -78,7 +78,12 @@ test(
     await page.waitForTimeout(2000);
     const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
     const showsUnsupported = /unsupported file/i.test(bodyText);
-    console.log('"UNSUPPORTED FILE" message shown:', showsUnsupported);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['"UNSUPPORTED FILE" message shown:', showsUnsupported].join(' '),
+      });
     expect(showsUnsupported).toBe(true);
     await expect(plr.closeIcon.first()).toBeVisible();
   }
@@ -105,7 +110,13 @@ test(
       .getByRole('button', { name: /download/i })
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('A Download fallback button is present (expected, correct behavior for .txt):', downloadBtnVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'A Download fallback button is present (expected, correct behavior for .txt):',
+        downloadBtnVisible,
+      ].join(' '),
+    });
     expect(downloadBtnVisible).toBe(true);
   }
 );
@@ -131,7 +142,12 @@ test(
       .getByText(/close all resources/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('"Close All Resources" control found:', closeAllVisible);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['"Close All Resources" control found:', closeAllVisible].join(' '),
+      });
     test.fail(
       closeAllVisible,
       "Expected this control to be absent per the workbook's own confirmed finding, but it was found -- worth re-checking"

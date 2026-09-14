@@ -56,10 +56,13 @@ test(
     await expect(acc.virtualKeyboardToggle).toBeVisible();
     await expect(acc.signOutBtn).toBeVisible();
     const accountTabVisibleBeforeDrilldown = await acc.accountTab.isVisible().catch(() => false);
-    console.log(
-      'Account tab visible on the OUTER menu (should be false -- it lives in the inner view):',
-      accountTabVisibleBeforeDrilldown
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Account tab visible on the OUTER menu (should be false -- it lives in the inner view):',
+        accountTabVisibleBeforeDrilldown,
+      ].join(' '),
+    });
     expect(accountTabVisibleBeforeDrilldown).toBe(false);
 
     await acc.drilldownTrigger.click({ force: true });
@@ -75,12 +78,15 @@ test(
     await acc.openAccountTab();
     const resourceTypeVisible = await acc.preferredResourceTypeDropdown.isVisible({ timeout: 5000 }).catch(() => false);
     const subjectChipCount = await acc.subjectChips.count();
-    console.log(
-      'Preferred Resource Type control visible:',
-      resourceTypeVisible,
-      '| Subject chips found:',
-      subjectChipCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Preferred Resource Type control visible:',
+        resourceTypeVisible,
+        '| Subject chips found:',
+        subjectChipCount,
+      ].join(' '),
+    });
     test.fail(
       !resourceTypeVisible && subjectChipCount === 0,
       "Account tab shows neither a Preferred Resource Type control nor any Subject chips -- conflicts with this workbook's own confirmed finding"
@@ -135,7 +141,12 @@ test(
       .getByText(/at least 8 characters/i)
       .isVisible()
       .catch(() => false);
-    console.log('Real-time weak-password error shown:', errorVisible);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Real-time weak-password error shown:', errorVisible].join(' '),
+      });
     test.fail(!errorVisible, 'No real-time validation error shown for a 3-character New Password');
     expect(errorVisible).toBe(true);
   }
@@ -243,7 +254,10 @@ test(
       .newPinBox(0)
       .inputValue()
       .catch(async () => (await acc.newPinBox(0).textContent()) || '');
-    console.log('Value in New PIN box 0 after attempting to type "a":', JSON.stringify(value));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Value in New PIN box 0 after attempting to type "a":', JSON.stringify(value)].join(' '),
+    });
     expect(value).not.toContain('a');
   }
 );
@@ -269,7 +283,15 @@ test(
       .newPinBox(0)
       .getAttribute('type')
       .catch(() => null);
-    console.log('New PIN box value after Auto-Generate:', JSON.stringify(newPinValue), '| input type:', inputType);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'New PIN box value after Auto-Generate:',
+        JSON.stringify(newPinValue),
+        '| input type:',
+        inputType,
+      ].join(' '),
+    });
     const isPlaintext = newPinValue.length > 0 && inputType !== 'password';
     test.fail(
       isPlaintext,
@@ -290,9 +312,12 @@ test(
     await page.waitForTimeout(800);
     await acc.openChangePinLink.click({ force: true });
     await expect(acc.newPinBox(0)).toBeVisible({ timeout: 5000 });
-    const box5Exists = await acc.newPinBox(5).count();
-    console.log('A 6th New PIN box exists beyond the expected 5-digit group:', box5Exists > 0);
-    expect(box5Exists).toBe(0);
+    const box5Exists = acc.newPinBox(5);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A 6th New PIN box exists beyond the expected 5-digit group:', box5Exists > 0].join(' '),
+    });
+    await expect(box5Exists).toHaveCount(0);
   }
 );
 
@@ -333,10 +358,13 @@ test(
     await expect(acc.newPasswordInput).toBeVisible({ timeout: 5000 });
 
     const changePinLinkStillVisible = await acc.openChangePinLink.isVisible().catch(() => false);
-    console.log(
-      'Change PIN entry link still visible/clickable while Change Password form is open:',
-      changePinLinkStillVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Change PIN entry link still visible/clickable while Change Password form is open:',
+        changePinLinkStillVisible,
+      ].join(' '),
+    });
     let bothOpenAtOnce = false;
     if (changePinLinkStillVisible) {
       await acc.openChangePinLink.click({ force: true });
@@ -349,7 +377,10 @@ test(
           .catch(() => false));
       bothOpenAtOnce = bothFormsVisible;
     }
-    console.log('Both Change Password and Change PIN forms open simultaneously:', bothOpenAtOnce);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Both Change Password and Change PIN forms open simultaneously:', bothOpenAtOnce].join(' '),
+    });
     test.fail(
       bothOpenAtOnce,
       "CONFIRMED (source: isPasswordOrOtpOpen defined as AND, not OR) -- opening one credential form leaves the other's entry link clickable, allowing both to be open at once"
@@ -367,7 +398,10 @@ test(
     await expect(acc.darkModeToggle).toBeVisible();
     const tagName = await acc.darkModeToggle.evaluate((el) => el.tagName.toLowerCase());
     const inputType = await acc.darkModeToggle.getAttribute('type').catch(() => null);
-    console.log('Dark Mode toggle element:', tagName, '| type attribute:', inputType);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Dark Mode toggle element:', tagName, '| type attribute:', inputType].join(' '),
+    });
     expect(tagName).toBe('input');
     expect(inputType).toBe('checkbox');
   }
@@ -397,7 +431,10 @@ test(
       });
       return count;
     });
-    console.log('Shadow-DOM host elements found after opening Release Notes:', shadowHostCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Shadow-DOM host elements found after opening Release Notes:', shadowHostCount].join(' '),
+    });
     expect(shadowHostCount).toBeGreaterThan(0);
   }
 );
@@ -408,20 +445,28 @@ test(
   async ({ page }) => {
     const acc = new AccountManagementPage(page);
     await acc.openAccountTab();
-    const accountClass = await acc.accountTab.getAttribute('class');
+    const accountClass = acc.accountTab;
     await acc.profileTab.click({ force: true });
     await page.waitForTimeout(500);
     const profileClassWhileSelected = await acc.profileTab.getAttribute('class');
     const accountClassWhileNotSelected = await acc.accountTab.getAttribute('class');
-    console.log(
-      'Account tab class (selected):',
-      accountClass,
-      '| Account tab class (not selected):',
-      accountClassWhileNotSelected
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Account tab class (selected):',
+        accountClass,
+        '| Account tab class (not selected):',
+        accountClassWhileNotSelected,
+      ].join(' '),
+    });
     const ariaSelected = await acc.profileTab.getAttribute('aria-selected').catch(() => null);
-    console.log('Profile tab aria-selected while active:', ariaSelected);
-    expect(accountClass).toBe(accountClassWhileNotSelected);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Profile tab aria-selected while active:', ariaSelected].join(' '),
+      });
+    await expect(accountClass).toHaveAttribute('class', accountClassWhileNotSelected);
   }
 );
 
@@ -456,7 +501,10 @@ test(
       .getByText(/mfa|two-factor|2fa|multi-factor/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Any MFA-related option found in Account/Profile tabs:', mfaOptionVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Any MFA-related option found in Account/Profile tabs:', mfaOptionVisible].join(' '),
+    });
     test.fail(
       !mfaOptionVisible,
       'No MFA/second-factor enrollment option found anywhere in the Account/Profile tabs for this account -- either not eligible or not enabled in this environment'
@@ -540,7 +588,16 @@ test(
     await acc.newPasswordInput.fill(longUnicode);
     await page.waitForTimeout(400);
     const actualValue = await acc.newPasswordInput.inputValue();
-    console.log('Typed', longUnicode.length, 'chars of Unicode/emoji, field retained:', actualValue.length, 'chars');
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Typed',
+        longUnicode.length,
+        'chars of Unicode/emoji, field retained:',
+        actualValue.length,
+        'chars',
+      ].join(' '),
+    });
     // The concern is a crash/broken layout, not a real submit (deliberately
     // not attempted, same reasoning as USR-PWD-05).
     const formStillUsable = await acc.changePasswordCancelBtn.isVisible().catch(() => false);
@@ -562,13 +619,16 @@ test(
     const withSpaces = '  Password123!  ';
     await acc.newPasswordInput.fill(withSpaces);
     await page.waitForTimeout(300);
-    const actualValue = await acc.newPasswordInput.inputValue();
-    console.log('Typed value with leading/trailing spaces, field retained:', JSON.stringify(actualValue));
+    const actualValue = acc.newPasswordInput;
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Typed value with leading/trailing spaces, field retained:', JSON.stringify(actualValue)].join(' '),
+    });
     test.fail(
       actualValue !== withSpaces,
       'The New Password field trims leading/trailing whitespace client-side -- if the same trimming happens server-side but the user retypes the password WITH spaces later, that is a real login-lockout risk'
     );
-    expect(actualValue).toBe(withSpaces);
+    await expect(actualValue).toHaveValue(withSpaces);
   }
 );
 
@@ -588,7 +648,10 @@ test(
     await acc.addSubjectsBtn.click({ force: true });
     await page.waitForTimeout(600);
     const optionCount = await acc.subjectPickerOptions.count();
-    console.log('Subject chips before:', beforeCount, '| picker options available:', optionCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Subject chips before:', beforeCount, '| picker options available:', optionCount].join(' '),
+    });
     // CONFIRMED LIVE this pass: this account currently has ZERO Subject
     // chips (beforeCount: 0), and the Add Subjects picker opened with zero
     // selectable options too -- not just "nothing left to add" (which would
@@ -613,7 +676,7 @@ test(
     const acc = new AccountManagementPage(page);
     await acc.openAccountTab();
     const count = await acc.subjectChips.count();
-    console.log('Subject chips present:', count);
+    test.info().annotations.push({ type: 'note', description: ['Subject chips present:', count].join(' ') });
     test.fail(count === 0, 'No Subject chips present on this account to test single-chip removal against');
     expect(count).toBeGreaterThan(0);
     // Not actually removing one this pass -- verifying the remove control's
@@ -642,12 +705,15 @@ test(
     await page.waitForTimeout(600);
     const pickerOptions = await acc.subjectPickerOptions.allTextContents();
     const overlap = existingSubjects.some((s) => pickerOptions.some((p) => p.trim() === s.trim()));
-    console.log(
-      'Existing chips:',
-      existingSubjects.map((s) => s.trim()),
-      '| any already-added subject still offered in the picker:',
-      overlap
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Existing chips:',
+        existingSubjects.map((s) => s.trim()),
+        '| any already-added subject still offered in the picker:',
+        overlap,
+      ].join(' '),
+    });
     test.fail(overlap, 'An already-added Subject is still offered as a selectable option in the Add Subjects picker');
     expect(overlap).toBe(false);
     await page.keyboard.press('Escape');
@@ -700,12 +766,15 @@ test(
       .catch(() => '');
     await acc.openProfileMenu();
     const switcherVisible = await acc.classroomModeSwitcher.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log(
-      'Classroom Mode switcher visible in this scope:',
-      switcherVisible,
-      '| class before:',
-      beforeClass.trim()
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Classroom Mode switcher visible in this scope:',
+        switcherVisible,
+        '| class before:',
+        beforeClass.trim(),
+      ].join(' '),
+    });
     test.fail(
       !switcherVisible,
       'Classroom Mode switcher not reachable in this pass -- workbook notes a later "Teaching mode only" scope restriction may have removed it'
@@ -736,7 +805,10 @@ test(
     // next line runs. Check visibility first with a short bounded timeout.
     const confirmBtn = page.getByRole('button', { name: /sign out/i }).last();
     const confirmVisible = await confirmBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('A separate Sign Out confirmation button appeared:', confirmVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A separate Sign Out confirmation button appeared:', confirmVisible].join(' '),
+    });
     if (confirmVisible) {
       await confirmBtn.click({ force: true }).catch(() => {});
     }
@@ -747,10 +819,13 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'Stale second tab still shows the authenticated avatar after Sign Out on the first tab:',
-      secondAvatarVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Stale second tab still shows the authenticated avatar after Sign Out on the first tab:',
+        secondAvatarVisible,
+      ].join(' '),
+    });
     await secondPage.close();
     // Documenting actual behavior -- this is explicitly a "worth checking"
     // case in the workbook, not a hard pass/fail bar on its own.
@@ -834,7 +909,10 @@ test(
       .newPinBox(0)
       .inputValue()
       .catch(async () => (await acc.newPinBox(0).textContent()) || '');
-    console.log('New PIN box 0 value after cancel + reopen:', JSON.stringify(valueAfterReopen));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['New PIN box 0 value after cancel + reopen:', JSON.stringify(valueAfterReopen)].join(' '),
+    });
     test.fail(
       valueAfterReopen.includes('9'),
       'Change PIN form retains a stale digit from a previously cancelled attempt when reopened'
@@ -870,12 +948,15 @@ test(
       (await acc.preferredResourceTypeDropdown.isVisible({ timeout: 3000 }).catch(() => false)) ||
       (await acc.subjectChips.count()) > 0;
     const profileContentVisible = await acc.openChangePasswordLink.isVisible({ timeout: 1000 }).catch(() => false);
-    console.log(
-      'After rapid tab toggling, settled on Account tab -- Account content visible:',
-      accountContentVisible,
-      '| stale Profile content also visible:',
-      profileContentVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After rapid tab toggling, settled on Account tab -- Account content visible:',
+        accountContentVisible,
+        '| stale Profile content also visible:',
+        profileContentVisible,
+      ].join(' '),
+    });
     expect(profileContentVisible).toBe(false);
   }
 );

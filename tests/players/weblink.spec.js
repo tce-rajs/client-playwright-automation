@@ -65,10 +65,13 @@ test(
         .first()
         .isVisible()
         .catch(() => false));
-    console.log(
-      'State after clicking the play overlay (iframe count/visibility unchanged expected):',
-      iframeStillJustPreview
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'State after clicking the play overlay (iframe count/visibility unchanged expected):',
+        iframeStillJustPreview,
+      ].join(' '),
+    });
     expect(typeof iframeStillJustPreview).toBe('boolean');
   }
 );
@@ -95,9 +98,12 @@ test(
       context.waitForEvent('page', { timeout: 8000 }).catch(() => null),
       plr.weblinkWatchOnYoutubeBtn.click({ force: true }),
     ]);
-    console.log('A new tab/page opened after clicking "Watch on YouTube":', !!newPage);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A new tab/page opened after clicking "Watch on YouTube":', !!newPage].join(' '),
+    });
     if (newPage) {
-      console.log('New tab URL:', newPage.url());
+      test.info().annotations.push({ type: 'note', description: ['New tab URL:', newPage.url()].join(' ') });
       await newPage.close().catch(() => {});
     }
     test.fail(!newPage, 'Clicking "Watch on YouTube" did not open a new tab/window as expected');
@@ -120,7 +126,13 @@ test('PLR-WL-05: Purpose of the link/chain icon on the card', { tag: ['@ui-state
   await plr.weblinkChainIcon.click({ force: true }).catch(() => {});
   await page.waitForTimeout(800);
   const clipboardText = await page.evaluate(() => navigator.clipboard.readText().catch(() => null));
-  console.log('Clipboard content after clicking the chain icon (documents its actual purpose):', clipboardText);
+  test.info().annotations.push({
+    type: 'note',
+    description: [
+      'Clipboard content after clicking the chain icon (documents its actual purpose):',
+      clipboardText,
+    ].join(' '),
+  });
   expect(true).toBe(true);
 });
 
@@ -167,7 +179,10 @@ test(
       .first()
       .getAttribute('data-qa-id')
       .catch(() => null);
-    console.log('data-qa-id on the weblink iframe (expected null):', iframeQaId);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['data-qa-id on the weblink iframe (expected null):', iframeQaId].join(' '),
+    });
     expect(iframeQaId).toBeNull();
   }
 );
@@ -190,7 +205,10 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const count = await plr.weblinkCards.count();
-    console.log('Distinct Weblink resources found on this topic:', count);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Distinct Weblink resources found on this topic:', count].join(' '),
+    });
     test.fail(
       count < 2,
       'Content-availability gap, not a defect: only ' +
@@ -215,7 +233,10 @@ test(
       .first()
       .getAttribute('allow')
       .catch(() => null);
-    console.log('iframe sandbox attribute:', sandboxAttr, '| allow attribute:', allowAttr);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['iframe sandbox attribute:', sandboxAttr, '| allow attribute:', allowAttr].join(' '),
+    });
     const hasTopNavAllowed = (sandboxAttr || '').includes('allow-top-navigation');
     test.fail(
       hasTopNavAllowed,

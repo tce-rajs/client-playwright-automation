@@ -90,7 +90,7 @@ test(
     await page.waitForTimeout(1000);
 
     const swatchCount = await tb.textMenuColorSwatches.count();
-    console.log('Text color swatch count:', swatchCount);
+    test.info().annotations.push({ type: 'note', description: ['Text color swatch count:', swatchCount].join(' ') });
     expect(swatchCount).toBeGreaterThan(10);
   }
 );

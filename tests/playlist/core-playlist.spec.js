@@ -26,7 +26,7 @@ test(
   async ({ page }) => {
     const pl = new PlaylistPage(page);
     const contentsText = await pl.contentsTile.textContent();
-    console.log('Contents tile text:', contentsText);
+    test.info().annotations.push({ type: 'note', description: ['Contents tile text:', contentsText].join(' ') });
     expect(contentsText).toMatch(/\d+\.\d+/);
   }
 );
@@ -62,9 +62,11 @@ test('PL-CORE-06: Pin/anchor icon toggles visual state on click', { tag: '@ui-st
   const before = await pl.pinBtn.getAttribute('class');
   await pl.pinBtn.click();
   await page.waitForTimeout(500);
-  const after = await pl.pinBtn.getAttribute('class');
-  console.log('Pin button class before:', before, '| after:', after);
-  expect(after).not.toBe(before);
+  const after = pl.pinBtn;
+  test
+    .info()
+    .annotations.push({ type: 'note', description: ['Pin button class before:', before, '| after:', after].join(' ') });
+  await expect(after).not.toHaveAttribute('class', before);
 });
 
 test('PL-CORE-07: Floating "+" button opens the Add Resources picker', { tag: '@positive' }, async ({ page }) => {

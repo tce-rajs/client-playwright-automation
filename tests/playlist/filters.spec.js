@@ -56,7 +56,7 @@ test(
     const count = await pl.filterOptions.count();
     expect(count).toBeGreaterThan(0);
     const texts = await pl.filterOptions.allTextContents();
-    console.log('Filter options:', JSON.stringify(texts));
+    test.info().annotations.push({ type: 'note', description: ['Filter options:', JSON.stringify(texts)].join(' ') });
     for (const t of texts) {
       expect(t).toMatch(/\(\d+\)/);
     }
@@ -74,20 +74,23 @@ test(
       await page.waitForTimeout(400);
     }
 
-    const cardCount = await pl.resourceCards.count();
+    const cardCount = pl.resourceCards;
     const noResourcesMessage = await page
       .getByText(/no resources found/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Resource cards after unchecking all',
-      optionCount,
-      'type(s):',
-      cardCount,
-      '| "No resources found!" shown:',
-      noResourcesMessage
-    );
-    expect(cardCount).toBe(0);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Resource cards after unchecking all',
+        optionCount,
+        'type(s):',
+        cardCount,
+        '| "No resources found!" shown:',
+        noResourcesMessage,
+      ].join(' '),
+    });
+    await expect(cardCount).toHaveCount(0);
     expect(noResourcesMessage).toBe(true);
   }
 );
@@ -109,8 +112,8 @@ test(
       await page.waitForTimeout(300);
     }
 
-    const afterCount = await pl.resourceCards.count();
-    expect(afterCount).toBe(beforeCount);
+    const afterCount = pl.resourceCards;
+    await expect(afterCount).toHaveCount(beforeCount);
   }
 );
 
@@ -161,7 +164,10 @@ test(
       .getByText(/no resources found/i)
       .isVisible()
       .catch(() => false);
-    console.log('Filter (all-unchecked) still applied after switching topics:', filterStateOnTopicB);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Filter (all-unchecked) still applied after switching topics:', filterStateOnTopicB].join(' '),
+    });
     // Documenting whichever real behaviour occurs -- both "remembered" and
     // "reset" are legitimate as long as they're consistent; this isn't a
     // pass/fail bar on its own per the test case, just a documented finding.
@@ -210,8 +216,8 @@ test('PL-FLT-08: Cancelling the Edit confirmation makes no change', { tag: '@ui-
   await pl.filterCancelBtn.click();
   await page.waitForTimeout(500);
 
-  const afterCancelCount = await pl.resourceCards.count();
-  expect(afterCancelCount).toBe(filteredCount);
+  const afterCancelCount = pl.resourceCards;
+  await expect(afterCancelCount).toHaveCount(filteredCount);
   expect(afterCancelCount).not.toBe(beforeCount); // Cancel undoes Edit-mode entry, not the filter itself
 });
 
@@ -224,6 +230,6 @@ test('PL-FLT-09: Cancelling the Reset confirmation makes no change', { tag: '@ne
   await pl.filterCancelBtn.click();
   await page.waitForTimeout(500);
 
-  const afterCount = await pl.resourceCards.count();
-  expect(afterCount).toBe(beforeCount);
+  const afterCount = pl.resourceCards;
+  await expect(afterCount).toHaveCount(beforeCount);
 });

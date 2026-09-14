@@ -31,7 +31,10 @@ test(
   { tag: ['@positive', '@bug'] },
   async ({ page }) => {
     const angularRefExists = await page.evaluate(() => typeof window.angularReference !== 'undefined');
-    console.log('window.angularReference exists on this page:', angularRefExists);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['window.angularReference exists on this page:', angularRefExists].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED cross-repo: zero TCE-type resources exist anywhere in the curriculum on any known account -- nothing to click to even attempt this check'

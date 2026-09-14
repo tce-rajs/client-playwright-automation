@@ -34,7 +34,10 @@ test.describe('Core (ADD-LIB-01..07)', () => {
       const pl = new PlaylistPage(page);
       const topicText = (await pl.contentsTile.textContent()).trim().replace(/^\d+\.\d+\s*\|\s*/, '');
       const searchValue = await ar.librarySearchInput.inputValue();
-      console.log('Current Topic:', topicText, '| Library search box value:', searchValue);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Current Topic:', topicText, '| Library search box value:', searchValue].join(' '),
+      });
       expect(searchValue.length).toBeGreaterThan(0);
     }
   );
@@ -50,7 +53,10 @@ test.describe('Core (ADD-LIB-01..07)', () => {
         .getByText(/no result found/i)
         .isVisible()
         .catch(() => false);
-      console.log('Auto-search result count:', resultCount, '| "No result found" shown:', noResultMsg);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Auto-search result count:', resultCount, '| "No result found" shown:', noResultMsg].join(' '),
+      });
       // Documenting whichever is real -- the current Topic may or may not have
       // pre-existing Library matches; either a result or an explicit empty
       // state (never both absent) is what this case actually checks.
@@ -70,18 +76,21 @@ test.describe('Core (ADD-LIB-01..07)', () => {
 
       await ar.libraryClearBtn.click();
       await page.waitForTimeout(500);
-      const searchValue = await ar.librarySearchInput.inputValue();
-      const resultsAfterClear = await ar.libraryResults.count();
-      console.log(
-        'Results before Clear:',
-        resultsBefore,
-        '| search box after Clear:',
-        JSON.stringify(searchValue),
-        '| results still shown:',
-        resultsAfterClear
-      );
-      expect(searchValue).toBe('');
-      expect(resultsAfterClear).toBe(resultsBefore);
+      const searchValue = ar.librarySearchInput;
+      const resultsAfterClear = ar.libraryResults;
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Results before Clear:',
+          resultsBefore,
+          '| search box after Clear:',
+          JSON.stringify(searchValue),
+          '| results still shown:',
+          resultsAfterClear,
+        ].join(' '),
+      });
+      await expect(searchValue).toHaveValue('');
+      await expect(resultsAfterClear).toHaveCount(resultsBefore);
     }
   );
 
@@ -116,7 +125,12 @@ test.describe('Core (ADD-LIB-01..07)', () => {
       await ar.librarySearchBtn.click();
       await page.waitForTimeout(1200);
       const resultCount = await ar.libraryResults.count();
-      console.log('Library results available to attach:', resultCount);
+      test
+        .info()
+        .annotations.push({
+          type: 'note',
+          description: ['Library results available to attach:', resultCount].join(' '),
+        });
       expect(resultCount).toBeGreaterThan(0);
       test.fail(true, 'Deliberately not executed (clicking a result) to avoid altering the shared QA playlist');
       expect(true).toBe(false);
@@ -134,7 +148,10 @@ test.describe('Core (ADD-LIB-01..07)', () => {
         .getByText('Tab', { exact: true })
         .isVisible()
         .catch(() => false);
-      console.log('Virtual QWERTY keyboard visible after focusing Library search:', keyboardVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Virtual QWERTY keyboard visible after focusing Library search:', keyboardVisible].join(' '),
+      });
       expect(keyboardVisible).toBe(true);
     }
   );
@@ -230,14 +247,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
       // real chance to render.
       const addPlaylistVisible = await btns.addPlaylist.isVisible({ timeout: 5000 }).catch(() => false);
       const closeVisible = await btns.close.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log(
-        'Preview dialog -- Open in Whiteboard visible:',
-        openWbVisible,
-        '| Add to Playlist visible:',
-        addPlaylistVisible,
-        '| Close visible:',
-        closeVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Preview dialog -- Open in Whiteboard visible:',
+          openWbVisible,
+          '| Add to Playlist visible:',
+          addPlaylistVisible,
+          '| Close visible:',
+          closeVisible,
+        ].join(' '),
+      });
       expect(openWbVisible && addPlaylistVisible && closeVisible).toBe(true);
     }
   );
@@ -266,7 +286,12 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .getByText(/successfully added/i)
         .isVisible({ timeout: 5000 })
         .catch(() => false);
-      console.log('"Successfully added resource!" toast shown after Open in Whiteboard:', successToastVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['"Successfully added resource!" toast shown after Open in Whiteboard:', successToastVisible].join(
+          ' '
+        ),
+      });
       test.fail(
         !successToastVisible,
         'No success toast shown after "Open in whiteboard" -- cannot confirm the content was actually placed on the board'
@@ -293,7 +318,10 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
       }
       const btns = previewButtons(page);
       const addPlaylistVisible = await btns.addPlaylist.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('"Add to playlist" button reachable on the preview dialog:', addPlaylistVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['"Add to playlist" button reachable on the preview dialog:', addPlaylistVisible].join(' '),
+      });
       // FIXED (test-authoring bug, not app bug): the original unconditional
       // `test.fail(true, ...)` always marked this test as expected-to-fail,
       // but the paired assertion actually PASSES whenever the button is
@@ -333,14 +361,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
       const dialogGone = !(await btns.close.isVisible().catch(() => false));
       const searchValueRetained = await ar.librarySearchInput.inputValue().catch(() => '');
       const resultsStillShown = await ar.libraryResults.count();
-      console.log(
-        'Preview dialog closed:',
-        dialogGone,
-        '| search box still shows:',
-        JSON.stringify(searchValueRetained),
-        '| results still shown:',
-        resultsStillShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Preview dialog closed:',
+          dialogGone,
+          '| search box still shows:',
+          JSON.stringify(searchValueRetained),
+          '| results still shown:',
+          resultsStillShown,
+        ].join(' '),
+      });
       expect(dialogGone).toBe(true);
       expect(searchValueRetained).toBe(searchTerm);
       expect(resultsStillShown).toBeGreaterThan(0);
@@ -362,14 +393,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
       await ar.librarySearchInput.type('c');
       await page.waitForTimeout(300);
       const disabledAt3 = await ar.librarySearchBtn.isDisabled();
-      console.log(
-        'Search disabled at 1 char:',
-        disabledAt1,
-        '| at 2 chars:',
-        disabledAt2,
-        '| at 3 chars:',
-        disabledAt3
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Search disabled at 1 char:',
+          disabledAt1,
+          '| at 2 chars:',
+          disabledAt2,
+          '| at 3 chars:',
+          disabledAt3,
+        ].join(' '),
+      });
       test.fail(
         !disabledAt1 || !disabledAt2 || disabledAt3,
         'The 3-character minimum-length gate on Library Search did not behave as previously confirmed (disabled at 1-2 chars, enabled at 3)'
@@ -400,14 +434,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .getByText(payload, { exact: false })
         .isVisible()
         .catch(() => false);
-      console.log(
-        'A JS dialog/alert fired:',
-        dialogFired,
-        '| "no result found" state shown:',
-        noResultText,
-        '| payload rendered as literal text:',
-        literalPayloadShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'A JS dialog/alert fired:',
+          dialogFired,
+          '| "no result found" state shown:',
+          noResultText,
+          '| payload rendered as literal text:',
+          literalPayloadShown,
+        ].join(' '),
+      });
       test.fail(dialogFired, 'A script-like search payload actually executed (alert fired) -- a real XSS vector');
       expect(dialogFired).toBe(false);
     }
@@ -456,10 +493,13 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .locator('[data-qa-id="add-resource-trigger"]')
         .isVisible()
         .catch(() => false);
-      console.log(
-        '"+" Add Resources trigger still visible after closing whiteboard-opened content:',
-        playlistTriggerVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          '"+" Add Resources trigger still visible after closing whiteboard-opened content:',
+          playlistTriggerVisible,
+        ].join(' '),
+      });
       test.fail(
         !playlistTriggerVisible,
         'CONFIRMED (cross-ref PL-BUG-01): closing content opened via "Open in Whiteboard" left the Playlist strip/"+" trigger invisible until a full page reload'
@@ -486,14 +526,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .locator('img.type-icon')
         .evaluateAll((els) => els.map((el) => el.getAttribute('src')));
       const uniqueTypes = new Set(typeIconSrcs);
-      console.log(
-        'Result count:',
-        count,
-        '| type-icon srcs:',
-        JSON.stringify(typeIconSrcs),
-        '| unique types:',
-        uniqueTypes.size
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Result count:',
+          count,
+          '| type-icon srcs:',
+          JSON.stringify(typeIconSrcs),
+          '| unique types:',
+          uniqueTypes.size,
+        ].join(' '),
+      });
       // Documenting the real mix (or lack of it) for this term/pass rather than
       // asserting a specific count -- the actionable finding is that a caller
       // must inspect each card's OWN type marker, not assume uniformity.
@@ -512,7 +555,7 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
       await ar.librarySearchInput.fill(uniqueTerm);
       await ar.librarySearchBtn.click();
       await page.waitForTimeout(2000); // give a slower background auto-search time to land AFTER, if it exists
-      const currentSearchValue = await ar.librarySearchInput.inputValue();
+      const currentSearchValue = ar.librarySearchInput;
       const noResultTextShown = await page
         .getByText(new RegExp(`no result found for.*${uniqueTerm}`, 'i'))
         .isVisible()
@@ -521,19 +564,22 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .getByText(/no result found/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Search box still shows the manually-typed unique term:',
-        currentSearchValue === uniqueTerm,
-        '| "no result found for <our term>" shown:',
-        noResultTextShown,
-        '| some "no result" state shown:',
-        genericNoResultShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Search box still shows the manually-typed unique term:',
+          currentSearchValue === uniqueTerm,
+          '| "no result found for <our term>" shown:',
+          noResultTextShown,
+          '| some "no result" state shown:',
+          genericNoResultShown,
+        ].join(' '),
+      });
       test.fail(
         currentSearchValue !== uniqueTerm,
         "CONFIRMED RACE: the search box no longer shows the manually-typed term -- Library's own background auto-search overwrote it"
       );
-      expect(currentSearchValue).toBe(uniqueTerm);
+      await expect(currentSearchValue).toHaveValue(uniqueTerm);
     }
   );
 
@@ -552,12 +598,15 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
       await page.waitForTimeout(1500);
       const count = await ar.libraryResults.count();
       const loadMoreVisible = await ar.libraryLoadMoreBtn.isVisible({ timeout: 2000 }).catch(() => false);
-      console.log(
-        '"Worksheet" search result count:',
-        count,
-        '| Load More visible (would indicate pagination):',
-        loadMoreVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          '"Worksheet" search result count:',
+          count,
+          '| Load More visible (would indicate pagination):',
+          loadMoreVisible,
+        ].join(' '),
+      });
       test.fail(
         loadMoreVisible,
         'The "Worksheet" search pool unexpectedly shows a Load More control -- contradicts the cross-repo-confirmed "finite, non-paginated ~22 results" finding'
@@ -593,7 +642,10 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         const count = await ar.libraryResults.count();
         found.push({ term, count });
       }
-      console.log('Search term -> result count map:', JSON.stringify(found));
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Search term -> result count map:', JSON.stringify(found)].join(' '),
+      });
       const anyResults = found.some((f) => f.count > 0);
       test.fail(
         !anyResults,
@@ -626,14 +678,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .locator('[data-qa-id="tce-library-pdf-close-btn"]')
         .isVisible()
         .catch(() => false);
-      console.log(
-        'tce-library-pdf-* footer buttons found on a Worksheet-type preview -- open-whiteboard:',
-        pdfOpenWb,
-        '| add-playlist:',
-        pdfAddPlaylist,
-        '| close:',
-        pdfClose
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'tce-library-pdf-* footer buttons found on a Worksheet-type preview -- open-whiteboard:',
+          pdfOpenWb,
+          '| add-playlist:',
+          pdfAddPlaylist,
+          '| close:',
+          pdfClose,
+        ].join(' '),
+      });
       test.fail(
         !(pdfOpenWb && pdfAddPlaylist && pdfClose),
         'The confirmed tce-library-pdf-* footer button IDs were not all found on a Worksheet-type preview this pass'
@@ -690,12 +745,15 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .first()
         .isVisible({ timeout: 3000 })
         .catch(() => false);
-      console.log(
-        'Existing Playlist resource cards:',
-        count,
-        '| an asset overflow icon (Remove/Edit entry point) found:',
-        overflowVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Existing Playlist resource cards:',
+          count,
+          '| an asset overflow icon (Remove/Edit entry point) found:',
+          overflowVisible,
+        ].join(' '),
+      });
       test.fail(!overflowVisible, 'No playlist-asset-overflow-icon-btn found on any existing resource card this pass');
       expect(overflowVisible).toBe(true);
     }
@@ -728,12 +786,15 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .getByText(/error|something went wrong|try again|failed/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Generic "no result found" shown for a forced 500:',
-        genericNoResults,
-        '| a distinguishable error message shown:',
-        distinctErrorShown
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Generic "no result found" shown for a forced 500:',
+          genericNoResults,
+          '| a distinguishable error message shown:',
+          distinctErrorShown,
+        ].join(' '),
+      });
       test.fail(
         genericNoResults && !distinctErrorShown,
         'A forced 500 on the search request shows the SAME generic "no result found" message as a genuine zero-match search, with no distinguishable error state'
@@ -771,14 +832,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .getByText(/no result found/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Numeric query "2.4" -- results:',
-        resultCount,
-        '| "no result" state:',
-        noResultShown,
-        '| an invalid-query error shown:',
-        errorOrCrash
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Numeric query "2.4" -- results:',
+          resultCount,
+          '| "no result" state:',
+          noResultShown,
+          '| an invalid-query error shown:',
+          errorOrCrash,
+        ].join(' '),
+      });
       test.fail(
         errorOrCrash,
         'A purely numeric search query was flagged as invalid instead of being treated as normal text search'
@@ -813,10 +877,13 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         .catch(() => {});
       await page.waitForTimeout(1000);
       const closeButtonCount = await page.locator('[data-qa-id*="-close-btn"]').count();
-      console.log(
-        'Number of visible preview-dialog close buttons after opening a 2nd result without closing the 1st:',
-        closeButtonCount
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Number of visible preview-dialog close buttons after opening a 2nd result without closing the 1st:',
+          closeButtonCount,
+        ].join(' '),
+      });
       test.fail(
         closeButtonCount > 1,
         'Opening a second search result while the first preview is still open stacked TWO overlapping preview dialogs instead of replacing/blocking the first'
@@ -844,14 +911,17 @@ test.describe('Extended coverage (gap-analysis pass, 29-row workbook)', () => {
         els.map((el) => el.getAttribute('data-qa-id') || el.textContent)
       );
       const uniqueIds = new Set(ids);
-      console.log(
-        'Total results for "the" after paging:',
-        ids.length,
-        '| unique:',
-        uniqueIds.size,
-        '| Load More was available:',
-        loadMoreVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Total results for "the" after paging:',
+          ids.length,
+          '| unique:',
+          uniqueIds.size,
+          '| Load More was available:',
+          loadMoreVisible,
+        ].join(' '),
+      });
       test.fail(
         uniqueIds.size !== ids.length,
         'Paging through a large "the" result set produced duplicate result entries'

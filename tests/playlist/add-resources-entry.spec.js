@@ -35,10 +35,10 @@ test(
     await page.waitForTimeout(500);
 
     await expect(pl.addResourcesActions.create).toBeHidden();
-    const afterClass = await page.locator('[data-qa-id="playlist-current-grade-subject-btn"]').textContent();
-    const afterTopic = await pl.contentsTile.textContent();
-    expect(afterClass).toBe(beforeClass);
-    expect(afterTopic).toBe(beforeTopic);
+    const afterClass = page.locator('[data-qa-id="playlist-current-grade-subject-btn"]');
+    const afterTopic = pl.contentsTile;
+    await expect(afterClass).toHaveText(beforeClass);
+    await expect(afterTopic).toHaveText(beforeTopic);
   }
 );
 
@@ -59,7 +59,10 @@ test(
       // showing (i.e. something actually happened, not a silent no-op).
       const pickerStillShowingAllOptions = await pl.addResourcesActions.create.isVisible().catch(() => false);
       results[name] = !pickerStillShowingAllOptions;
-      console.log(`Add Resources -> ${name}: opened its own flow =`, results[name]);
+      test.info().annotations.push({
+        type: 'note',
+        description: [`Add Resources -> ${name}: opened its own flow =`, results[name]].join(' '),
+      });
 
       // Reset back to a clean state for the next option.
       await page.keyboard.press('Escape');

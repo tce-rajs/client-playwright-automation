@@ -60,7 +60,10 @@ test(
     await openWorksheet(page, plr);
     const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
     const hasRollNo = /roll no|remarks/i.test(bodyText);
-    console.log('Header-style metadata fields present (Roll No / Remarks):', hasRollNo);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Header-style metadata fields present (Roll No / Remarks):', hasRollNo].join(' '),
+    });
     test.fail(!hasRollNo, 'No Name/Class/Div/Roll No/Date/Remarks-style header text found on this worksheet resource');
     expect(hasRollNo).toBe(true);
   }
@@ -70,7 +73,9 @@ test('PLR-WS-03: Questions are shown with a labeled answer area below each', { t
   const plr = new PlayerPage(page);
   await openWorksheet(page, plr);
   const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
-  console.log('Worksheet body text length:', bodyText.length);
+  test
+    .info()
+    .annotations.push({ type: 'note', description: ['Worksheet body text length:', bodyText.length].join(' ') });
   expect(bodyText.trim().length).toBeGreaterThan(0);
 });
 
@@ -81,7 +86,12 @@ test(
     const plr = new PlayerPage(page);
     await openWorksheet(page, plr);
     const audioIconCount = await page.locator('[class*="audio" i], [class*="speaker" i], [class*="tts" i]').count();
-    console.log('Audio/read-aloud style icon count:', audioIconCount);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Audio/read-aloud style icon count:', audioIconCount].join(' '),
+      });
     test.fail(
       audioIconCount === 0,
       'No audio/read-aloud style control found on this worksheet resource -- may be conditional per-resource (see PLR-WS-19)'
@@ -104,7 +114,12 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('A mini annotation toolbar appeared after clicking into the content area:', toolbarVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A mini annotation toolbar appeared after clicking into the content area:', toolbarVisible].join(
+        ' '
+      ),
+    });
     test.fail(
       !toolbarVisible,
       'No annotation toolbar appeared on click -- may be conditional per-resource (see PLR-WS-19) or need a click on a specific answer-area element'
@@ -136,7 +151,10 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Color palette appeared after selecting pencil:', paletteVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Color palette appeared after selecting pencil:', paletteVisible].join(' '),
+    });
     expect(paletteVisible).toBe(true);
   }
 );
@@ -175,7 +193,10 @@ test(
     await nextBtn.click({ force: true });
     await page.waitForTimeout(1500);
     const after = await page.evaluate(() => document.body.innerText);
-    console.log('Content changed after clicking Next:', before !== after);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Content changed after clicking Next:', before !== after].join(' '),
+    });
     expect(after).not.toBe(before);
   }
 );
@@ -199,7 +220,10 @@ test(
     await zoomIn.click({ force: true });
     await page.waitForTimeout(800);
     const boxAfter = await pageEl.boundingBox().catch(() => null);
-    console.log('Page box before/after zoom-in x2:', JSON.stringify(boxBefore), JSON.stringify(boxAfter));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Page box before/after zoom-in x2:', JSON.stringify(boxBefore), JSON.stringify(boxAfter)].join(' '),
+    });
     test.fail(
       !(boxBefore && boxAfter && boxAfter.width > boxBefore.width),
       'Zoom-in did not visibly increase the rendered page size'
@@ -229,7 +253,15 @@ test(
     await openWorksheet(page, plr);
     const orientationVisible = await plr.worksheetOrientationToggle.isVisible({ timeout: 3000 }).catch(() => false);
     const answerKeyVisible = await plr.worksheetAnswerKeyBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Orientation toggle visible:', orientationVisible, '| Answer Key toggle visible:', answerKeyVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Orientation toggle visible:',
+        orientationVisible,
+        '| Answer Key toggle visible:',
+        answerKeyVisible,
+      ].join(' '),
+    });
     test.fail(
       !(orientationVisible || answerKeyVisible),
       'Neither the orientation toggle (.portraitLandscapeToggleIcon) nor the Answer Key toggle (.worksheet_btn) was found -- both are conditional per-resource per PLR-WS-19, and this resource may not have either flag set'
@@ -239,7 +271,10 @@ test(
       await plr.worksheetAnswerKeyBtn.click({ force: true });
       await page.waitForTimeout(1000);
       const after = await page.evaluate(() => document.body.innerText);
-      console.log('Content changed after toggling Answer Key:', before !== after);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Content changed after toggling Answer Key:', before !== after].join(' '),
+      });
       expect(after).not.toBe(before);
     } else {
       expect(orientationVisible || answerKeyVisible).toBe(true);
@@ -268,7 +303,10 @@ test('PLR-WS-12: Print icon triggers a print flow', { tag: ['@positive', '@bug']
     .catch(() => {});
   await plr.worksheetPrintIcon.click({ force: true });
   await page.waitForTimeout(1000);
-  console.log('Print flow appeared to trigger (dialog/binding signal):', printTriggered);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Print flow appeared to trigger (dialog/binding signal):', printTriggered].join(' '),
+  });
   // Real print dialogs are OS-level and not reliably observable from
   // Playwright -- documenting the click succeeded without crashing as the
   // practical, reachable signal.
@@ -329,7 +367,10 @@ test(
     const plr = new PlayerPage(page);
     await openWorksheet(page, plr);
     const dataQaIdCount = page.locator('.previous-item [data-qa-id], .pagination-next [data-qa-id]');
-    console.log('data-qa-id attributes found on the Prev/Next chrome (expected 0):', dataQaIdCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['data-qa-id attributes found on the Prev/Next chrome (expected 0):', dataQaIdCount].join(' '),
+    });
     await expect(dataQaIdCount).toHaveCount(0);
   }
 );
@@ -341,7 +382,9 @@ test(
     const plr = new PlayerPage(page);
     await openWorksheet(page, plr);
     const svgCount = await plr.worksheetAnnotationLayer.count();
-    console.log('.annotation-layer SVG element count:', svgCount);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['.annotation-layer SVG element count:', svgCount].join(' ') });
     test.fail(
       svgCount === 0,
       'No .annotation-layer SVG element found -- this resource may not have annotation enabled (see PLR-WS-19)'
@@ -359,14 +402,17 @@ test(
     const orientationVisible = await plr.worksheetOrientationToggle.isVisible({ timeout: 2000 }).catch(() => false);
     const answerKeyVisible = await plr.worksheetAnswerKeyBtn.isVisible({ timeout: 2000 }).catch(() => false);
     const printVisible = await plr.worksheetPrintIcon.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      "This resource's own flags -- orientation:",
-      orientationVisible,
-      '| answerKey:',
-      answerKeyVisible,
-      '| print:',
-      printVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "This resource's own flags -- orientation:",
+        orientationVisible,
+        '| answerKey:',
+        answerKeyVisible,
+        '| print:',
+        printVisible,
+      ].join(' '),
+    });
     // The check this row cares about: these presences are independently
     // true/false per-resource, not all-or-nothing -- documented as data, no
     // single flag is asserted here.
@@ -382,7 +428,10 @@ test(
     await openWorksheet(page, plr);
     const keys = await page.evaluate(() => Object.keys(localStorage));
     const assetKeyed = keys.filter((k) => /annotation|asset/i.test(k));
-    console.log('localStorage keys matching annotation/asset pattern:', JSON.stringify(assetKeyed));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['localStorage keys matching annotation/asset pattern:', JSON.stringify(assetKeyed)].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED cross-repo (source-read per workbook): annotations persist to localStorage keyed only by assetId, not by user -- a genuine cross-teacher shared-computer leak risk this pass could not independently re-verify end-to-end without a second account signing in on the SAME browser profile'
@@ -398,7 +447,10 @@ test(
     const plr = new PlayerPage(page);
     await openWorksheet(page, plr);
     const answerKeyVisible = await plr.worksheetAnswerKeyBtn.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Answer Key control visible on this resource:', answerKeyVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Answer Key control visible on this resource:', answerKeyVisible].join(' '),
+    });
     // If absent, this itself is the confirmed negative case (clean absence,
     // not present-but-broken) -- if present, this resource simply isn't the
     // no-answer-key negative example, documented honestly either way.
@@ -487,7 +539,12 @@ test(
     await nextBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
     const afterExtraNext = await page.evaluate(() => document.body.innerText);
-    console.log('Content unchanged after clicking Next past the last page:', lastPageText === afterExtraNext);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Content unchanged after clicking Next past the last page:', lastPageText === afterExtraNext].join(
+        ' '
+      ),
+    });
     expect(afterExtraNext).toBe(lastPageText);
   }
 );
@@ -509,7 +566,10 @@ test(
     await page.keyboard.press('Enter').catch(() => {});
     await page.waitForTimeout(1000);
     const crashed = await page.evaluate(() => document.body.innerText.length === 0);
-    console.log('Page rendered blank/crashed after an out-of-range page number:', crashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Page rendered blank/crashed after an out-of-range page number:', crashed].join(' '),
+    });
     test.fail(
       crashed,
       'Typing an out-of-range page number produced a blank/crashed render instead of clamping or a clear error'
@@ -537,10 +597,13 @@ test(
     await openWorksheet(page, plr);
     const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
     const answerKeyStillShowing = /answer key.*for teacher use/i.test(bodyText);
-    console.log(
-      'Answer Key still showing after close+reopen (should be false -- safety default):',
-      answerKeyStillShowing
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Answer Key still showing after close+reopen (should be false -- safety default):',
+        answerKeyStillShowing,
+      ].join(' '),
+    });
     test.fail(
       answerKeyStillShowing,
       'CONFIRMED RISK: the Answer Key toggle state persisted across a close+reopen instead of safely defaulting back to the student-facing view'

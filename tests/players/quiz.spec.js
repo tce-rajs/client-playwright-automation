@@ -100,7 +100,10 @@ test(
     await page.waitForTimeout(1500);
     const onLaunchScreen = await plr.quizLaunchScreenBtn.isVisible({ timeout: 4000 }).catch(() => false);
     const rendererVisible = await plr.quizRenderer.isVisible({ timeout: 4000 }).catch(() => false);
-    console.log('Launch screen shown:', onLaunchScreen, '| renderer loaded directly:', rendererVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Launch screen shown:', onLaunchScreen, '| renderer loaded directly:', rendererVisible].join(' '),
+    });
     expect(onLaunchScreen || rendererVisible).toBe(true);
   }
 );
@@ -111,7 +114,10 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { reachedQuestion, cameraBlocked } = await openQuiz(page, plr);
-    console.log('Reached a real question:', reachedQuestion, '| camera-blocked:', cameraBlocked);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Reached a real question:', reachedQuestion, '| camera-blocked:', cameraBlocked].join(' '),
+    });
     test.fail(!reachedQuestion, CAMERA_BLOCK_REASON);
     expect(reachedQuestion).toBe(true);
   }
@@ -492,7 +498,12 @@ test(
     });
     await page.waitForTimeout(2500);
     const rendererCount = await plr.quizRenderer.count();
-    console.log('lib-quiz-renderer instance count after a rapid triple-click (should be <=1):', rendererCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['lib-quiz-renderer instance count after a rapid triple-click (should be <=1):', rendererCount].join(
+        ' '
+      ),
+    });
     test.fail(
       rendererCount > 1,
       'CONFIRMED RACE (per mature Cypress suite, cross-repo confirmed): a rapid multi-click on a Quiz card opened duplicate stacked quiz instances instead of exactly one'
@@ -546,7 +557,9 @@ test(
   async ({ page }) => {
     const plr = new PlayerPage(page);
     const { cameraBlocked } = await openQuiz(page, plr);
-    console.log('Camera-access error shown:', cameraBlocked);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Camera-access error shown:', cameraBlocked].join(' ') });
     // This IS the confirming evidence for the reconciliation question --
     // documented as a real pass (the discrepancy is resolved, not left open).
     expect(typeof cameraBlocked).toBe('boolean');

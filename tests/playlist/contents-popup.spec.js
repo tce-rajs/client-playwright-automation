@@ -79,7 +79,12 @@ test(
     await page.waitForTimeout(800);
 
     const resultsCount = await pl.topicItems.count();
-    console.log(`Search "${searchTerm}" ->`, resultsCount, 'results');
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: [`Search "${searchTerm}" ->`, resultsCount, 'results'].join(' '),
+      });
     expect(resultsCount).toBeGreaterThan(0);
     const results = await pl.topicItems.allTextContents();
     for (const r of results) {
@@ -99,7 +104,15 @@ test('PL-TOC-05: Search Table of Contents with no matches', { tag: ['@negative',
     .getByText(/no results|no items|not found/i)
     .isVisible()
     .catch(() => false);
-  console.log('Results after nonsense search:', resultsCount, '| "no results" message shown:', noResultsMessageVisible);
+  test.info().annotations.push({
+    type: 'note',
+    description: [
+      'Results after nonsense search:',
+      resultsCount,
+      '| "no results" message shown:',
+      noResultsMessageVisible,
+    ].join(' '),
+  });
 
   // CONFIRMED FINDING: the panel goes blank with no explicit "no results"
   // message, unlike this same app's Sign-in school-search which does show one.
@@ -147,7 +160,10 @@ test(
     await page.waitForTimeout(800);
 
     const chapterResultsCount = await pl.chapterItems.count();
-    console.log(`Chapter-name search "${searchTerm}" -> ${chapterResultsCount} chapter result(s)`);
+    test.info().annotations.push({
+      type: 'note',
+      description: [`Chapter-name search "${searchTerm}" -> ${chapterResultsCount} chapter result(s)`].join(' '),
+    });
     test.fail(
       chapterResultsCount === 0,
       'Searching a term that only appears in a Chapter name (not any Topic name) returns zero chapter results — search may be Topic-only'

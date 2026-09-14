@@ -50,7 +50,17 @@ test(
 
     const pageAlive = await tb.wbSvg.isVisible().catch(() => false);
     const afterCount = await tb.pathCount();
-    console.log('Path count before:', beforeCount, '| after reload mid-drag:', afterCount, '| page alive:', pageAlive);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before:',
+        beforeCount,
+        '| after reload mid-drag:',
+        afterCount,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'Reloading mid-drag (before mouseup) leaves the whiteboard canvas broken after reload');
     expect(pageAlive).toBe(true);
@@ -77,25 +87,31 @@ test(
     await page.waitForTimeout(2000);
     const tab1CountRightAfterDraw = await tb1.pathCount();
     const tab2CountRightAfterDraw = await tb2.pathCount();
-    console.log(
-      'Right after concurrent draws (before reload) -- tab 1 sees:',
-      tab1CountRightAfterDraw,
-      '| tab 2 sees:',
-      tab2CountRightAfterDraw
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Right after concurrent draws (before reload) -- tab 1 sees:',
+        tab1CountRightAfterDraw,
+        '| tab 2 sees:',
+        tab2CountRightAfterDraw,
+      ].join(' '),
+    });
     await page.reload({ waitUntil: 'domcontentloaded' });
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 20000 });
     const afterReloadCount = await tb1.waitForBoardToSettle();
 
     const pageAlive = await tb1.wbSvg.isVisible().catch(() => false);
-    console.log(
-      'Path count before concurrent draws:',
-      before1,
-      '| after both tabs drew + reload:',
-      afterReloadCount,
-      '| page alive:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before concurrent draws:',
+        before1,
+        '| after both tabs drew + reload:',
+        afterReloadCount,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'Two tabs drawing concurrently on the same class/topic crashes the whiteboard');
     expect(pageAlive).toBe(true);
@@ -146,14 +162,17 @@ test(
     const tb2 = new ToolbarPage(page);
     const afterRoundTripCount = await tb2.waitForBoardToSettle();
 
-    console.log(
-      'Path count before draw:',
-      beforeCount,
-      '| after draw:',
-      afterDrawCount,
-      '| after immediate class-switch round trip:',
-      afterRoundTripCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Path count before draw:',
+        beforeCount,
+        '| after draw:',
+        afterDrawCount,
+        '| after immediate class-switch round trip:',
+        afterRoundTripCount,
+      ].join(' '),
+    });
     // Documenting the real outcome -- if the stroke is gone, that's a
     // legitimate, high-value data-loss finding directly tied to the existing
     // WB-SAVE-DEAD-01 gap; if it's still there, autosave is faster/more

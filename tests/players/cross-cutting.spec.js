@@ -37,7 +37,10 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Worksheet close is a real <button class="closeIcon">:', isRealButton);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Worksheet close is a real <button class="closeIcon">:', isRealButton].join(' '),
+    });
     expect(isRealButton).toBe(true);
     await plr.closePlayer();
 
@@ -52,7 +55,10 @@ test(
       .locator('.weblink-close-btn')
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('Weblink close is img.weblink-close-btn (no alt attribute):', isImgWithoutAlt);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Weblink close is img.weblink-close-btn (no alt attribute):', isImgWithoutAlt].join(' '),
+    });
     expect(isImgWithoutAlt).toBe(true);
   }
 );
@@ -77,14 +83,17 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log(
-      'Worksheet open before:',
-      worksheetVisibleBefore,
-      '| Weblink opened after:',
-      weblinkOpened,
-      '| Worksheet still open (side-by-side, not force-closed):',
-      worksheetStillOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Worksheet open before:',
+        worksheetVisibleBefore,
+        '| Weblink opened after:',
+        weblinkOpened,
+        '| Worksheet still open (side-by-side, not force-closed):',
+        worksheetStillOpen,
+      ].join(' '),
+    });
     test.fail(
       !weblinkOpened,
       'Opening a second, DIFFERENT player type failed to open at all with the first still open'
@@ -106,7 +115,10 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Player still open after pressing Esc (expected: it does NOT close via Esc):', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Player still open after pressing Esc (expected: it does NOT close via Esc):', stillOpen].join(' '),
+    });
     // Documented as data either way -- not asserting a specific direction
     // since the workbook itself frames this as open ("document whether...").
     expect(typeof stillOpen).toBe('boolean');
@@ -128,10 +140,13 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log(
-      'The Class-12A-CS Worksheet player is still visible/interactive after switching to Class 12A Physics:',
-      oldPlayerStillThere
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'The Class-12A-CS Worksheet player is still visible/interactive after switching to Class 12A Physics:',
+        oldPlayerStillThere,
+      ].join(' '),
+    });
     test.fail(
       oldPlayerStillThere,
       'A player resource from the PREVIOUS class remained open/interactive after switching Current Class -- a real cross-class leak risk'
@@ -153,7 +168,10 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('App shell still intact/recoverable after browser Back:', stillOnAppShell);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['App shell still intact/recoverable after browser Back:', stillOnAppShell].join(' '),
+    });
     test.fail(
       !stillOnAppShell,
       'Browser Back left the app in an unrecoverable state instead of a clean equivalent to closing via the X control'
@@ -179,12 +197,15 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log(
-      'Inactivity interstitial appeared:',
-      stayInterstitialVisible,
-      '| player still open after the wait:',
-      playerStillOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Inactivity interstitial appeared:',
+        stayInterstitialVisible,
+        '| player still open after the wait:',
+        playerStillOpen,
+      ].join(' '),
+    });
     if (stayInterstitialVisible) {
       await page
         .getByRole('button', { name: /stay signed in/i })
@@ -211,10 +232,13 @@ test(
     });
     await page.waitForTimeout(2500);
     const closeIconCount = await page.locator('button.closeIcon').count();
-    console.log(
-      'Close-icon count after a rapid double-click on a Worksheet card (should reflect exactly one open instance):',
-      closeIconCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Close-icon count after a rapid double-click on a Worksheet card (should reflect exactly one open instance):',
+        closeIconCount,
+      ].join(' '),
+    });
     test.fail(
       closeIconCount > 1,
       'A rapid double-click opened MORE than one instance -- generalizes the already-confirmed Video/Quiz double-click race to this Worksheet resource too'

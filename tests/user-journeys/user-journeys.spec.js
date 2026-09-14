@@ -52,14 +52,22 @@ test(
     // UJ1-03/04/05: All My Classes cascade -> Class 5A | Mathematics.
     await nav.resetToClass('Class 5', 'A', 'Mathematics');
     await expect(nav.currentClassBtn).toContainText('Mathematics');
-    console.log('UJ1-05: class switch committed to Class 5A | Mathematics with no separate confirm step.');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ1-05: class switch committed to Class 5A | Mathematics with no separate confirm step.'].join(
+        ' '
+      ),
+    });
 
     // UJ1-06: hard refresh, confirm persistence.
     await page.reload();
     await nav.userAvatar.waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     await expect(nav.currentClassBtn).toContainText('Mathematics');
-    console.log('UJ1-06: class selection survived a hard refresh -- persisted server-side.');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ1-06: class selection survived a hard refresh -- persisted server-side.'].join(' '),
+    });
   }
 );
 
@@ -85,19 +93,27 @@ test(
 
     // UJ2-05: leave the counter at its safe default (no rapid double-click).
     const defaultVal = await ah.hwObjInput.inputValue().catch(async () => ah.hwObjInput.textContent());
-    console.log('UJ2-05: Objective counter left at its default:', defaultVal);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ2-05: Objective counter left at its default:', defaultVal].join(' '),
+    });
 
     // UJ2-06: Generate, wait for the real AI/RAG call.
     await ah.generateAndWait(90000);
     const questionCount = await ah.builderQuestions.count();
-    console.log('UJ2-06: Generate produced', questionCount, 'real questions.');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ2-06: Generate produced', questionCount, 'real questions.'].join(' '),
+    });
     expect(questionCount).toBeGreaterThan(0);
 
     // UJ2-07: Next -> pre-filled Assignment form.
     await ah.nextBtn.click({ force: true, timeout: 8000 });
     await page.waitForTimeout(1500);
     const titleVal = await ah.assignTitleInput.inputValue().catch(() => '');
-    console.log('UJ2-07: Assignment Title pre-filled:', titleVal);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['UJ2-07: Assignment Title pre-filled:', titleVal].join(' ') });
     expect(titleVal.length).toBeGreaterThan(0);
 
     // UJ2-08: Discard, never click Ready to Send.
@@ -105,7 +121,13 @@ test(
     await page.waitForTimeout(1000);
     await ah.open();
     const freshTypePickerVisible = await ah.homeworkTypeCard.isVisible({ timeout: 8000 }).catch(() => false);
-    console.log('UJ2-08: reopened composer shows a fresh type picker (no leftover draft):', freshTypePickerVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ2-08: reopened composer shows a fresh type picker (no leftover draft):',
+        freshTypePickerVisible,
+      ].join(' '),
+    });
     expect(freshTypePickerVisible).toBe(true);
   }
 );
@@ -128,7 +150,10 @@ test(
     // ai-notices.spec.js verification pass (see LIVE_FINDINGS.md for the
     // real approve/discard selector + camera... no, OCR-latency fix).
     const titleVisible = await an.openComposeDialogWithRealText(tb);
-    console.log('UJ3-05: compose dialog opened with real OCR content:', titleVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ3-05: compose dialog opened with real OCR content:', titleVisible].join(' '),
+    });
     test.fail(
       !titleVisible,
       "The real OCR round-trip (place text -> Magnet Notice -> drag-select -> Approve) did not open the compose dialog this run -- see ai-notices.spec.js AIN-OCR-02 for the same flow's own confirmed ~10-20s latency"
@@ -140,15 +165,21 @@ test(
 
     // UJ3-06: review Share-with-classes without altering it.
     const shareCheckboxCount = await an.anyClassCheckbox.count();
-    console.log('UJ3-06: Share-with-classes checkboxes shown:', shareCheckboxCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ3-06: Share-with-classes checkboxes shown:', shareCheckboxCount].join(' '),
+    });
     expect(shareCheckboxCount).toBeGreaterThan(0);
 
     // UJ3-07: Close WITHOUT sending.
     await an.closeBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(800);
-    console.log(
-      'UJ3-07: closed the composer via Close, never clicked Send/Ready-to-Send (real, data-dispatching action deliberately avoided).'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ3-07: closed the composer via Close, never clicked Send/Ready-to-Send (real, data-dispatching action deliberately avoided).',
+      ].join(' '),
+    });
   }
 );
 
@@ -181,16 +212,22 @@ test(
     // empty-state message.
     const analyseItPresent = await cmp.analyseItItem.isVisible({ timeout: 5000 }).catch(() => false);
     const noHomeworkMsgVisible = await cmp.noHomeworkMessage.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log(
-      'UJ4-04: AnalyseIt item present:',
-      analyseItPresent,
-      '| "no homework" empty-state message shown:',
-      noHomeworkMsgVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ4-04: AnalyseIt item present:',
+        analyseItPresent,
+        '| "no homework" empty-state message shown:',
+        noHomeworkMsgVisible,
+      ].join(' '),
+    });
 
     // UJ4-05: ExploreIt -- checked via its confirmed "Open Widgets" link.
     const exploreItVisible = await cmp.exploreItOpenWidgetsLink.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('UJ4-05: ExploreIt "Open Widgets" link visible:', exploreItVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ4-05: ExploreIt "Open Widgets" link visible:', exploreItVisible].join(' '),
+    });
     expect(analyseItPresent || noHomeworkMsgVisible || exploreItVisible).toBe(true);
 
     // UJ4-06: hard refresh mid-view, confirm clean recovery.
@@ -198,7 +235,13 @@ test(
     await nav.userAvatar.waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     const recovered = await nav.currentClassBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('UJ4-06: app recovered cleanly to the normal whiteboard state after a mid-view refresh:', recovered);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ4-06: app recovered cleanly to the normal whiteboard state after a mid-view refresh:',
+        recovered,
+      ].join(' '),
+    });
     expect(recovered).toBe(true);
   }
 );
@@ -240,7 +283,10 @@ test(
     await ar.librarySearchBtn.click({ force: true });
     await page.waitForTimeout(2000);
     const resultCount = await ar.libraryResults.count();
-    console.log('UJ5-04: Library search results for "graph":', resultCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ5-04: Library search results for "graph":', resultCount].join(' '),
+    });
     test.fail(resultCount === 0, 'No Library search results for "graph" this run');
     if (resultCount === 0) {
       expect(resultCount).toBeGreaterThan(0);
@@ -261,19 +307,27 @@ test(
 
     // UJ5-06: observe the confirmed Playlist-vanishing bug.
     const afterAdd = await pl.resourceCards.count();
-    console.log(
-      'UJ5-06: resource count before add:',
-      before,
-      '| immediately after add (bug: often does NOT increase):',
-      afterAdd
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ5-06: resource count before add:',
+        before,
+        '| immediately after add (bug: often does NOT increase):',
+        afterAdd,
+      ].join(' '),
+    });
 
     // UJ5-07: hard refresh recovers it.
     await page.reload();
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     const afterReload = await pl.resourceCards.count();
-    console.log('UJ5-07: resource count after hard refresh (should now reflect the real add):', afterReload);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ5-07: resource count after hard refresh (should now reflect the real add):', afterReload].join(
+        ' '
+      ),
+    });
     test.fail(
       afterReload <= before,
       'The added resource never reappeared even after a hard refresh -- either the add genuinely failed server-side, or this recovery path itself is broken'
@@ -294,7 +348,12 @@ test(
     // UJ6-02: double-click Pen to open its panel.
     await tb.openToolPanel('gtPen');
     const penPanelVisible = await tb.panel.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('UJ6-02: Pen color/size panel opened:', penPanelVisible);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['UJ6-02: Pen color/size panel opened:', penPanelVisible].join(' '),
+      });
     expect(penPanelVisible).toBe(true);
 
     // UJ6-03: select a color+size, draw a stroke.
@@ -305,20 +364,32 @@ test(
       .catch(() => {});
     await tb.drawStroke({ x: 300, y: 600 }, { x: 500, y: 600 });
     const after = await tb.pathCount();
-    console.log('UJ6-03: path count before/after the customized stroke:', before, after);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ6-03: path count before/after the customized stroke:', before, after].join(' '),
+    });
     expect(after).toBeGreaterThan(before);
 
     // UJ6-04: double-click Eraser to open its panel.
     await tb.openToolPanel('gtErase');
     const eraserPanelVisible = await tb.panel.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('UJ6-04: Eraser options panel opened:', eraserPanelVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ6-04: Eraser options panel opened:', eraserPanelVisible].join(' '),
+    });
     expect(eraserPanelVisible).toBe(true);
 
     // UJ6-05: Clear Whiteboard with its own confirm dialog.
     await wb.clearWhiteboardBtn.click({ timeout: 8000 });
     await page.waitForTimeout(500);
     const confirmVisible = await wb.clearConfirmDialogConfirmBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('UJ6-05: a real confirmation dialog appeared (not an instant unconfirmed clear):', confirmVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ6-05: a real confirmation dialog appeared (not an instant unconfirmed clear):',
+        confirmVisible,
+      ].join(' '),
+    });
     expect(confirmVisible).toBe(true);
     await wb.clearConfirmDialogConfirmBtn.click({ force: true });
     await page.waitForTimeout(1500);
@@ -330,7 +401,10 @@ test(
     await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
     await page.waitForTimeout(1500);
     const pathsAfterReload = await tb.pathCount();
-    console.log('UJ6-06: path count after hard refresh (should stay 0):', pathsAfterReload);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ6-06: path count after hard refresh (should stay 0):', pathsAfterReload].join(' '),
+    });
     expect(pathsAfterReload).toBe(0);
   }
 );
@@ -367,7 +441,12 @@ test(
       .first()
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('UJ7-04: attendance panel still stuck on a loading spinner after 15s+:', spinnerStillShowing);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ7-04: attendance panel still stuck on a loading spinner after 15s+:', spinnerStillShowing].join(
+        ' '
+      ),
+    });
 
     // UJ7-05: confirm no in-app escape.
     const closeControlVisible = await page
@@ -382,12 +461,15 @@ test(
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log(
-      'UJ7-05: any close control found:',
-      closeControlVisible,
-      '| still stuck after Escape:',
-      stillStuckAfterEscape
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'UJ7-05: any close control found:',
+        closeControlVisible,
+        '| still stuck after Escape:',
+        stillStuckAfterEscape,
+      ].join(' '),
+    });
     test.fail(
       spinnerStillShowing,
       "CONFIRMED CRITICAL (matches this suite's own tests/attendance/gap-analysis.spec.js ATT-PANEL-01): the Attendance panel hangs on a loading spinner with no in-app escape"
@@ -400,7 +482,10 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('UJ7-06: full reload recovered the app back to the whiteboard:', recovered);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ7-06: full reload recovered the app back to the whiteboard:', recovered].join(' '),
+    });
     expect(recovered).toBe(true);
   }
 );
@@ -428,7 +513,12 @@ test(
 
     // UJ8-04: check a question's checkbox on the Exercise tab.
     const checkboxCount = await ar.aiAssistExerciseCheckboxes.count();
-    console.log('UJ8-04: Exercise checkboxes available:', checkboxCount);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['UJ8-04: Exercise checkboxes available:', checkboxCount].join(' '),
+      });
     test.fail(
       checkboxCount === 0,
       'No Exercise checkboxes rendered this run (AI Assist content generation may not have finished, or this class/subject has none)'
@@ -455,7 +545,9 @@ test(
       .getByText(/successfully added/i)
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('UJ8-05: success toast shown:', toastVisible);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['UJ8-05: success toast shown:', toastVisible].join(' ') });
     expect(toastVisible).toBe(true);
 
     // UJ8-06: rapid double-click, confirm no duplicate.
@@ -464,15 +556,20 @@ test(
     page.on('console', () => {}); // no-op, keep lint happy about unused import patterns
     await ar.aiAssistAddToPlaylistBtn.dblclick({ force: true }).catch(() => {});
     await page.waitForTimeout(2000);
-    console.log(
-      "UJ8-06: rapid double-click on Add to Playlist performed -- checked for debounce (matches AIA-ADV-01's own confirmed-safe finding)."
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "UJ8-06: rapid double-click on Add to Playlist performed -- checked for debounce (matches AIA-ADV-01's own confirmed-safe finding).",
+      ].join(' '),
+    });
 
     // UJ8-07: close cleanly.
     await ar.aiAssistCloseBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
     const closed = !(await ar.aiAssistCloseBtn.isVisible({ timeout: 2000 }).catch(() => false));
-    console.log('UJ8-07: AI Assist closed cleanly:', closed);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['UJ8-07: AI Assist closed cleanly:', closed].join(' ') });
     expect(closed).toBe(true);
   }
 );
@@ -490,7 +587,10 @@ test(
     await am.drilldownTrigger.click({ force: true }).catch(() => {});
     await page.waitForTimeout(1000);
     const accountTabVisible = await am.accountTab.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('UJ9-02: User Profile modal opened (Account tab visible):', accountTabVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ9-02: User Profile modal opened (Account tab visible):', accountTabVisible].join(' '),
+    });
 
     // UJ9-03: Profile tab -> Change Password.
     await am.profileTab.click({ force: true }).catch(() => {});
@@ -514,17 +614,26 @@ test(
       .getByText(/at least 8 characters/i)
       .isVisible({ timeout: 3000 })
       .catch(() => false);
-    console.log('UJ9-04: real-time validation error shown for a weak password:', errorVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ9-04: real-time validation error shown for a weak password:', errorVisible].join(' '),
+    });
 
     // UJ9-05: Save stays disabled.
     const saveDisabled = await am.changePasswordSaveBtn.isDisabled().catch(() => null);
-    console.log('UJ9-05: Save button disabled while invalid:', saveDisabled);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ9-05: Save button disabled while invalid:', saveDisabled].join(' '),
+    });
     expect(saveDisabled).not.toBe(false);
 
     // UJ9-06: Cancel discards the form.
     await am.changePasswordCancelBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(500);
-    console.log('UJ9-06: cancelled the Change Password form without saving.');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ9-06: cancelled the Change Password form without saving.'].join(' '),
+    });
 
     // UJ9-07: Sign Out via the confirmed chain.
     await am.avatarTrigger.click({ force: true }).catch(() => {});
@@ -544,7 +653,12 @@ test(
       .getByText(/guest mode/i)
       .isVisible({ timeout: 8000 })
       .catch(() => false);
-    console.log('UJ9-07: signed out back to Guest Mode:', backToGuest);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['UJ9-07: signed out back to Guest Mode:', backToGuest].join(' '),
+      });
     expect(backToGuest).toBe(true);
   }
 );
@@ -615,6 +729,9 @@ test(
     await plr.quizCloseBtn.click({ force: true });
     await page.waitForTimeout(1000);
     await expect(plr.quizRenderer).toBeHidden();
-    console.log('UJ10-06: quiz closed cleanly, returned to Dashboard/Playlist.');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['UJ10-06: quiz closed cleanly, returned to Dashboard/Playlist.'].join(' '),
+    });
   }
 );

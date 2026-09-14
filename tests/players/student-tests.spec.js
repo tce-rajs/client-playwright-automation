@@ -38,9 +38,12 @@ test(
     // This documentation/scope-clarification row is itself the finding --
     // recorded as a real, passing check that the app is reachable, with the
     // scoping ambiguity logged in the console for whoever picks this up next.
-    console.log(
-      'RECOMMENDATION (per workbook): get explicit product/client clarification on whether "Student Tests" means (a) Checkpoints under a different name, (b) a genuinely separate teacher-preview flow, or (c) exclusively the student\'s own separate experience.'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'RECOMMENDATION (per workbook): get explicit product/client clarification on whether "Student Tests" means (a) Checkpoints under a different name, (b) a genuinely separate teacher-preview flow, or (c) exclusively the student\'s own separate experience.',
+      ].join(' '),
+    });
     await expect(page.locator('[data-qa-id="toolbar-user-avatar"]')).toBeVisible({ timeout: 10000 });
   }
 );

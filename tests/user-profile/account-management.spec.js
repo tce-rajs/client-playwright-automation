@@ -38,12 +38,15 @@ test(
     await acc.openAccountTab();
     const changePwdLinkVisible = await acc.openChangePasswordLink.isVisible().catch(() => false);
     const changePinLinkVisible = await acc.openChangePinLink.isVisible().catch(() => false);
-    console.log(
-      'Change Password link visible after clicking Account tab:',
-      changePwdLinkVisible,
-      '| Change PIN link visible:',
-      changePinLinkVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Change Password link visible after clicking Account tab:',
+        changePwdLinkVisible,
+        '| Change PIN link visible:',
+        changePinLinkVisible,
+      ].join(' '),
+    });
 
     test.fail(
       !changePwdLinkVisible || !changePinLinkVisible,
@@ -78,7 +81,10 @@ test(
     // Confirm Save is gated on the current-password field being filled,
     // without ever actually submitting a real change.
     const saveDisabledEmpty = await acc.changePasswordSaveBtn.isDisabled().catch(() => null);
-    console.log('Save button disabled with all fields empty:', saveDisabledEmpty);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Save button disabled with all fields empty:', saveDisabledEmpty].join(' '),
+    });
     expect(saveDisabledEmpty).not.toBe(false);
 
     await acc.changePasswordCancelBtn.click({ force: true });
@@ -145,7 +151,9 @@ test(
       .newPinBox(0)
       .isVisible()
       .catch(() => false);
-    console.log('New PIN entry box visible:', pinBoxVisible);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['New PIN entry box visible:', pinBoxVisible].join(' ') });
     expect(pinBoxVisible).toBe(true);
 
     // Fill an intentionally too-short/invalid new PIN and confirm Save
@@ -153,7 +161,10 @@ test(
     await acc.newPinBox(0).fill('1');
     await page.waitForTimeout(500);
     const saveDisabled = await acc.changePinSaveBtn.isDisabled().catch(() => null);
-    console.log('Save button disabled with an incomplete new PIN:', saveDisabled);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Save button disabled with an incomplete new PIN:', saveDisabled].join(' '),
+    });
     expect(saveDisabled).not.toBe(false);
 
     await acc.changePinCancelBtn.click({ force: true });
@@ -208,7 +219,7 @@ test(
       await page.waitForTimeout(3000);
     }
 
-    console.log('Session dropped at (ms):', droppedAt);
+    test.info().annotations.push({ type: 'note', description: ['Session dropped at (ms):', droppedAt].join(' ') });
     test.fail(
       droppedAt !== null && droppedAt < 120000,
       `Session dropped back to Guest Mode after ${droppedAt}ms of active use, well before a teacher would expect`

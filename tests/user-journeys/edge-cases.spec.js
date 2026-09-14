@@ -57,14 +57,17 @@ test(
     await pl.ensureDrawerVisible();
     const classBTitles = await pl.resourceCards.evaluateAll((els) => els.map((e) => e.textContent.trim()).slice(0, 5));
     const overlap = classATitles.filter((t) => classBTitles.includes(t));
-    console.log(
-      'Class A resource titles:',
-      JSON.stringify(classATitles),
-      '| Class B:',
-      JSON.stringify(classBTitles),
-      '| overlap:',
-      JSON.stringify(overlap)
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Class A resource titles:',
+        JSON.stringify(classATitles),
+        '| Class B:',
+        JSON.stringify(classBTitles),
+        '| overlap:',
+        JSON.stringify(overlap),
+      ].join(' '),
+    });
     test.fail(
       overlap.length > 0 && overlap.length === classATitles.length,
       'Every Class A resource title also appeared in Class B -- possible cross-class leak (though identical generic titles across classes could also be a coincidence, not a leak)'
@@ -111,12 +114,15 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log(
-      'App still responsive after rapid multi-overlay switching:',
-      stillResponsive,
-      '| crashed:',
-      pageCrashed
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'App still responsive after rapid multi-overlay switching:',
+        stillResponsive,
+        '| crashed:',
+        pageCrashed,
+      ].join(' '),
+    });
     test.fail(
       !stillResponsive || pageCrashed,
       'Rapid multi-module overlay switching left the app unresponsive or crashed'
@@ -175,7 +181,10 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 15000 })
       .catch(() => false);
-    console.log('Session fully normal after 2 failed PIN attempts then a real one:', loggedIn);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Session fully normal after 2 failed PIN attempts then a real one:', loggedIn].join(' '),
+    });
     test.fail(
       !loggedIn,
       'A valid PIN after 2 failed attempts did not produce a normal logged-in session -- possible lockout or residual error state'
@@ -218,7 +227,12 @@ test(
       .click({ timeout: 5000 })
       .then(() => true)
       .catch(() => false);
-    console.log('Class Popup opened while Attendance panel is hung (an escape attempt):', classSwitchWorked);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class Popup opened while Attendance panel is hung (an escape attempt):', classSwitchWorked].join(
+        ' '
+      ),
+    });
     test.fail(
       !classSwitchWorked,
       'CONFIRMED: the hung Attendance panel also blocks the Class Popup trigger -- class-switch is NOT a working escape either, matching ATT-PANEL-01/ATT-CLOSE-01\'s "no in-app escape" finding'
@@ -260,12 +274,15 @@ test(
     await page.waitForTimeout(800);
     await ah.generateAndWait(90000);
     const secondCount = await ah.builderQuestions.count();
-    console.log(
-      'First generate question count:',
-      firstCount,
-      '| immediately-after-discard second generate count:',
-      secondCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'First generate question count:',
+        firstCount,
+        '| immediately-after-discard second generate count:',
+        secondCount,
+      ].join(' '),
+    });
     expect(secondCount).toBeGreaterThan(0);
   }
 );
@@ -345,7 +362,10 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 15000 })
       .catch(() => false);
-    console.log('PIN login succeeded cleanly after a failed Password attempt:', loggedIn);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['PIN login succeeded cleanly after a failed Password attempt:', loggedIn].join(' '),
+    });
     expect(loggedIn).toBe(true);
   }
 );
@@ -400,7 +420,13 @@ test(
       .getByText(/guest mode/i)
       .isVisible({ timeout: 8000 })
       .catch(() => false);
-    console.log('Rapid sign-out right after a real backend action completed cleanly (no hang/crash):', backToGuest);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Rapid sign-out right after a real backend action completed cleanly (no hang/crash):',
+        backToGuest,
+      ].join(' '),
+    });
     expect(backToGuest).toBe(true);
   }
 );
@@ -436,10 +462,13 @@ test(
     await nav.resetToClass('Class 9', 'A', 'Hindi Language');
     await page.waitForTimeout(1500);
     const aiAssistStillOpen = await ar.aiAssistCloseBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log(
-      "AI Assist (opened on the OLD grade's content) still open/visible after switching Grade/Subject:",
-      aiAssistStillOpen
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "AI Assist (opened on the OLD grade's content) still open/visible after switching Grade/Subject:",
+        aiAssistStillOpen,
+      ].join(' '),
+    });
     expect(typeof aiAssistStillOpen).toBe('boolean');
   }
 );
@@ -462,7 +491,10 @@ test(
       .first()
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('Touchpoints reached in one continuous session:', JSON.stringify(touchpoints));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Touchpoints reached in one continuous session:', JSON.stringify(touchpoints)].join(' '),
+    });
     const allReached = Object.values(touchpoints).every(Boolean);
     test.fail(!allReached, 'Not every module touchpoint was reachable in this one continuous session run');
     expect(allReached).toBe(true);
@@ -483,7 +515,10 @@ test(
       const r2 = calendar.getBoundingClientRect();
       return !(r1.right < r2.left || r1.left > r2.right);
     });
-    console.log('Logo/calendar header elements overlap at mobile viewport width:', overlapping);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Logo/calendar header elements overlap at mobile viewport width:', overlapping].join(' '),
+    });
     test.fail(
       !!overlapping,
       "CONFIRMED (matches Authentication's already-known RESP-01 minor overlap): header elements overlap at mobile viewport width"
@@ -510,7 +545,13 @@ test(
     const bothOverlaysPresent =
       (await mm.container.isVisible({ timeout: 2000 }).catch(() => false)) &&
       (await tb.panel.isVisible({ timeout: 2000 }).catch(() => false));
-    console.log('Minimap + Widgets panel both showing simultaneously (stacked overlays):', bothOverlaysPresent);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Minimap + Widgets panel both showing simultaneously (stacked overlays):',
+        bothOverlaysPresent,
+      ].join(' '),
+    });
     const stillResponsive = await page
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible({ timeout: 3000 })
@@ -562,7 +603,10 @@ test(
     await am.darkModeToggle.click({ force: true });
     await page.waitForTimeout(1000);
     const after = await page.evaluate(() => document.documentElement.className);
-    console.log('Root element class before/after toggling Dark Mode:', before, '|', after);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Root element class before/after toggling Dark Mode:', before, '|', after].join(' '),
+    });
     test.fail(before === after, 'Toggling Dark Mode produced no observable change to the document root class');
     expect(after).not.toBe(before);
     await am.darkModeToggle.click({ force: true }); // restore
@@ -598,7 +642,10 @@ test(
     await am.classroomModeSwitcher.click({ force: true });
     await page.waitForTimeout(2000);
     const urlChanged = page.url().includes('/plan/');
-    console.log('Navigated to a distinct Planning-mode app:', urlChanged, '| URL:', page.url());
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Navigated to a distinct Planning-mode app:', urlChanged, '| URL:', page.url()].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED cross-repo: switching to Planning navigates to a WHOLLY SEPARATE app (.../plan/#/canvas) with zero data-qa-id attributes anywhere -- mid-lesson Whiteboard/Playlist state is left behind entirely, not preserved across the mode switch'
@@ -634,7 +681,10 @@ test(
     const zoomLevelAfter = await page.evaluate(
       () => document.querySelector('[data-qa-id="wb-drawing-container"]')?.style.transform || ''
     );
-    console.log('Zoom transform before/after class switch:', zoomLevelBefore, '|', zoomLevelAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Zoom transform before/after class switch:', zoomLevelBefore, '|', zoomLevelAfter].join(' '),
+    });
     expect(typeof zoomLevelAfter).toBe('string');
   }
 );
@@ -660,7 +710,10 @@ test(
       .first()
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('Clicking Feedback opened some real UI (not a dead link):', somethingOpened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Clicking Feedback opened some real UI (not a dead link):', somethingOpened].join(' '),
+    });
     test.fail(!somethingOpened, 'Feedback control produced no visible UI change when clicked');
     expect(somethingOpened).toBe(true);
   }
@@ -675,7 +728,9 @@ test(
     await am.avatarTrigger.click({ force: true });
     await page.waitForTimeout(500);
     const buildText = (await am.buildInfoBtn.textContent().catch(() => '')) || '';
-    console.log('Build info text:', JSON.stringify(buildText));
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Build info text:', JSON.stringify(buildText)].join(' ') });
     const leaksSensitive = /password|secret|key|token|internal/i.test(buildText);
     test.fail(leaksSensitive, 'Build info line contains a sensitive-looking term');
     expect(leaksSensitive).toBe(false);
@@ -747,7 +802,10 @@ test(
       'Remove Playlist resource':
         'HAS a real "Are you sure?" confirm dialog (per playlist.page.js\'s resourceRemoveConfirmBtn)',
     };
-    console.log('Destructive-action confirmation audit:', JSON.stringify(findings, null, 1));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Destructive-action confirmation audit:', JSON.stringify(findings, null, 1)].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED INCONSISTENCY: this suite has found at least 2 destructive actions WITH a real confirm dialog (Clear Whiteboard, Remove Playlist resource) and at least 3 WITHOUT one (Sign Out, AI Homework Discard, AI Notice Close) -- worth a product-level consistency pass rather than leaving each as an isolated per-module finding'
