@@ -95,9 +95,16 @@ module.exports = defineConfig({
     // 1920x1080 it correctly fills the whole window). Setting it here
     // makes every file consistent regardless of whether it overrides it.
     // Re-enabled (2026-09-14): only matters for legacy browser mode (the desktop-client fixture
-    // ignores this entirely) -- without it, a real headed browser window can open at an
-    // inconsistent/oversized native window size instead of this project's confirmed standard.
+    // ignores this entirely). CONFIRMED LIVE: `viewport` alone only controls the PAGE's internal
+    // content area via CDP emulation -- it does NOT resize the actual OS browser window, which
+    // still opened maximized to the real monitor's native resolution regardless. The real fix is
+    // an explicit --window-size launch arg below, which controls the actual window; `viewport` is
+    // kept in sync with it so the page's reported size matches what's really on screen.
     viewport: { width: 1920, height: 1080 },
+
+    launchOptions: {
+      args: ['--window-size=1920,1080', '--window-position=0,0'],
+    },
 
     // Capture a trace whenever a test fails -- 'on-first-retry' (the previous
     // setting) only produces a trace on retry attempts, so a local run
