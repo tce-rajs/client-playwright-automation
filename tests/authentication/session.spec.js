@@ -106,7 +106,10 @@ test('SESS-05: Sign-out clears session fully', { tag: ['@positive', '@bug'] }, a
   // real user would expect and not the still-authenticated content either.
   await page.goBack();
   const bodyTextLength = (await page.textContent('body')).length;
-  console.log('body text length after Back post-sign-out:', bodyTextLength);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['body text length after Back post-sign-out:', bodyTextLength].join(' '),
+  });
   test.fail(bodyTextLength === 0, 'Browser Back after sign-out lands on a blank page — same class of bug as ENT-07');
   expect(bodyTextLength).toBeGreaterThan(0);
 });
@@ -151,7 +154,10 @@ test('SESS-07: Guest-mode state preserved or lost on sign-in', { tag: '@boundary
   await login.enterPin(process.env.VALID_PIN);
   await expect(avatar(page)).toBeVisible({ timeout: 15000 });
 
-  console.log('Guest-mode drawing attempted before sign-in:', penAvailable);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Guest-mode drawing attempted before sign-in:', penAvailable].join(' '),
+  });
   // Whether the drawing persisted or was discarded is the real finding to
   // read from this run's trace/screenshot -- both are legitimate outcomes,
   // what matters is confirming the app doesn't crash carrying state across

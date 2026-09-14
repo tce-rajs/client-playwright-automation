@@ -48,11 +48,16 @@ test(
       return;
     }
     const bannerVisible = await an.captureInstructionBanner.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Capture instruction banner visible:', bannerVisible);
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Capture instruction banner visible:', bannerVisible].join(' '),
+      });
     const box = await tb.wbSvg.boundingBox();
     await an.dragSelect(box, { x: 300, y: 300 }, { x: 500, y: 400 });
     const rectVisible = await an.selectionRect.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Selection rectangle drawn:', rectVisible);
+    test.info().annotations.push({ type: 'note', description: ['Selection rectangle drawn:', rectVisible].join(' ') });
     expect(bannerVisible || rectVisible).toBe(true);
     // Discard cleanly to leave no residual state. CONFIRMED LIVE (verifier
     // pass): discardBtn/approveBtn are real, reliable selectors
@@ -62,7 +67,10 @@ test(
     await an.discardBtn.click({ force: true, timeout: 5000 });
     await page.waitForTimeout(500);
     const toolbarGoneAfterDiscard = (await page.locator('g[cursor="pointer"]').count()) === 0;
-    console.log('Approve/Discard toolbar gone after Discard:', toolbarGoneAfterDiscard);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Approve/Discard toolbar gone after Discard:', toolbarGoneAfterDiscard].join(' '),
+    });
     expect(toolbarGoneAfterDiscard).toBe(true);
   }
 );
@@ -86,7 +94,15 @@ test(
     const sendDisabledEmpty = await an.sendBtn.isDisabled().catch(() => null);
     await an.titleInput.fill('A real title');
     const sendDisabledFilled = await an.sendBtn.isDisabled().catch(() => null);
-    console.log('Send disabled with empty title:', sendDisabledEmpty, '| with a title entered:', sendDisabledFilled);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Send disabled with empty title:',
+        sendDisabledEmpty,
+        '| with a title entered:',
+        sendDisabledFilled,
+      ].join(' '),
+    });
     expect(sendDisabledEmpty).not.toBe(sendDisabledFilled);
   }
 );
@@ -107,9 +123,14 @@ test(
     const longText = 'X'.repeat(201);
     await an.titleInput.fill(longText);
     const value = await an.titleInput.inputValue();
-    console.log('Title maxlength attribute:', maxLength, '| chars accepted:', value.length, '(typed 201)');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Title maxlength attribute:', maxLength, '| chars accepted:', value.length, '(typed 201)'].join(
+        ' '
+      ),
+    });
     // LIVE-CONFIRMED (workbook): maxLength -1 (no limit), full 201 chars accepted.
-    expect(value.length).toBe(201);
+    expect(value).toHaveLength(201);
   }
 );
 
@@ -132,7 +153,9 @@ test(
     await an.boldBtn.click({ force: true });
     await page.waitForTimeout(400);
     const boldActive = await an.boldBtn.evaluate((el) => el.classList.contains('ql-active')).catch(() => false);
-    console.log('Bold button toggled ql-active:', boldActive);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Bold button toggled ql-active:', boldActive].join(' ') });
     expect(boldActive).toBe(true);
   }
 );
@@ -158,7 +181,10 @@ test(
     await an.bodyEditor.click();
     await an.bodyEditor.fill('<img src=x onerror=alert(1)>');
     await page.waitForTimeout(500);
-    console.log('A JS dialog/alert fired from the XSS payload:', dialogFired);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A JS dialog/alert fired from the XSS payload:', dialogFired].join(' '),
+    });
     test.fail(dialogFired, 'A script-like payload in the notice body actually executed -- a real XSS vector');
     expect(dialogFired).toBe(false);
   }
@@ -172,7 +198,10 @@ test(
     const tb = new ToolbarPage(page);
     await an.openComposeDialogWithRealText(tb);
     const btnVisible = await an.paraphraseBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Rephrase/Paraphrase button visible (with compose dialog genuinely open):', btnVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Rephrase/Paraphrase button visible (with compose dialog genuinely open):', btnVisible].join(' '),
+    });
     test.fail(
       true,
       "CONFIRMED DEAD CODE (per this workbook's own source-read finding): the Rephrase HTTP call is commented out in notice-form-dialog.component.ts -- clicking it produces no real rephrase regardless of button visibility"
@@ -189,7 +218,10 @@ test(
     const tb = new ToolbarPage(page);
     await an.openComposeDialogWithRealText(tb);
     const btnVisible = await an.translateBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Translate button visible (with compose dialog genuinely open):', btnVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Translate button visible (with compose dialog genuinely open):', btnVisible].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED DEAD CODE, same root cause as AIN-REPHRASE-01 -- the Translate HTTP call is commented out in source'
@@ -206,7 +238,10 @@ test(
     const tb = new ToolbarPage(page);
     await an.openComposeDialogWithRealText(tb);
     const btnVisible = await an.grammarBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Grammar button visible (with compose dialog genuinely open):', btnVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Grammar button visible (with compose dialog genuinely open):', btnVisible].join(' '),
+    });
     test.fail(
       true,
       'CONFIRMED DEAD CODE, same root cause as AIN-REPHRASE-01/AIN-TRANS-01 -- the Grammar HTTP call is commented out in source'
@@ -243,7 +278,9 @@ test(
       return;
     }
     const checkboxCount = await an.anyClassCheckbox.count();
-    console.log('Share-with class checkboxes found:', checkboxCount);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Share-with class checkboxes found:', checkboxCount].join(' ') });
     expect(checkboxCount).toBeGreaterThan(0);
   }
 );
@@ -269,7 +306,7 @@ test(
     const opened = await an.openComposeDialogWithRealText(tb);
     const sendVisible = opened && (await an.sendBtn.isVisible({ timeout: 5000 }).catch(() => false));
     test.fail(!sendVisible, 'Send/Ready to Send control not reachable this pass');
-    console.log('Send control reachable:', sendVisible);
+    test.info().annotations.push({ type: 'note', description: ['Send control reachable:', sendVisible].join(' ') });
     // Deliberately NOT clicked -- a real Send is an irreversible dispatch to
     // real students/parents, matching this suite's destructive-action
     // convention used throughout (e.g. Compass's Add Quiz, Learning Shorts'
@@ -299,7 +336,10 @@ test('AIN-SEND-02: Send is blocked with no class selected', { tag: ['@negative',
     .catch(() => {});
   await page.waitForTimeout(400);
   const sendDisabled = await an.sendBtn.isDisabled().catch(() => null);
-  console.log('Send disabled after unchecking the only class:', sendDisabled);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Send disabled after unchecking the only class:', sendDisabled].join(' '),
+  });
   expect(sendDisabled).toBe(true);
   await an.anyClassCheckbox
     .first()
@@ -335,7 +375,12 @@ test(
     await an.closeBtn.click({ force: true }).catch(() => {});
     await page.waitForTimeout(600);
     const stillOpen = await an.titleInput.isVisible({ timeout: 1500 }).catch(() => false);
-    console.log('Compose dialog still open after Close (a warning dialog would keep it open):', stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Compose dialog still open after Close (a warning dialog would keep it open):', stillOpen].join(
+        ' '
+      ),
+    });
     test.fail(
       !stillOpen,
       "CONFIRMED: Close discards unsent edits immediately with no confirmation warning -- a UX gap, not a hard bug (matches this workbook's own finding)"
@@ -374,7 +419,13 @@ test(
     // an explicit short timeout + catch so a genuinely-gone field reads '''
     // rather than hanging out Playwright's own default actionability wait.
     const titleAfter = await an.titleInput.inputValue({ timeout: 5000 }).catch(() => '');
-    console.log('Title after Recapture (should NOT be the manual edit if it truly restarts capture):', titleAfter);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Title after Recapture (should NOT be the manual edit if it truly restarts capture):',
+        titleAfter,
+      ].join(' '),
+    });
     test.fail(
       titleAfter === 'manually edited title should be lost',
       'Recapture unexpectedly preserved the manual edit -- contradicts this workbook\'s own confirmed "full restart, not in-place re-crop" finding'
@@ -400,7 +451,10 @@ test(
     await an.dragSelect(box, { x: 800, y: 800 }, { x: 900, y: 850 });
     await an.approveBtn.click({ force: true, timeout: 5000 }).catch(() => {});
     const errorVisible = await an.errorToast.isVisible({ timeout: 8000 }).catch(() => false);
-    console.log('"Unable to process" error toast shown for an empty selection:', errorVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['"Unable to process" error toast shown for an empty selection:', errorVisible].join(' '),
+    });
     test.fail(
       !errorVisible,
       'No clear error toast shown for a failed/empty OCR selection this pass -- may be an indefinite silent hang instead'
@@ -420,7 +474,12 @@ test(
     // selectors (g[cursor="pointer"], not the old zero-match class heuristic)
     // and a poll long enough for the real OCR backend call to complete.
     const titleVisible = await an.openComposeDialogWithRealText(tb);
-    console.log('Compose dialog opened with a pre-filled Title after a real-text OCR capture:', titleVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Compose dialog opened with a pre-filled Title after a real-text OCR capture:', titleVisible].join(
+        ' '
+      ),
+    });
     test.fail(
       !titleVisible,
       'OCR success path did not open a pre-filled compose dialog this pass -- either the selection missed the text or OCR failed'
@@ -451,14 +510,17 @@ test(
     await page.keyboard.press('Control+A');
     await page.keyboard.press('Backspace');
     const afterCtrlABackspace = await an.titleInput.inputValue();
-    console.log(
-      'After insert:',
-      afterInsert,
-      '| after 7x Backspace:',
-      afterBackspace,
-      '| after Ctrl+A+Backspace:',
-      afterCtrlABackspace
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After insert:',
+        afterInsert,
+        '| after 7x Backspace:',
+        afterBackspace,
+        '| after Ctrl+A+Backspace:',
+        afterCtrlABackspace,
+      ].join(' '),
+    });
     const backspaceDidNothing = afterBackspace === afterInsert;
     test.fail(
       backspaceDidNothing,
@@ -511,12 +573,15 @@ test(
     await page.waitForTimeout(500);
     const stillEditable = await an.bodyEditor.isVisible().catch(() => false);
     const contentLength = ((await an.bodyEditor.textContent().catch(() => '')) || '').length;
-    console.log(
-      'Editor still visible/editable after a large paste:',
-      stillEditable,
-      '| content length:',
-      contentLength
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Editor still visible/editable after a large paste:',
+        stillEditable,
+        '| content length:',
+        contentLength,
+      ].join(' '),
+    });
     expect(stillEditable).toBe(true);
     expect(contentLength).toBeGreaterThan(0);
   }

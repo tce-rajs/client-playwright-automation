@@ -80,7 +80,15 @@ test.describe('Core (ATT-ACCESS-01, ATT-PLAN-01..08)', () => {
       const att = new AttendancePage(page);
       const contentAppeared = await openAndWaitForContent(att, 15000);
       const spinnerStillShowing = await att.loaderSpinner.isVisible().catch(() => false);
-      console.log('Real content appeared:', contentAppeared, '| spinner still showing after 15s:', spinnerStillShowing);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Real content appeared:',
+          contentAppeared,
+          '| spinner still showing after 15s:',
+          spinnerStillShowing,
+        ].join(' '),
+      });
 
       test.fail(
         !contentAppeared,
@@ -125,7 +133,12 @@ test.describe('Core (ATT-ACCESS-01, ATT-PLAN-01..08)', () => {
       .getByText(/no students/i)
       .isVisible()
       .catch(() => false);
-    console.log('Roster cell count:', cellCount, '| explicit empty-state message shown:', emptyStateShown);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Roster cell count:', cellCount, '| explicit empty-state message shown:', emptyStateShown].join(
+        ' '
+      ),
+    });
     expect(cellCount > 0 || emptyStateShown).toBe(true);
   });
 
@@ -162,14 +175,17 @@ test.describe('Core (ATT-ACCESS-01, ATT-PLAN-01..08)', () => {
         .getByText(/unsaved|lost|discard/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Mark state before refresh:',
-        classBefore,
-        '| after refresh:',
-        classAfter,
-        '| warned instead:',
-        warnedInstead
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Mark state before refresh:',
+          classBefore,
+          '| after refresh:',
+          classAfter,
+          '| warned instead:',
+          warnedInstead,
+        ].join(' '),
+      });
       expect(classAfter === classBefore || warnedInstead).toBe(true);
     }
   );
@@ -205,7 +221,10 @@ test.describe('Core (ATT-ACCESS-01, ATT-PLAN-01..08)', () => {
         .first()
         .getAttribute('class')
         .catch(() => null);
-      console.log('Mark state before class-switch:', classBefore, '| after returning:', classAfter);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Mark state before class-switch:', classBefore, '| after returning:', classAfter].join(' '),
+      });
       expect(classAfter).toBe(classBefore);
     }
   );
@@ -232,7 +251,10 @@ test.describe('Core (ATT-ACCESS-01, ATT-PLAN-01..08)', () => {
       await att.innerCloseBtn.click({ force: true });
       await page.waitForTimeout(800);
       const confirmDialogShown = await att.closeDialogConfirmBtn.isVisible().catch(() => false);
-      console.log('Close-confirmation dialog shown after an unsaved mark:', confirmDialogShown);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Close-confirmation dialog shown after an unsaved mark:', confirmDialogShown].join(' '),
+      });
       // Documenting whichever real behavior occurs, matching the case's own
       // "document which" framing -- not a hard pass/fail bar on its own.
       if (confirmDialogShown) await att.closeDialogCancelBtn.click({ force: true }).catch(() => {});
@@ -299,7 +321,15 @@ test.describe('Core (ATT-ACCESS-01, ATT-PLAN-01..08)', () => {
       await page.waitForTimeout(1500);
       const rosterB = await att.gridCells.allTextContents();
 
-      console.log('Roster A (Physics) size:', rosterA.length, '| Roster B (Mathematics) size:', rosterB.length);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Roster A (Physics) size:',
+          rosterA.length,
+          '| Roster B (Mathematics) size:',
+          rosterB.length,
+        ].join(' '),
+      });
       expect(rosterA).not.toEqual(rosterB);
     }
   );
@@ -315,14 +345,17 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const contentAppeared = await openAndWaitForContent(att, 15000);
       const spinnerStillShowing = await att.loaderSpinner.isVisible().catch(() => false);
       const anyCloseControlVisible = await att.innerCloseBtn.isVisible({ timeout: 2000 }).catch(() => false);
-      console.log(
-        'Content ever appeared:',
-        contentAppeared,
-        '| spinner still showing:',
-        spinnerStillShowing,
-        '| any Close control reachable:',
-        anyCloseControlVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Content ever appeared:',
+          contentAppeared,
+          '| spinner still showing:',
+          spinnerStillShowing,
+          '| any Close control reachable:',
+          anyCloseControlVisible,
+        ].join(' '),
+      });
 
       test.fail(
         !contentAppeared,
@@ -339,7 +372,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       const att = new AttendancePage(page);
       await att.openMagnetSubmenu();
       const attendanceItemVisible = await att.magnetAttendanceItem.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('Attendance item visible in Magnet menu for this account/class:', attendanceItemVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Attendance item visible in Magnet menu for this account/class:', attendanceItemVisible].join(
+          ' '
+        ),
+      });
       expect(attendanceItemVisible).toBe(true);
     }
   );
@@ -418,7 +456,15 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(3000);
       const spinnerShowing = await att.loaderSpinner.isVisible().catch(() => false);
       const closeControlVisible = await att.innerCloseBtn.isVisible({ timeout: 2000 }).catch(() => false);
-      console.log('Spinner showing:', spinnerShowing, '| Close control reachable while stuck:', closeControlVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Spinner showing:',
+          spinnerShowing,
+          '| Close control reachable while stuck:',
+          closeControlVisible,
+        ].join(' '),
+      });
       test.fail(
         spinnerShowing && closeControlVisible === false,
         'CONFIRMED: while stuck on the loading spinner, no Close control exists inside the panel -- the only way out is navigating away entirely (e.g. switching class)'
@@ -494,10 +540,13 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       });
       await openAndWaitForContent(att);
       await page.waitForTimeout(1500);
-      console.log(
-        'Any attendance-related HTTP request observed by Playwright (even just opening the panel):',
-        sawAnyRequest
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Any attendance-related HTTP request observed by Playwright (even just opening the panel):',
+          sawAnyRequest,
+        ].join(' '),
+      });
       // Documenting the tooling gap directly rather than re-deriving it --
       // consistent with the workbook's own "confirmed tooling gap, not a
       // defect" framing (cross-repo confirmed via a mature Cypress suite).
@@ -597,7 +646,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           .first()
           .textContent()
           .catch(() => '')) || '';
-      console.log("This class/subject's Attendance badge state:", badgeText || '(not found)');
+      test.info().annotations.push({
+        type: 'note',
+        description: ["This class/subject's Attendance badge state:", badgeText || '(not found)'].join(' '),
+      });
       await page.keyboard.press('Escape');
 
       // Search a few other real class/subject combos for a non-"Pending" badge.
@@ -613,7 +665,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
           await att.openMagnetSubmenu();
           const attendanceMenuItem = att.magnetAttendanceItem;
           const itemText = await attendanceMenuItem.textContent().catch(() => '');
-          console.log(`${grade} ${division} ${subject} -- Attendance menu item text:`, itemText);
+          test.info().annotations.push({
+            type: 'note',
+            description: [`${grade} ${division} ${subject} -- Attendance menu item text:`, itemText].join(' '),
+          });
           if (itemText && !/pending/i.test(itemText)) foundNonPending = true;
           await page.keyboard.press('Escape');
           await page.waitForTimeout(300);
@@ -628,7 +683,12 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       // Left as a genuine failure rather than test.fail() -- see NAV-NET-02's
       // comment elsewhere in this suite for why a real crash can't be tracked
       // softly.
-      console.log('Page crashed while checking Attendance badge state across multiple classes:', pageCrashed);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Page crashed while checking Attendance badge state across multiple classes:', pageCrashed].join(
+          ' '
+        ),
+      });
       expect(
         pageCrashed,
         'Repeatedly opening the Magnet submenu across several class switches should not crash the page'
@@ -669,7 +729,10 @@ test.describe('Extended coverage (gap-analysis pass)', () => {
       await page.waitForTimeout(1500);
 
       const containerCount = await att.container.count();
-      console.log('Attendance container instances mounted after a rapid double-click:', containerCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Attendance container instances mounted after a rapid double-click:', containerCount].join(' '),
+      });
       test.fail(
         containerCount > 1,
         'A rapid double-click on Attendance mounts more than one attendance-container instance instead of exactly one'

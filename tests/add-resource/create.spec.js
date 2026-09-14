@@ -43,7 +43,10 @@ test(
     const ar = new AddResourcePage(page);
     const gradeSubjectValue = await ar.gradeSubjectInput.inputValue();
     const chapterTopicValue = await ar.chapterTopicInput.inputValue();
-    console.log('Grade & Subject:', gradeSubjectValue, '| Chapter & Topic:', chapterTopicValue);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Grade & Subject:', gradeSubjectValue, '| Chapter & Topic:', chapterTopicValue].join(' '),
+    });
     expect(gradeSubjectValue.length).toBeGreaterThan(0);
     expect(chapterTopicValue.length).toBeGreaterThan(0);
     await expect(ar.gradeSubjectInput).toBeDisabled();
@@ -84,7 +87,15 @@ test(
     await ar.submitBtn.click({ force: submitDisabled }).catch(() => {});
     await page.waitForTimeout(500);
     const errorShown = await ar.titleErrorText.isVisible().catch(() => false);
-    console.log('Submit disabled:', submitDisabled, '| Title error shown after blind submit attempt:', errorShown);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Submit disabled:',
+        submitDisabled,
+        '| Title error shown after blind submit attempt:',
+        errorShown,
+      ].join(' '),
+    });
     test.fail(
       !errorShown,
       'Submitting with an untouched empty Title shows no validation feedback at all (inconsistent with ADD-CRT-04, where a touched-then-invalid Title does show the error)'
@@ -107,12 +118,15 @@ test(
       .getByText(/file.*required|required.*file/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Submit disabled with valid Title but no file:',
-      submitDisabled,
-      '| File error shown:',
-      fileErrorVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Submit disabled with valid Title but no file:',
+        submitDisabled,
+        '| File error shown:',
+        fileErrorVisible,
+      ].join(' '),
+    });
     test.fail(
       !fileErrorVisible,
       'Submitting a valid Title with no File selected shows no validation feedback near the File control'
@@ -130,8 +144,8 @@ test('ADD-CRT-08: Cancel closes the Create form and discards entered data', { ta
   await ar.openPicker();
   await ar.actions.create.click();
   await expect(ar.createForm).toBeVisible();
-  const value = await ar.titleInput.inputValue();
-  expect(value).toBe('');
+  const value = ar.titleInput;
+  await expect(value).toHaveValue('');
 });
 
 test(
@@ -161,7 +175,15 @@ test(
       .getByText(/size|10 ?mb|large/i)
       .isVisible()
       .catch(() => false);
-    console.log('Submit disabled with oversized file:', submitDisabled, '| Size-related error shown:', errorVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Submit disabled with oversized file:',
+        submitDisabled,
+        '| Size-related error shown:',
+        errorVisible,
+      ].join(' '),
+    });
     test.fail(
       !submitDisabled && !errorVisible,
       'An oversized (>10MB) file is accepted with no rejection/error and Submit remains enabled'
@@ -173,7 +195,7 @@ test(
 test('ADD-CRT-11: A file of an unsupported type is rejected', { tag: ['@negative', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const accept = await ar.fileInput.getAttribute('accept');
-  console.log('File input accept list:', accept);
+  test.info().annotations.push({ type: 'note', description: ['File input accept list:', accept].join(' ') });
   await ar.titleInput.fill('unsupported file test');
   // .exe is not in the confirmed accept list (.jpeg,.jpg,.png,.mp4,.pdf,.xlsx,.xls,.doc,.docx,.ppt,.pptx,.txt,.gif,.odp,.ods,.odt)
   await ar.fileInput.setInputFiles({
@@ -189,12 +211,15 @@ test('ADD-CRT-11: A file of an unsupported type is rejected', { tag: ['@negative
     .getByText(/type|not supported|invalid file/i)
     .isVisible()
     .catch(() => false);
-  console.log(
-    'Submit disabled with unsupported file type:',
-    submitDisabled,
-    '| Type-related error shown:',
-    errorVisible
-  );
+  test.info().annotations.push({
+    type: 'note',
+    description: [
+      'Submit disabled with unsupported file type:',
+      submitDisabled,
+      '| Type-related error shown:',
+      errorVisible,
+    ].join(' '),
+  });
   test.fail(
     !submitDisabled && !errorVisible,
     'A file with a disallowed extension is accepted with no rejection/error and Submit remains enabled'
@@ -244,7 +269,7 @@ test(
 test('ADD-CRT-14: Subtitle copy has a spelling/grammar issue', { tag: ['@ui-state', '@bug'] }, async ({ page }) => {
   const ar = new AddResourcePage(page);
   const subtitle = (await ar.createSubtitle.textContent()).trim();
-  console.log('Create subtitle text:', subtitle);
+  test.info().annotations.push({ type: 'note', description: ['Create subtitle text:', subtitle].join(' ') });
   const hasTypo = /extention/i.test(subtitle) || /an existing resources/i.test(subtitle);
   test.fail(hasTypo, `Subtitle has a spelling/grammar issue: "${subtitle}"`);
   expect(hasTypo).toBe(false);

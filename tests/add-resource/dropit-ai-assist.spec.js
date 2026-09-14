@@ -54,7 +54,10 @@ test(
     const errorScreenVisible = await ar.aiAssistErrorScreen.isVisible().catch(() => false);
     if (errorScreenVisible) {
       const msg = (await ar.aiAssistErrorMessage.textContent().catch(() => '')).trim();
-      console.log('AI-Assist returned an error screen instead of content:', msg);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['AI-Assist returned an error screen instead of content:', msg].join(' '),
+      });
       test.fail(true, `AI-Assist returned an error screen instead of content: "${msg}"`);
       expect(errorScreenVisible).toBe(false);
       return;

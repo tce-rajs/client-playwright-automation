@@ -69,7 +69,9 @@ test(
     // per-project `grep`) — repeating the core PIN login flow and checking
     // the same real things work on each: the canvas-rendered toolbar, the
     // virtual keyboard, and PIN entry/submit.
-    console.log('Running under browser engine:', browserName);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Running under browser engine:', browserName].join(' ') });
 
     await page.goto('./');
     const login = new LoginPage(page);

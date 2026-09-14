@@ -72,7 +72,13 @@ test(
         .catch(() => '');
       if (html.includes('learning') && html.includes('short')) found = true;
     }
-    console.log(`Scanned ${count} resource cards on this account for a Learning-Shorts-type card -- found:`, found);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        `Scanned ${count} resource cards on this account for a Learning-Shorts-type card -- found:`,
+        found,
+      ].join(' '),
+    });
     test.fail(
       !found,
       "No existing Learning-Shorts-type resource card was found on this account/topic to verify playback against -- the workbook's own example card belongs to a different account's data"
@@ -88,7 +94,10 @@ test(
     const pl = new PlaylistPage(page);
     const ls = new LearningShortsPage(page);
     const opened = await openComposerViaAltEntry(page, pl, ls);
-    console.log('Composer reached via the owned-Video-asset alt entry:', opened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Composer reached via the owned-Video-asset alt entry:', opened].join(' '),
+    });
     test.fail(
       !opened,
       'Could not reach the composer via the alt entry this pass -- either no owned Video asset could be found/bootstrapped, or its overflow menu did not expose a Send option'
@@ -107,7 +116,10 @@ test(
       .first()
       .isVisible({ timeout: 5000 })
       .catch(() => false);
-    console.log('Learning Shorts item visible in Magnet menu:', itemVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Learning Shorts item visible in Magnet menu:', itemVisible].join(' '),
+    });
     test.fail(
       !itemVisible,
       "The Learning Shorts item was not found in this account/class's Magnet menu -- gated per-account+class-teacher assignment, matching the workbook's own note that it was not found on any of 3 classes tried"
@@ -118,7 +130,10 @@ test(
     await ls.magnetLearningShortsItem.first().click({ force: true });
     await page.waitForTimeout(1500);
     const recordUiVisible = await ls.exitBtn.isVisible({ timeout: 5000 }).catch(() => false);
-    console.log('Recording panel (Exit control) visible:', recordUiVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Recording panel (Exit control) visible:', recordUiVisible].join(' '),
+    });
     expect(recordUiVisible).toBe(true);
     if (recordUiVisible) await ls.exitBtn.click({ force: true });
   }
@@ -146,7 +161,10 @@ test(
     await ls.exitBtn.click({ force: true });
     await page.waitForTimeout(600);
     const stillOpen = await ls.exitBtn.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Recording panel closed cleanly (Exit control gone):', !stillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Recording panel closed cleanly (Exit control gone):', !stillOpen].join(' '),
+    });
     expect(stillOpen).toBe(false);
   }
 );
@@ -163,11 +181,17 @@ test(
     if (!opened) return;
 
     const sendDisabledEmpty = await ls.sendBtn.isDisabled().catch(() => null);
-    console.log('Send button disabled with an empty Title:', sendDisabledEmpty);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Send button disabled with an empty Title:', sendDisabledEmpty].join(' '),
+    });
     await ls.titleInput.fill('QA automated title check');
     await page.waitForTimeout(400);
     const sendDisabledAfterTitle = await ls.sendBtn.isDisabled().catch(() => null);
-    console.log('Send button disabled after entering a Title:', sendDisabledAfterTitle);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Send button disabled after entering a Title:', sendDisabledAfterTitle].join(' '),
+    });
 
     test.fail(
       sendDisabledEmpty === null,
@@ -191,7 +215,10 @@ test(
     if (!opened) return;
 
     const deleteVisible = await ls.deleteAttachmentBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Delete Attachment control visible with the pre-filled video:', deleteVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Delete Attachment control visible with the pre-filled video:', deleteVisible].join(' '),
+    });
     test.fail(!deleteVisible, 'No Delete Attachment control was found on the composer reached via the alt entry');
     expect(deleteVisible).toBe(true);
   }
@@ -209,7 +236,9 @@ test(
     if (!opened) return;
 
     const classCount = await ls.classCheckboxes.count();
-    console.log('Class checkbox options found:', classCount);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Class checkbox options found:', classCount].join(' ') });
     test.fail(
       classCount === 0,
       "No class-selection checkboxes were found on the composer -- either the selector is wrong for this account's markup, or the class list renders differently than the workbook describes"
@@ -242,7 +271,9 @@ test(
         ).trim()
       );
     }
-    console.log('Class options listed for targeting:', labels);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Class options listed for targeting:', labels].join(' ') });
     // A real "not assigned" comparison needs a known-unassigned class to
     // cross-check against, which this single-account pass cannot construct --
     // documenting what's listed is the honest scope here.
@@ -264,7 +295,15 @@ test(
 
     const saveToPlaylistVisible = await ls.savePlaylistBtn.isVisible({ timeout: 3000 }).catch(() => false);
     const saveRevisionVisible = await ls.saveRevisionBtn.isVisible({ timeout: 3000 }).catch(() => false);
-    console.log('Save to Playlist visible:', saveToPlaylistVisible, '| Save Revision visible:', saveRevisionVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Save to Playlist visible:',
+        saveToPlaylistVisible,
+        '| Save Revision visible:',
+        saveRevisionVisible,
+      ].join(' '),
+    });
     test.fail(
       !saveToPlaylistVisible || !saveRevisionVisible,
       "Did not find both distinct save controls on this account's composer markup"
@@ -285,7 +324,10 @@ test(
     if (!opened) return;
     await ls.titleInput.fill('QA save-path check (not actually saved)');
     const saveEnabled = await ls.savePlaylistBtn.isEnabled().catch(() => false);
-    console.log('Save to Playlist reachable and enabled after entering a Title:', saveEnabled);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Save to Playlist reachable and enabled after entering a Title:', saveEnabled].join(' '),
+    });
     test.fail(
       true,
       'Verifying the real Save-to-Playlist dispatch needs an actual click, deliberately not executed on the shared QA account (same reasoning as other "would add a permanent asset" cases elsewhere in this project)'
@@ -307,7 +349,10 @@ test(
     await ls.titleInput.fill('QA send-path check (not actually sent)');
     if ((await ls.classCheckboxes.count()) > 0) await ls.classCheckboxes.first().click({ force: true });
     const sendEnabled = await ls.sendBtn.isEnabled().catch(() => false);
-    console.log('Send reachable and enabled after Title + a class selected:', sendEnabled);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Send reachable and enabled after Title + a class selected:', sendEnabled].join(' '),
+    });
     test.fail(
       true,
       'Verifying the real Send dispatch needs an actual click, deliberately not executed on the shared QA account -- this is a Critical-priority real-dispatch action to a class'
@@ -332,7 +377,10 @@ test(
         break;
       }
     }
-    console.log('Found a non-Video owned card to contrast against:', !!nonVideoOwnedCard);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Found a non-Video owned card to contrast against:', !!nonVideoOwnedCard].join(' '),
+    });
     test.fail(
       !nonVideoOwnedCard,
       'No non-Video (e.g. PDF/Worksheet) owned card was found on this account/topic to contrast against -- cannot demonstrate the confirmed gotcha this pass'
@@ -346,7 +394,10 @@ test(
       await overflow.click({ force: true });
       await page.waitForTimeout(500);
       const sendVisible = await ls.assetSendBtn.isVisible({ timeout: 2000 }).catch(() => false);
-      console.log("Send option visible on a non-Video card's overflow (should be false):", sendVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ["Send option visible on a non-Video card's overflow (should be false):", sendVisible].join(' '),
+      });
       expect(sendVisible).toBe(false);
     }
   }
@@ -378,7 +429,10 @@ test(
       .getByText(/unsaved changes|are you sure|discard/i)
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('A confirmation dialog appeared before discarding unsaved work:', confirmDialogShown);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['A confirmation dialog appeared before discarding unsaved work:', confirmDialogShown].join(' '),
+    });
     test.fail(
       !confirmDialogShown,
       'CONFIRMED (matches the workbook\'s adversarial concern, consistent with this app\'s already-documented Attendance Close-before-Submit pattern elsewhere): Discard silently drops the typed Title and class selection with no "are you sure" warning'
@@ -401,12 +455,20 @@ test(
     const longTitle = 'A'.repeat(320) + ' 🎥📚✨ !@#$%^&*()';
     await ls.titleInput.fill(longTitle);
     const actualValue = await ls.titleInput.inputValue();
-    console.log('Typed', longTitle.length, 'chars, field retained', actualValue.length, 'chars');
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Typed', longTitle.length, 'chars, field retained', actualValue.length, 'chars'].join(' '),
+    });
     const classListStillVisible = await ls.classCheckboxes
       .first()
       .isVisible({ timeout: 2000 })
       .catch(() => false);
-    console.log('Class-checkbox list still visible/not broken after the long title:', classListStillVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class-checkbox list still visible/not broken after the long title:', classListStillVisible].join(
+        ' '
+      ),
+    });
     expect(classListStillVisible).toBe(true);
   }
 );
@@ -529,7 +591,10 @@ test(
       await page.waitForTimeout(200);
     }
     const stuck = await ls.exitBtn.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Recording panel left in a stuck/still-open state after rapid open/exit spam:', stuck);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Recording panel left in a stuck/still-open state after rapid open/exit spam:', stuck].join(' '),
+    });
     test.fail(stuck, 'The recording panel got stuck open after rapid open/exit spam');
     expect(stuck).toBe(false);
   }

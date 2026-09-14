@@ -95,7 +95,10 @@ test(
       .waitFor({ state: 'visible', timeout: 5000 })
       .then(() => true)
       .catch(() => false);
-    console.log('Class Popup actually opened while Chapters Popup was still up:', classPopupOpened);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class Popup actually opened while Chapters Popup was still up:', classPopupOpened].join(' '),
+    });
 
     // CONFIRMED FINDING: with the Chapters Popup already open, clicking
     // Current Class does NOT open the Class Popup at all (it stays hidden
@@ -115,7 +118,12 @@ test(
     // tree as if it belonged to the new one -- either it's closed, or its
     // chapter list now matches the new class.
     const chapterPopupStillOpen = await nav.chapterTpPopup.isVisible().catch(() => false);
-    console.log('Chapters Popup still open after switching class via Recent Classes:', chapterPopupStillOpen);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Chapters Popup still open after switching class via Recent Classes:', chapterPopupStillOpen].join(
+        ' '
+      ),
+    });
   }
 );
 
@@ -162,12 +170,15 @@ test(
       .getByText(/error|retry|something went wrong|failed/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Grades rendered despite curriculum fetch failing:',
-      gradeCount,
-      '| error/retry state shown:',
-      errorStateVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Grades rendered despite curriculum fetch failing:',
+        gradeCount,
+        '| error/retry state shown:',
+        errorStateVisible,
+      ].join(' '),
+    });
 
     test.fail(
       gradeCount === 0 && !errorStateVisible,
@@ -207,7 +218,13 @@ test(
     // Playwright's own teardown hang on the dead page, so test.fail()'s
     // tracking can't complete cleanly either way -- a hard failure is the
     // more honest signal for "this crashed the browser" than a soft one.
-    console.log('Page crashed/closed while opening Chapters Popup with curriculum fetch failing:', pageCrashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Page crashed/closed while opening Chapters Popup with curriculum fetch failing:',
+        pageCrashed,
+      ].join(' '),
+    });
     expect(pageCrashed, 'Opening the Chapters Popup while the curriculum fetch fails should not crash the page').toBe(
       false
     );
@@ -218,12 +235,15 @@ test(
       .getByText(/error|retry|something went wrong|failed/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Chapters rendered despite curriculum fetch failing:',
-      chapterCount,
-      '| error/retry shown:',
-      errorStateVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Chapters rendered despite curriculum fetch failing:',
+        chapterCount,
+        '| error/retry shown:',
+        errorStateVisible,
+      ].join(' '),
+    });
     expect(errorStateVisible).toBe(true);
   }
 );
@@ -247,14 +267,17 @@ test(
       .getByText(/error|retry|failed to load/i)
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Class label before:',
-      beforeClass,
-      '| after (content fetch failing):',
-      afterClass,
-      '| error state shown:',
-      errorStateVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Class label before:',
+        beforeClass,
+        '| after (content fetch failing):',
+        afterClass,
+        '| error state shown:',
+        errorStateVisible,
+      ].join(' '),
+    });
 
     // CONFIRMED FINDING (intermittent, seen on repeated runs): the Current
     // Class label sometimes updates to the new class immediately, silently,
@@ -285,7 +308,12 @@ test('NAV-NET-04: Slow/throttled network while opening a popup', { tag: '@cross-
     .first()
     .isVisible({ timeout: 1000 })
     .catch(() => false);
-  console.log('Loading indicator visible while chapter/topic content was still fetching:', loadingVisible);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Loading indicator visible while chapter/topic content was still fetching:', loadingVisible].join(
+      ' '
+    ),
+  });
 
   await expect(nav.chapterTpPopup).toBeVisible({ timeout: 10000 });
 });
@@ -328,7 +356,10 @@ test(
     await page.waitForTimeout(3000);
 
     const finalClass = (await nav.currentClassBtn.textContent()).trim();
-    console.log('Switched to B then C (B delayed); final Current Class:', finalClass);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Switched to B then C (B delayed); final Current Class:', finalClass].join(' '),
+    });
     const [, , subjectC] = classC.split('|').map((s) => s.trim());
     expect(finalClass).toContain(subjectC);
   }
@@ -379,7 +410,15 @@ test(
 
     const finalTab1 = (await nav1.currentClassBtn.textContent()).trim();
     const finalTab2 = (await nav2.currentClassBtn.textContent()).trim();
-    console.log('After near-simultaneous switches and refresh — tab1 shows:', finalTab1, '| tab2 shows:', finalTab2);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After near-simultaneous switches and refresh — tab1 shows:',
+        finalTab1,
+        '| tab2 shows:',
+        finalTab2,
+      ].join(' '),
+    });
     // The server-persisted class should be identical in both tabs after
     // refresh (last-write-wins), never two different "current" classes.
     expect(finalTab1).toBe(finalTab2);
@@ -463,15 +502,21 @@ test(
     // login/render, before the payload ever gets a chance to execute as a
     // script or not. Left as a genuine failure rather than test.fail() --
     // see NAV-NET-02's comment for why a real crash can't be tracked softly.
-    console.log('Page crashed/closed with an XSS-payload chapter/topic name in the curriculum response:', pageCrashed);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Page crashed/closed with an XSS-payload chapter/topic name in the curriculum response:',
+        pageCrashed,
+      ].join(' '),
+    });
     expect(pageCrashed, 'An XSS-style chapter/topic name in the curriculum response should not crash the page').toBe(
       false
     );
     if (pageCrashed) return;
 
     expect(dialogFired).toBe(false);
-    const scriptTagCount = await page.locator('script:has-text("alert(1)")').count();
-    expect(scriptTagCount).toBe(0);
+    const scriptTagCount = page.locator('script:has-text("alert(1)")');
+    await expect(scriptTagCount).toHaveCount(0);
   }
 );
 
@@ -497,7 +542,10 @@ test(
     await nav.topicItems.nth(1).click();
     await page.waitForTimeout(1500);
 
-    console.log('Requests fired from one single topic click:', requestCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Requests fired from one single topic click:', requestCount].join(' '),
+    });
     expect(requestCount).toBeLessThanOrEqual(1);
   }
 );
@@ -547,11 +595,14 @@ test(
     await items.nth(count > 1 ? 1 : 0).click();
     await page.waitForTimeout(1500);
 
-    console.log(
-      'Made an unsaved whiteboard mark before switching:',
-      penAvailable,
-      '— no warning-dialog mechanism observed in this pass.'
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Made an unsaved whiteboard mark before switching:',
+        penAvailable,
+        '— no warning-dialog mechanism observed in this pass.',
+      ].join(' '),
+    });
     await expect(page.locator('[data-qa-id="wb-drawing-container"]')).toBeVisible();
   }
 );

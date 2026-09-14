@@ -41,12 +41,15 @@ test(
 
     const panelStillVisible = await ar.dropitCloseBtn.isVisible({ timeout: 2000 }).catch(() => false);
     const qrStillVisible = await ar.dropitQrCanvas.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      'After switching class with Drop It open -- close button still visible:',
-      panelStillVisible,
-      '| QR canvas still visible:',
-      qrStillVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After switching class with Drop It open -- close button still visible:',
+        panelStillVisible,
+        '| QR canvas still visible:',
+        qrStillVisible,
+      ].join(' '),
+    });
 
     test.fail(
       panelStillVisible || qrStillVisible,
@@ -80,12 +83,15 @@ test(
       .locator('[data-qa-id="toolbar-user-avatar"]')
       .isVisible()
       .catch(() => false);
-    console.log(
-      'Firestore-related requests observed across 8 rapid open/close cycles:',
-      firestoreRequestCount,
-      '| page alive:',
-      pageAlive
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Firestore-related requests observed across 8 rapid open/close cycles:',
+        firestoreRequestCount,
+        '| page alive:',
+        pageAlive,
+      ].join(' '),
+    });
 
     test.fail(!pageAlive, 'Rapidly opening/closing Drop It 8 times crashes the page');
     expect(pageAlive).toBe(true);
@@ -123,14 +129,17 @@ test(
     if (opened2) {
       await ar2.dropitQrCanvas.waitFor({ state: 'visible', timeout: 8000 });
       const dataUrl2 = await ar2.dropitQrCanvas.evaluate((el) => el.toDataURL()).catch(() => null);
-      console.log(
-        'Tab 1 QR dataURL length:',
-        dataUrl1 ? dataUrl1.length : null,
-        '| Tab 2 QR dataURL length:',
-        dataUrl2 ? dataUrl2.length : null,
-        '| identical:',
-        dataUrl1 === dataUrl2
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Tab 1 QR dataURL length:',
+          dataUrl1 ? dataUrl1.length : null,
+          '| Tab 2 QR dataURL length:',
+          dataUrl2 ? dataUrl2.length : null,
+          '| identical:',
+          dataUrl1 === dataUrl2,
+        ].join(' '),
+      });
 
       // Tab 1's own panel must still be alive/showing a real QR after tab 2 opened its own.
       const tab1StillShowsQr = await ar1.dropitQrCanvas.isVisible({ timeout: 3000 }).catch(() => false);
@@ -163,7 +172,15 @@ test(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
     );
     const closeBtnBox = await ar.dropitCloseBtn.boundingBox().catch(() => null);
-    console.log('At 375px width -- horizontal overflow:', overflowsViewport, '| close button box:', closeBtnBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'At 375px width -- horizontal overflow:',
+        overflowsViewport,
+        '| close button box:',
+        closeBtnBox,
+      ].join(' '),
+    });
 
     test.fail(overflowsViewport, 'The Drop It panel causes horizontal overflow at a real mobile viewport width');
     expect(overflowsViewport).toBe(false);

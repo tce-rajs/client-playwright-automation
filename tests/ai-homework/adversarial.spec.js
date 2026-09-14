@@ -46,18 +46,26 @@ test(
       .click({ timeout: 8000 })
       .then(() => true)
       .catch((e) => {
-        console.log('Current Class click threw:', e.message.split('\n')[0]);
+        test
+          .info()
+          .annotations.push({
+            type: 'note',
+            description: ['Current Class click threw:', e.message.split('\n')[0]].join(' '),
+          });
         return false;
       });
     await page.waitForTimeout(1000);
 
     const composerStillVisible = await ah.homeworkTypeCard.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log(
-      'Current Class click succeeded:',
-      classPopupOpened,
-      '| AI Homework composer still visible:',
-      composerStillVisible
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Current Class click succeeded:',
+        classPopupOpened,
+        '| AI Homework composer still visible:',
+        composerStillVisible,
+      ].join(' '),
+    });
 
     test.fail(
       !classPopupOpened && composerStillVisible,
@@ -89,7 +97,10 @@ test(
     if (!lastOpened) return;
 
     const cardCount = await page.locator('[data-qa-id="ai-homework-option-homework-select"]:visible').count();
-    console.log('Visible homework-type-card instance count after 5x rapid open/close cycles:', cardCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Visible homework-type-card instance count after 5x rapid open/close cycles:', cardCount].join(' '),
+    });
     test.fail(
       cardCount > 1,
       'Rapidly opening/closing the AI Homework composer 5 times leaves more than one visible instance mounted'
@@ -118,7 +129,12 @@ test(
       .locator('body')
       .isVisible()
       .catch(() => false);
-    console.log('Page usable after Back with AI Homework composer open:', pageUsable, '| URL:', page.url());
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Page usable after Back with AI Homework composer open:', pageUsable, '| URL:', page.url()].join(
+        ' '
+      ),
+    });
     test.fail(!pageUsable, 'Pressing Back while the AI Homework composer is open leaves the page unusable');
     expect(pageUsable).toBe(true);
   }
@@ -150,12 +166,15 @@ test(
     }
     await page.waitForTimeout(500);
     const endValue = parseInt((await ah.hwObjInput.inputValue().catch(() => '-1')) || '-1', 10);
-    console.log(
-      'Objective counter -- start value:',
-      startValue,
-      '| end value after 10x alternating +/- clicks:',
-      endValue
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Objective counter -- start value:',
+        startValue,
+        '| end value after 10x alternating +/- clicks:',
+        endValue,
+      ].join(' '),
+    });
 
     test.fail(
       endValue !== startValue,

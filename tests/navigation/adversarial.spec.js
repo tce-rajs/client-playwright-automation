@@ -34,12 +34,15 @@ test(
 
     const stillResponsive = await nav.chapterTpSearchInput.isVisible().catch(() => false);
     const chapterCount = await nav.chapterItems.count();
-    console.log(
-      'After 300-char search input -- input still visible:',
-      stillResponsive,
-      '| chapter items shown:',
-      chapterCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 300-char search input -- input still visible:',
+        stillResponsive,
+        '| chapter items shown:',
+        chapterCount,
+      ].join(' '),
+    });
 
     test.fail(
       !stillResponsive,
@@ -64,15 +67,23 @@ test(
     await page.waitForTimeout(1000);
 
     const stillVisible = await nav.chapterTpSearchInput.isVisible().catch(() => false);
-    const chapterCount = await nav.chapterItems.count();
+    const chapterCount = nav.chapterItems;
     const popupErrored = await page
       .locator('body')
       .evaluate(() => document.querySelectorAll('.error-page, .cdk-overlay-backdrop-showing').length >= 0); // sanity DOM read, never throws
-    console.log('Emoji/Unicode search -- input visible:', stillVisible, '| chapter items shown:', chapterCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Emoji/Unicode search -- input visible:',
+        stillVisible,
+        '| chapter items shown:',
+        chapterCount,
+      ].join(' '),
+    });
 
     test.fail(!stillVisible, 'Emoji/Unicode search input crashes or dismisses the Chapter/Topic search popup');
     expect(stillVisible).toBe(true);
-    expect(chapterCount).toBe(0);
+    await expect(chapterCount).toHaveCount(0);
   }
 );
 
@@ -97,14 +108,17 @@ test(
 
     const xssRan = await page.evaluate(() => !!window.__xss);
     const inputValue = await nav.chapterTpSearchInput.inputValue().catch(() => '');
-    console.log(
-      'XSS payload executed:',
-      xssRan,
-      '| dialog fired:',
-      dialogFired,
-      '| input still holds literal payload:',
-      inputValue === payload
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'XSS payload executed:',
+        xssRan,
+        '| dialog fired:',
+        dialogFired,
+        '| input still holds literal payload:',
+        inputValue === payload,
+      ].join(' '),
+    });
 
     test.fail(
       xssRan || dialogFired,
@@ -135,12 +149,15 @@ test(
       .locator('visible=true')
       .count()
       .catch(() => 0);
-    console.log(
-      'After 6 rapid search-toggle clicks -- input element count:',
-      searchInputCount,
-      '| currently-visible count:',
-      visibleCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 6 rapid search-toggle clicks -- input element count:',
+        searchInputCount,
+        '| currently-visible count:',
+        visibleCount,
+      ].join(' '),
+    });
 
     test.fail(
       searchInputCount > 1,
@@ -179,16 +196,19 @@ test(
       ? await nav.currentClassBtn.textContent().catch(() => '')
       : '(current class label not reachable after Back)';
     const urlAfterBack = page.url();
-    console.log(
-      'Class label before switch:',
-      beforeClassLabel,
-      '| after switch:',
-      afterSwitchLabel,
-      '| after browser Back:',
-      afterBackLabel,
-      '| URL after Back:',
-      urlAfterBack
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Class label before switch:',
+        beforeClassLabel,
+        '| after switch:',
+        afterSwitchLabel,
+        '| after browser Back:',
+        afterBackLabel,
+        '| URL after Back:',
+        urlAfterBack,
+      ].join(' '),
+    });
 
     // Whatever happens, the app must not end up in a broken/blank state --
     // some real class label must still be showing (old or new class both
@@ -215,7 +235,12 @@ test(
 
     const classPopupVisible = await nav.allMyClassesTab.isVisible({ timeout: 2000 }).catch(() => false);
     const chaptersPopupVisible = await nav.chapterTpPopup.isVisible({ timeout: 2000 }).catch(() => false);
-    console.log('Class Popup visible:', classPopupVisible, '| Chapters Popup visible:', chaptersPopupVisible);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Class Popup visible:', classPopupVisible, '| Chapters Popup visible:', chaptersPopupVisible].join(
+        ' '
+      ),
+    });
 
     const bothOpenAtOnce = classPopupVisible && chaptersPopupVisible;
     test.fail(
@@ -241,12 +266,15 @@ test(
     await page.waitForTimeout(1000);
 
     const chapterCountAfter = await nav.chapterItems.count();
-    console.log(
-      'Full chapter count:',
-      fullChapterCount,
-      '| chapter count with whitespace-only search:',
-      chapterCountAfter
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Full chapter count:',
+        fullChapterCount,
+        '| chapter count with whitespace-only search:',
+        chapterCountAfter,
+      ].join(' '),
+    });
 
     // Document actual behavior either way -- a whitespace query legitimately
     // COULD be treated as "no match" (empty list) by design; the adversarial
@@ -255,7 +283,10 @@ test(
     // query. Since the app's real behavior isn't documented anywhere for this
     // exact input, this is a genuine open finding either way.
     const treatedAsEmpty = chapterCountAfter === fullChapterCount;
-    console.log('Whitespace-only search treated as no-filter (shows full list):', treatedAsEmpty);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Whitespace-only search treated as no-filter (shows full list):', treatedAsEmpty].join(' '),
+    });
     expect(chapterCountAfter).toBeGreaterThanOrEqual(0); // sanity: never negative/undefined
   }
 );
@@ -279,14 +310,17 @@ test(
     const countRightAfterClear = await nav.chapterItems.count();
     const searchInputStillThere = await nav.chapterTpSearchInput.isVisible().catch(() => false);
     const popupStillThere = await nav.chapterTpPopup.isVisible().catch(() => false);
-    console.log(
-      'Immediately after clearing search -- chapter item count:',
-      countRightAfterClear,
-      '| search input still visible:',
-      searchInputStillThere,
-      '| popup still visible:',
-      popupStillThere
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Immediately after clearing search -- chapter item count:',
+        countRightAfterClear,
+        '| search input still visible:',
+        searchInputStillThere,
+        '| popup still visible:',
+        popupStillThere,
+      ].join(' '),
+    });
 
     // Click the first item the instant it reappears, no extra wait -- this is
     // the adversarial "click the instant it appears" pattern.
@@ -295,27 +329,35 @@ test(
       .click({ timeout: 4000 })
       .then(() => true)
       .catch((e) => {
-        console.log('Click failed:', e.message.split('\n')[0]);
+        test
+          .info()
+          .annotations.push({ type: 'note', description: ['Click failed:', e.message.split('\n')[0]].join(' ') });
         return false;
       });
     await page.waitForTimeout(3000);
     const countAfterExtraWait = await nav.chapterItems.count();
-    console.log(
-      'Chapter item count 3s after clearing search (checking if it ever self-recovers):',
-      countAfterExtraWait
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Chapter item count 3s after clearing search (checking if it ever self-recovers):',
+        countAfterExtraWait,
+      ].join(' '),
+    });
 
     const activeChapterText = await page
       .locator('[data-qa-id="playlist-select-chapter"].active')
       .first()
       .textContent()
       .catch(() => '');
-    console.log(
-      'First chapter before search:',
-      firstChapterTextBeforeSearch,
-      '| active chapter after clear+immediate click:',
-      activeChapterText
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'First chapter before search:',
+        firstChapterTextBeforeSearch,
+        '| active chapter after clear+immediate click:',
+        activeChapterText,
+      ].join(' '),
+    });
 
     const selectedSomething = clicked && Boolean(activeChapterText && activeChapterText.trim().length > 0);
     test.fail(

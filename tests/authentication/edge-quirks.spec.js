@@ -27,7 +27,10 @@ test(
     const afterClickChecked = await settingsToggle
       .isChecked()
       .catch(async () => (await settingsToggle.getAttribute('aria-checked')) === 'true');
-    console.log('Settings keyboard toggle: before =', initiallyChecked, '| after =', afterClickChecked);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Settings keyboard toggle: before =', initiallyChecked, '| after =', afterClickChecked].join(' '),
+    });
     expect(afterClickChecked).not.toBe(initiallyChecked);
   }
 );

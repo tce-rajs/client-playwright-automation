@@ -23,7 +23,9 @@ test('A11Y-01: Full keyboard-only navigation through the modal', { tag: ['@ui-st
     });
     focusedSequence.push(info);
   }
-  console.log('Tab sequence:', JSON.stringify(focusedSequence));
+  test
+    .info()
+    .annotations.push({ type: 'note', description: ['Tab sequence:', JSON.stringify(focusedSequence)].join(' ') });
 
   const reachedPinBox = focusedSequence.some((f) => f && f.qaId && f.qaId.startsWith('login-pin-digit-input'));
   const reachedPasswordLink = focusedSequence.some((f) => f && f.qaId === 'login-pin-password-link');
@@ -48,7 +50,9 @@ test('A11Y-02: Screen reader announces the error banner', { tag: ['@ui-state', '
 
   const ariaLive = await login.pinErrorMessage.getAttribute('aria-live');
   const role = await login.pinErrorMessage.getAttribute('role');
-  console.log('Error banner aria-live:', ariaLive, '| role:', role);
+  test
+    .info()
+    .annotations.push({ type: 'note', description: ['Error banner aria-live:', ariaLive, '| role:', role].join(' ') });
 
   // FINDING (verified, not assumed): check what's actually there.
   const hasAnnouncementSemantics = ariaLive !== null || role === 'alert' || role === 'status';
@@ -101,7 +105,12 @@ test('A11Y-03: Color contrast of the error state meets WCAG AA', { tag: ['@ui-st
     return { ratio, fg: style.color, bg };
   });
 
-  console.log('Error text contrast ratio:', contrast.ratio.toFixed(2), 'fg:', contrast.fg, 'bg:', contrast.bg);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Error text contrast ratio:', contrast.ratio.toFixed(2), 'fg:', contrast.fg, 'bg:', contrast.bg].join(
+      ' '
+    ),
+  });
   // WCAG AA for normal text: >= 4.5:1
   expect(contrast.ratio).toBeGreaterThanOrEqual(4.5);
 });
@@ -119,7 +128,10 @@ test('A11Y-04: Focus is trapped within the modal while open', { tag: ['@ui-state
     escapedFocus.push(insideModal);
   }
   const everEscaped = escapedFocus.some((inside) => inside === false);
-  console.log('Focus stayed inside the modal for all 20 tabs:', !everEscaped);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Focus stayed inside the modal for all 20 tabs:', !everEscaped].join(' '),
+  });
 
   test.fail(everEscaped, 'Focus escapes the modal into the background canvas/toolbar during Tab navigation');
   expect(everEscaped).toBe(false);
@@ -137,7 +149,10 @@ test('A11Y-05: Interactive icons have accessible names', { tag: ['@ui-state', '@
     const accessibleName = await locator.evaluate((el) =>
       (el.getAttribute('aria-label') || el.getAttribute('title') || el.textContent || '').trim()
     );
-    console.log(`${label} accessible name:`, JSON.stringify(accessibleName));
+    test.info().annotations.push({
+      type: 'note',
+      description: [`${label} accessible name:`, JSON.stringify(accessibleName)].join(' '),
+    });
     if (!accessibleName) missingNames.push(label);
   }
 

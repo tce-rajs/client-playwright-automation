@@ -18,9 +18,12 @@ test('NET-01: Submit login while offline', { tag: '@boundary' }, async ({ page, 
   // A clear "no connection" style error, and specifically NOT an infinite
   // spinner -- give it a bounded wait and check the form is still usable.
   await page.waitForTimeout(5000);
-  const stillOnPinForm = await login.pinForm.isVisible();
-  console.log('Still on PIN form after offline submit (not stuck loading):', stillOnPinForm);
-  expect(stillOnPinForm).toBe(true);
+  const stillOnPinForm = login.pinForm;
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Still on PIN form after offline submit (not stuck loading):', stillOnPinForm].join(' '),
+  });
+  await expect(stillOnPinForm).toBeVisible();
 
   await context.setOffline(false);
 });

@@ -42,7 +42,10 @@ test(
     const expandIconCount = await nav.chapterItems
       .locator('mat-icon, [class*="expand"], [class*="collapse"], [class*="arrow"]')
       .count();
-    console.log('Expand/collapse icons found in the chapter column:', expandIconCount);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Expand/collapse icons found in the chapter column:', expandIconCount].join(' '),
+    });
     test.fail(
       expandIconCount === 0,
       'Chapters render as a flat list for this subject — no expand/collapse tree structure found'
@@ -196,7 +199,15 @@ test('NAV-CHP-07: A Chapter with zero mapped Topics', { tag: ['@boundary', '@bug
         .getByText(/no topic|not available|empty/i)
         .isVisible()
         .catch(() => false);
-      console.log('Chapter with zero topics found at index', i, '| empty-state message shown:', emptyMessageVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Chapter with zero topics found at index',
+          i,
+          '| empty-state message shown:',
+          emptyMessageVisible,
+        ].join(' '),
+      });
       test.fail(
         !emptyMessageVisible,
         'A chapter with zero topics shows a blank Topic column instead of an explicit empty-state message'
@@ -206,7 +217,12 @@ test('NAV-CHP-07: A Chapter with zero mapped Topics', { tag: ['@boundary', '@bug
     }
   }
   if (!foundEmptyChapter) {
-    console.log('Every chapter in this account has at least one topic — the zero-topic case could not be reached.');
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Every chapter in this account has at least one topic — the zero-topic case could not be reached.',
+      ].join(' '),
+    });
   }
 });
 
@@ -233,7 +249,10 @@ test('NAV-CHP-09: Very long Topic names are truncated in the UI', { tag: '@bound
     const span = node.querySelector('span') || node;
     return span.scrollWidth > span.clientWidth;
   });
-  console.log('Longest topic name:', JSON.stringify(longest), '| visually truncated:', isTruncated);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Longest topic name:', JSON.stringify(longest), '| visually truncated:', isTruncated].join(' '),
+  });
 
   // Whether or not this specific account's longest topic happens to be
   // long enough to truncate, confirm no layout break either way.

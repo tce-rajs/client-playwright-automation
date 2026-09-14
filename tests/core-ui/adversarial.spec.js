@@ -25,7 +25,10 @@ test(
 
     const logoBox = await logo.boundingBox();
     const calendarBox = await calendar.boundingBox();
-    console.log('320x480 -- logo box:', logoBox, '| calendar box:', calendarBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['320x480 -- logo box:', logoBox, '| calendar box:', calendarBox].join(' '),
+    });
 
     const overlap =
       logoBox &&
@@ -37,7 +40,12 @@ test(
     const overflowsViewport = await page.evaluate(
       () => document.documentElement.scrollWidth > document.documentElement.clientWidth + 5
     );
-    console.log('Logo/calendar overlap at 320px width:', overlap, '| horizontal overflow:', overflowsViewport);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Logo/calendar overlap at 320px width:', overlap, '| horizontal overflow:', overflowsViewport].join(
+        ' '
+      ),
+    });
 
     test.fail(
       Boolean(overlap) || overflowsViewport,
@@ -61,19 +69,25 @@ test(
 
     const logoBox = await logo.boundingBox();
     const calendarBox = await calendar.boundingBox();
-    console.log('3840x2160 -- logo box:', logoBox, '| calendar box:', calendarBox);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['3840x2160 -- logo box:', logoBox, '| calendar box:', calendarBox].join(' '),
+    });
 
     // Logo should stay near the left edge; calendar should stay near the right
     // edge -- neither should drift into the middle third of a 3840px-wide
     // screen (a real CSS-flex-without-max-width bug class).
     const logoNearLeft = logoBox && logoBox.x < 3840 * 0.25;
     const calendarNearRight = calendarBox && calendarBox.x + calendarBox.width > 3840 * 0.75;
-    console.log(
-      'Logo stayed near left quarter:',
-      logoNearLeft,
-      '| calendar stayed near right quarter:',
-      calendarNearRight
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Logo stayed near left quarter:',
+        logoNearLeft,
+        '| calendar stayed near right quarter:',
+        calendarNearRight,
+      ].join(' '),
+    });
 
     test.fail(
       !logoNearLeft || !calendarNearRight,
@@ -99,14 +113,17 @@ test(
     const logoCount = await page.locator('[data-qa-id="wb-header-logo-image"]').count();
     const calendarCount = await page.locator('[data-qa-id="wb-header-calendar-container"]').count();
     const versionCount = await page.locator('[data-qa-id="wb-header-version-text"]').count();
-    console.log(
-      'After 8 rapid reloads -- logo count:',
-      logoCount,
-      '| calendar count:',
-      calendarCount,
-      '| version count:',
-      versionCount
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'After 8 rapid reloads -- logo count:',
+        logoCount,
+        '| calendar count:',
+        calendarCount,
+        '| version count:',
+        versionCount,
+      ].join(' '),
+    });
 
     const anyDuplicated = logoCount > 1 || calendarCount > 1 || versionCount > 1;
     test.fail(
@@ -136,7 +153,10 @@ test(
     const calendar = page.locator('[data-qa-id="wb-header-calendar-container"]');
     await expect(calendar).toBeVisible({ timeout: 15000 });
     const text = (await calendar.textContent()) || '';
-    console.log('Header clock text at a DST spring-forward-gap instant:', JSON.stringify(text));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Header clock text at a DST spring-forward-gap instant:', JSON.stringify(text)].join(' '),
+    });
 
     const looksSane = text.trim().length > 0 && !/nan|invalid|undefined/i.test(text);
     test.fail(
@@ -166,16 +186,19 @@ test(
     const logoBox = await logo.boundingBox();
     const calendarBox = await calendar.boundingBox();
     const calendarText = await calendar.textContent();
-    console.log(
-      'Under ar-SA/Asia/Riyadh -- resolved dir:',
-      dir,
-      '| logo box:',
-      logoBox,
-      '| calendar box:',
-      calendarBox,
-      '| calendar text:',
-      calendarText
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Under ar-SA/Asia/Riyadh -- resolved dir:',
+        dir,
+        '| logo box:',
+        logoBox,
+        '| calendar box:',
+        calendarBox,
+        '| calendar text:',
+        calendarText,
+      ].join(' '),
+    });
 
     // Whatever the app's own RTL stance is, the logo must stay left-of the
     // calendar's midpoint and vice versa -- a swapped/overlapping header would
@@ -216,7 +239,9 @@ test(
 
     const text1 = await calendar1.textContent();
     const text2 = await calendar2.textContent();
-    console.log('Tab 1 clock:', text1, '| Tab 2 clock:', text2);
+    test
+      .info()
+      .annotations.push({ type: 'note', description: ['Tab 1 clock:', text1, '| Tab 2 clock:', text2].join(' ') });
 
     expect(text1 && text1.trim().length).toBeGreaterThan(0);
     expect(text2 && text2.trim().length).toBeGreaterThan(0);

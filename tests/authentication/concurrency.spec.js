@@ -27,7 +27,10 @@ test('CONC-01: Double-submit via Enter + click, or rapid double-click', { tag: '
   await expect(login.passwordErrorMessage).toBeVisible({ timeout: 10000 });
   await page.waitForTimeout(1000); // let any second request finish arriving
 
-  console.log('Login POST requests fired from one rapid double-click:', loginRequestCount);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Login POST requests fired from one rapid double-click:', loginRequestCount].join(' '),
+  });
   expect(loginRequestCount).toBe(1);
 });
 

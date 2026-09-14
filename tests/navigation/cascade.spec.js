@@ -78,7 +78,13 @@ test(
     // Division/Subject should reset for the new grade -- no leftover
     // Class-9-only subject (e.g. "Hindi Language") shown as valid for Class 12.
     const hindiForClass12 = await nav.subjectButton('Hindi Language').count();
-    console.log('"Hindi Language" (a Class 9 subject) still listed after switching to Class 12:', hindiForClass12 > 0);
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        '"Hindi Language" (a Class 9 subject) still listed after switching to Class 12:',
+        hindiForClass12 > 0,
+      ].join(' '),
+    });
   }
 );
 
@@ -95,7 +101,10 @@ test(
       const divisionCount = await nav.divisionButtons.count();
       if (divisionCount === 0) {
         foundEmptyGrade = true;
-        console.log('Found a grade with zero divisions:', await nav.gradeButtons.nth(i).textContent());
+        test.info().annotations.push({
+          type: 'note',
+          description: ['Found a grade with zero divisions:', await nav.gradeButtons.nth(i).textContent()].join(' '),
+        });
         const emptyMessageVisible = await page
           .getByText(/no division|not assigned|empty/i)
           .isVisible()
@@ -105,9 +114,12 @@ test(
       }
     }
     if (!foundEmptyGrade) {
-      console.log(
-        'Every grade for this teacher account has at least one division — the zero-division case could not be reached.'
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Every grade for this teacher account has at least one division — the zero-division case could not be reached.',
+        ].join(' '),
+      });
     }
   }
 );
@@ -160,13 +172,19 @@ test(
     // Exactly one grade should end up marked active, and its divisions
     // should genuinely belong to it (not a mixed state).
     const activeGradeTexts = await nav.gradeButtons.locator('.btn--active').allTextContents();
-    console.log('Grade(s) marked active after 3 rapid clicks (9 -> 12 -> 8):', JSON.stringify(activeGradeTexts));
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Grade(s) marked active after 3 rapid clicks (9 -> 12 -> 8):',
+        JSON.stringify(activeGradeTexts),
+      ].join(' '),
+    });
 
     test.fail(
       activeGradeTexts.length !== 1,
       `Expected exactly 1 active grade after the rapid clicks, found ${activeGradeTexts.length}`
     );
-    expect(activeGradeTexts.length).toBe(1);
+    expect(activeGradeTexts).toHaveLength(1);
     expect(activeGradeTexts[0].trim()).toBe('Class 8');
   }
 );
@@ -182,15 +200,18 @@ test(
     // asserting something we can't actually confirm.
     const nav = new NavigationPage(page);
     const grades = await nav.gradeButtons.allTextContents();
-    console.log(
-      'Grades shown for this account (needs manual cross-check against back-office records):',
-      JSON.stringify(grades)
-    );
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        'Grades shown for this account (needs manual cross-check against back-office records):',
+        JSON.stringify(grades),
+      ].join(' '),
+    });
     test.fail(
       true,
       'Cannot verify without a second reference account or back-office assignment record — see console log for the list to cross-check manually'
     );
-    expect(grades.length).toBe(0);
+    expect(grades).toHaveLength(0);
   }
 );
 
@@ -203,7 +224,10 @@ test(
     await nav.gradeButton('Class 9').click();
     await nav.divisionButton('A').click();
     const longestSubject = (await nav.subjectButtons.allTextContents()).sort((a, b) => b.length - a.length)[0];
-    console.log('Longest subject name in this account:', JSON.stringify(longestSubject));
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Longest subject name in this account:', JSON.stringify(longestSubject)].join(' '),
+    });
 
     const box = await nav.subjectButton(longestSubject).boundingBox();
     const viewport = page.viewportSize();

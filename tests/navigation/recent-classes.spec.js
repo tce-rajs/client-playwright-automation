@@ -42,7 +42,10 @@ test(
     // and the header format is "Class ND | Subject").
     const [, div, subject] = targetText.split('|').map((s) => s.trim());
     await expect(nav.currentClassBtn).toContainText(subject);
-    console.log('Switched to:', targetText, '-> header now:', await nav.currentClassBtn.textContent());
+    test.info().annotations.push({
+      type: 'note',
+      description: ['Switched to:', targetText, '-> header now:', await nav.currentClassBtn.textContent()].join(' '),
+    });
   }
 );
 
@@ -83,8 +86,16 @@ test(
       (await locator.innerHTML()).replace(/>([^<]*)</g, (m, t) => `>${t.trim() ? '[text]' : ''}<`);
     const firstMarkup = await stripText(items.first());
     const secondMarkup = await stripText(items.nth(1));
-    console.log('First (current) entry markup (text stripped):', firstMarkup);
-    console.log('Second entry markup (text stripped):', secondMarkup);
+    test.info().annotations.push({
+      type: 'note',
+      description: ['First (current) entry markup (text stripped):', firstMarkup].join(' '),
+    });
+    test
+      .info()
+      .annotations.push({
+        type: 'note',
+        description: ['Second entry markup (text stripped):', secondMarkup].join(' '),
+      });
 
     test.fail(
       firstMarkup === secondMarkup,
@@ -105,13 +116,19 @@ test(
     // non-empty, i.e. the app has a genuine populated state to contrast
     // against. Full empty-state coverage needs a fresh account.
     const nav = new NavigationPage(page);
-    const count = await nav.recentClassButtons.count();
-    console.log("This account's Recent Classes count (not zero, so the true empty-state path is unverified):", count);
+    const count = nav.recentClassButtons;
+    test.info().annotations.push({
+      type: 'note',
+      description: [
+        "This account's Recent Classes count (not zero, so the true empty-state path is unverified):",
+        count,
+      ].join(' '),
+    });
     test.fail(
       true,
       'No brand-new/zero-history teacher account available in this environment to verify the empty state'
     );
-    expect(count).toBe(0);
+    await expect(count).toHaveCount(0);
   }
 );
 
@@ -126,7 +143,7 @@ test(
     // failing on what's just transient leftover state from earlier tests.
     await nav.ensureRecentClasses(5);
     const count = await nav.recentClassButtons.count();
-    console.log('Recent Classes entries found:', count);
+    test.info().annotations.push({ type: 'note', description: ['Recent Classes entries found:', count].join(' ') });
     expect(count).toBeGreaterThanOrEqual(2);
 
     await nav.recentClassButtons.last().scrollIntoViewIfNeeded();
@@ -147,6 +164,9 @@ test('NAV-REC-07: Rapid double-click on the same Recent Classes item', { tag: '@
   await items.nth(targetIndex).click({ clickCount: 2, delay: 20 });
   await page.waitForTimeout(1500);
 
-  console.log('Class-switch requests fired from one rapid double-click:', switchRequestCount);
+  test.info().annotations.push({
+    type: 'note',
+    description: ['Class-switch requests fired from one rapid double-click:', switchRequestCount].join(' '),
+  });
   expect(switchRequestCount).toBeLessThanOrEqual(1);
 });

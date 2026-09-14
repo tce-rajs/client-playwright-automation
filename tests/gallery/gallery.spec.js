@@ -50,14 +50,17 @@ test.describe('Core (ADD-GAL-01..07)', () => {
       ).trim();
       const subjectDefault = (await ar.gallerySubjectSelect.textContent()).trim();
       const filterDefault = (await ar.galleryFilterSelect.textContent()).trim();
-      console.log(
-        'Current class:',
-        currentClassText,
-        '| Gallery subject default:',
-        subjectDefault,
-        '| Gallery filter default:',
-        filterDefault
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Current class:',
+          currentClassText,
+          '| Gallery subject default:',
+          subjectDefault,
+          '| Gallery filter default:',
+          filterDefault,
+        ].join(' '),
+      });
       // Documenting the real relationship rather than asserting a specific
       // expected pairing -- this is a live observation per the workbook, not a
       // hard pass/fail bar on its own.
@@ -77,12 +80,15 @@ test.describe('Core (ADD-GAL-01..07)', () => {
         .getByText(/no result|no image|not found/i)
         .isVisible()
         .catch(() => false);
-      console.log(
-        'Gallery cards after nonsense search:',
-        gridCount,
-        '| "no results" message shown:',
-        noResultsMsgVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Gallery cards after nonsense search:',
+          gridCount,
+          '| "no results" message shown:',
+          noResultsMsgVisible,
+        ].join(' '),
+      });
       test.fail(
         gridCount === 0 && !noResultsMsgVisible,
         'Zero-match Gallery search shows a blank grid with no "no results" message -- same defect pattern as Playlist\'s own Table-of-Contents search'
@@ -102,7 +108,10 @@ test.describe('Core (ADD-GAL-01..07)', () => {
         const imgs = Array.from(document.querySelectorAll('img'));
         return imgs.filter((img) => img.complete && img.naturalWidth === 0).length;
       });
-      console.log('Broken/failed-to-load Gallery thumbnails:', brokenCount);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Broken/failed-to-load Gallery thumbnails:', brokenCount].join(' '),
+      });
       test.fail(brokenCount > 0, `${brokenCount} Gallery thumbnail(s) failed to load as broken-image placeholders`);
       expect(brokenCount).toBe(0);
     }
@@ -130,9 +139,12 @@ test.describe('Core (ADD-GAL-01..07)', () => {
       await options.nth(1).click();
       await page.waitForTimeout(1200);
 
-      const afterFirstCard = await ar.galleryImageCards.first().getAttribute('data-qa-id');
-      console.log('First card before filter change:', beforeFirstCard, '| after:', afterFirstCard);
-      expect(afterFirstCard).not.toBe(beforeFirstCard);
+      const afterFirstCard = ar.galleryImageCards.first();
+      test.info().annotations.push({
+        type: 'note',
+        description: ['First card before filter change:', beforeFirstCard, '| after:', afterFirstCard].join(' '),
+      });
+      await expect(afterFirstCard).not.toHaveAttribute('data-qa-id', beforeFirstCard);
     }
   );
 
@@ -160,7 +172,9 @@ test.describe('Core (ADD-GAL-01..07)', () => {
         .first()
         .isVisible()
         .catch(() => false);
-      console.log('Pagination controls visible:', hasPagination);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Pagination controls visible:', hasPagination].join(' ') });
       if (!hasPagination) {
         test.fail(true, 'No pagination controls found on this pass -- current image count may fit on a single page');
         expect(hasPagination).toBe(true);
@@ -169,8 +183,8 @@ test.describe('Core (ADD-GAL-01..07)', () => {
       const beforeFirstCard = await ar.galleryImageCards.first().getAttribute('data-qa-id');
       await paginationControls.first().locator('button, a').last().click();
       await page.waitForTimeout(1000);
-      const afterFirstCard = await ar.galleryImageCards.first().getAttribute('data-qa-id');
-      expect(afterFirstCard).not.toBe(beforeFirstCard);
+      const afterFirstCard = ar.galleryImageCards.first();
+      await expect(afterFirstCard).not.toHaveAttribute('data-qa-id', beforeFirstCard);
     }
   );
 });
@@ -203,7 +217,10 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
     async ({ page }) => {
       const ar = new AddResourcePage(page);
       const closeBtnVisible = await ar.galleryCloseBtn.isVisible({ timeout: 5000 }).catch(() => false);
-      console.log('[data-qa-id="gallery-close-btn"] visible:', closeBtnVisible);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['[data-qa-id="gallery-close-btn"] visible:', closeBtnVisible].join(' '),
+      });
       if (!closeBtnVisible) {
         test.fail(
           true,
@@ -218,7 +235,10 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         .first()
         .isVisible()
         .catch(() => false);
-      console.log('Gallery still open after clicking gallery-close-btn:', galleryStillOpen);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Gallery still open after clicking gallery-close-btn:', galleryStillOpen].join(' '),
+      });
       test.fail(
         galleryStillOpen,
         'gallery-close-btn is visible but clicking it does not actually close the Gallery popup'
@@ -244,14 +264,17 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
       const pointerEventsOk = visible
         ? await closeBtn.evaluate((el) => getComputedStyle(el).pointerEvents !== 'none').catch(() => false)
         : false;
-      console.log(
-        'gallery-close-btn exists in DOM:',
-        exists > 0,
-        '| visible:',
-        visible,
-        '| actually clickable (pointer-events):',
-        pointerEventsOk
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'gallery-close-btn exists in DOM:',
+          exists > 0,
+          '| visible:',
+          visible,
+          '| actually clickable (pointer-events):',
+          pointerEventsOk,
+        ].join(' '),
+      });
       test.fail(
         !visible || !pointerEventsOk,
         'The cross-repo-confirmed gallery-close-btn selector is not both visible AND actually clickable in this environment/account -- see GAL-CLOSE-01 for the full click-through result that resolves which of the two conflicting workbook findings holds here'
@@ -274,17 +297,23 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
 
       const afterPlaylistCount = await pl.resourceCards.count();
       const afterCanvas = await countCanvasImageCandidates(page);
-      console.log(
-        'Playlist resource cards before/after inserting a Gallery image:',
-        beforePlaylistCount,
-        afterPlaylistCount
-      );
-      console.log(
-        'Canvas image-candidate counts before:',
-        JSON.stringify(beforeCanvas),
-        '| after:',
-        JSON.stringify(afterCanvas)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Playlist resource cards before/after inserting a Gallery image:',
+          beforePlaylistCount,
+          afterPlaylistCount,
+        ].join(' '),
+      });
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Canvas image-candidate counts before:',
+          JSON.stringify(beforeCanvas),
+          '| after:',
+          JSON.stringify(afterCanvas),
+        ].join(' '),
+      });
 
       const anyCanvasIncrease = Object.keys(afterCanvas).some((sel) => afterCanvas[sel] > (beforeCanvas[sel] ?? -1));
       test.fail(
@@ -296,10 +325,13 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         return;
       }
       const noPlaylistCardCreated = afterPlaylistCount === beforePlaylistCount;
-      console.log(
-        'No new Playlist card created for the Gallery-inserted image (confirmed asymmetry vs. other Add Resource paths):',
-        noPlaylistCardCreated
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'No new Playlist card created for the Gallery-inserted image (confirmed asymmetry vs. other Add Resource paths):',
+          noPlaylistCardCreated,
+        ].join(' '),
+      });
       // Documenting the confirmed real behavior either way -- if a Playlist
       // card WAS created this would actually contradict the cross-repo finding.
       test.fail(
@@ -325,14 +357,17 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
 
       const wbSyncMatch = requestUrls.some((u) => /\/serve\/wb\b/i.test(u));
       const customAssetMatch = requestUrls.some((u) => /serve\/custom\/asset/i.test(u));
-      console.log(
-        'Total requests captured:',
-        requestUrls.length,
-        '| any matching /serve/wb:',
-        wbSyncMatch,
-        '| any matching serve/custom/asset:',
-        customAssetMatch
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Total requests captured:',
+          requestUrls.length,
+          '| any matching /serve/wb:',
+          wbSyncMatch,
+          '| any matching serve/custom/asset:',
+          customAssetMatch,
+        ].join(' '),
+      });
       test.fail(
         !wbSyncMatch || customAssetMatch,
         'The Gallery-insert request pattern did not match the cross-repo-confirmed /serve/wb endpoint (or unexpectedly ALSO hit serve/custom/asset like other Add Resource paths) this pass'
@@ -351,17 +386,22 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
       await ar.galleryImageCards.first().dblclick({ force: true });
       await page.waitForTimeout(1500);
       const after = await countCanvasImageCandidates(page);
-      console.log(
-        'Canvas image-candidate counts before double-click:',
-        JSON.stringify(before),
-        '| after:',
-        JSON.stringify(after)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Canvas image-candidate counts before double-click:',
+          JSON.stringify(before),
+          '| after:',
+          JSON.stringify(after),
+        ].join(' '),
+      });
 
       const diffs = Object.keys(after)
         .map((sel) => ({ sel, diff: after[sel] - (before[sel] ?? 0) }))
         .filter((d) => d.diff > 0);
-      console.log('Selectors that changed:', JSON.stringify(diffs));
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Selectors that changed:', JSON.stringify(diffs)].join(' ') });
       const bestDiff = diffs.length > 0 ? Math.max(...diffs.map((d) => d.diff)) : 0;
       test.fail(
         bestDiff === 0,
@@ -371,7 +411,14 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         expect(bestDiff).toBeGreaterThan(0);
         return;
       }
-      console.log('Images added by a single double-click:', bestDiff, '(1 = correct, 2 = confirmed duplication bug)');
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Images added by a single double-click:',
+          bestDiff,
+          '(1 = correct, 2 = confirmed duplication bug)',
+        ].join(' '),
+      });
       test.fail(
         bestDiff >= 2,
         'CONFIRMED BUG: a single double-click on a Gallery thumbnail inserted 2 (or more) duplicate image objects onto the whiteboard instead of one'
@@ -395,12 +442,15 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         Object.keys(afterInsert)[0]
       );
       const countAfterInsert = afterInsert[bestSelector];
-      console.log(
-        'Best-matching selector for inserted images:',
-        bestSelector,
-        '| count after insert:',
-        countAfterInsert
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Best-matching selector for inserted images:',
+          bestSelector,
+          '| count after insert:',
+          countAfterInsert,
+        ].join(' '),
+      });
 
       await page.reload();
       await page.locator('[data-qa-id="toolbar-user-avatar"]').waitFor({ state: 'visible', timeout: 15000 });
@@ -409,7 +459,9 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         .locator(bestSelector)
         .count()
         .catch(() => 0);
-      console.log('Count after full page reload:', countAfterReload);
+      test
+        .info()
+        .annotations.push({ type: 'note', description: ['Count after full page reload:', countAfterReload].join(' ') });
       test.fail(
         countAfterReload < countAfterInsert,
         'The Gallery-inserted image did NOT survive a full page reload -- contradicts the confirmed server-side persistence finding'
@@ -431,14 +483,17 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         .first()
         .isVisible()
         .catch(() => false);
-      console.log(
-        'add-resource-action-gallery element count before reopening "+":',
-        galleryActionCountBefore,
-        '| after:',
-        galleryActionCountAfter,
-        '| original Gallery grid still visible underneath:',
-        galleryImagesStillVisible
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'add-resource-action-gallery element count before reopening "+":',
+          galleryActionCountBefore,
+          '| after:',
+          galleryActionCountAfter,
+          '| original Gallery grid still visible underneath:',
+          galleryImagesStillVisible,
+        ].join(' '),
+      });
       const stacked =
         galleryActionCountAfter > galleryActionCountBefore ||
         (galleryActionCountAfter >= 1 && galleryImagesStillVisible);
@@ -487,12 +542,15 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
             .getByText(/no image|empty|not found/i)
             .isVisible()
             .catch(() => false);
-          console.log(
-            'Found an empty category combo after',
-            combosChecked,
-            'tries -- clear empty-state message shown:',
-            emptyMsgVisible
-          );
+          test.info().annotations.push({
+            type: 'note',
+            description: [
+              'Found an empty category combo after',
+              combosChecked,
+              'tries -- clear empty-state message shown:',
+              emptyMsgVisible,
+            ].join(' '),
+          });
           test.fail(
             !emptyMsgVisible,
             'A Gallery category combination with zero images shows a blank grid with no clear empty-state message'
@@ -506,11 +564,14 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
         }
       }
       if (!foundEmptyCombo) {
-        console.log(
-          'No genuinely empty category/sub-category combination found in',
-          combosChecked,
-          "tries this pass (matches the workbook's own prior finding) -- cannot confirm the empty-state message either way"
-        );
+        test.info().annotations.push({
+          type: 'note',
+          description: [
+            'No genuinely empty category/sub-category combination found in',
+            combosChecked,
+            "tries this pass (matches the workbook's own prior finding) -- cannot confirm the empty-state message either way",
+          ].join(' '),
+        });
         test.fail(
           true,
           `No empty category combination found in ${combosChecked} tries this pass to test the empty-state message against -- same as this workbook's own prior finding`
@@ -541,7 +602,12 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
       await page.waitForTimeout(1000);
       const ids = await ar.galleryImageCards.evaluateAll((els) => els.map((el) => el.getAttribute('data-qa-id')));
       const uniqueIds = new Set(ids);
-      console.log('Total image cards after rapid Load More clicks:', ids.length, '| unique:', uniqueIds.size);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Total image cards after rapid Load More clicks:', ids.length, '| unique:', uniqueIds.size].join(
+          ' '
+        ),
+      });
       test.fail(uniqueIds.size !== ids.length, 'Rapidly clicking Load More produced duplicate image cards in the grid');
       expect(uniqueIds.size).toBe(ids.length);
     }
@@ -560,17 +626,23 @@ test.describe('Extended coverage (gap-analysis pass, 19-row workbook)', () => {
       }
       await page.waitForTimeout(1000);
       const after = await countCanvasImageCandidates(page);
-      console.log(
-        'Canvas image-candidate counts before 10 inserts:',
-        JSON.stringify(before),
-        '| after:',
-        JSON.stringify(after)
-      );
+      test.info().annotations.push({
+        type: 'note',
+        description: [
+          'Canvas image-candidate counts before 10 inserts:',
+          JSON.stringify(before),
+          '| after:',
+          JSON.stringify(after),
+        ].join(' '),
+      });
       const diffs = Object.keys(after)
         .map((sel) => after[sel] - (before[sel] ?? 0))
         .filter((d) => d > 0);
       const bestDiff = diffs.length > 0 ? Math.max(...diffs) : 0;
-      console.log('Best-detected image count increase after 10 inserts:', bestDiff);
+      test.info().annotations.push({
+        type: 'note',
+        description: ['Best-detected image count increase after 10 inserts:', bestDiff].join(' '),
+      });
       test.fail(
         bestDiff < 10,
         'Fewer than 10 new images were detected on canvas after 10 Gallery insert clicks -- some insertions may have silently failed or degraded'
