@@ -44,38 +44,71 @@ test.beforeEach(async ({ page }, testInfo) => {
     await nav.goToChapterTopicByName('Foundation Checkpoint', topicIndex).catch(() => {});
     await page.waitForTimeout(800);
     await pl.ensureDrawerVisible().catch(() => {});
-    const flashcardVisible = await pl.resourceCards.filter({ hasText: /flashcard/i }).first().isVisible({ timeout: 2000 }).catch(() => false);
+    const flashcardVisible = await pl.resourceCards
+      .filter({ hasText: /flashcard/i })
+      .first()
+      .isVisible({ timeout: 2000 })
+      .catch(() => false);
     if (flashcardVisible) found = true;
   }
 });
 
-test('PLR-FLASH-01: A paginated Flashcard-style player exists, distinct from Quiz', { tag: ['@positive', '@bug'] }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const plr = new PlayerPage(page);
-  const card = pl.resourceCards.filter({ hasText: /flashcard/i }).first();
-  const cardFound = await card.isVisible({ timeout: 5000 }).catch(() => false);
-  test.fail(!cardFound, 'Could not locate a FlashCard-type resource card in any of the first 5 topics under "Foundation Checkpoint" this run -- may need a different topic index than searched');
-  if (!cardFound) { expect(cardFound).toBe(true); return; }
+test(
+  'PLR-FLASH-01: A paginated Flashcard-style player exists, distinct from Quiz',
+  { tag: ['@positive', '@bug'] },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const plr = new PlayerPage(page);
+    const card = pl.resourceCards.filter({ hasText: /flashcard/i }).first();
+    const cardFound = await card.isVisible({ timeout: 5000 }).catch(() => false);
+    test.fail(
+      !cardFound,
+      'Could not locate a FlashCard-type resource card in any of the first 5 topics under "Foundation Checkpoint" this run -- may need a different topic index than searched'
+    );
+    if (!cardFound) {
+      expect(cardFound).toBe(true);
+      return;
+    }
 
-  await plr.openResourceCard(card);
-  await page.waitForTimeout(2000);
-  const closeVisible = await plr.closeIcon.first().isVisible({ timeout: 8000 }).catch(() => false);
-  const paginationVisible = await page.locator('[class*="pagination" i], [class*="page-number" i]').first().isVisible({ timeout: 3000 }).catch(() => false);
-  console.log('Flashcard player opened (close visible):', closeVisible, '| pagination indicator visible:', paginationVisible);
-  expect(closeVisible).toBe(true);
-});
+    await plr.openResourceCard(card);
+    await page.waitForTimeout(2000);
+    const closeVisible = await plr.closeIcon
+      .first()
+      .isVisible({ timeout: 8000 })
+      .catch(() => false);
+    const paginationVisible = await page
+      .locator('[class*="pagination" i], [class*="page-number" i]')
+      .first()
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    console.log(
+      'Flashcard player opened (close visible):',
+      closeVisible,
+      '| pagination indicator visible:',
+      paginationVisible
+    );
+    expect(closeVisible).toBe(true);
+  }
+);
 
-test('PLR-EXP-15: The Flashcard player independently confirmed to open and render real content (not just assumed distinct from Notes)', { tag: ['@negative', '@bug'] }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const plr = new PlayerPage(page);
-  const card = pl.resourceCards.filter({ hasText: /flashcard/i }).first();
-  const cardFound = await card.isVisible({ timeout: 5000 }).catch(() => false);
-  test.fail(!cardFound, 'Could not locate a FlashCard-type resource card this run');
-  if (!cardFound) { expect(cardFound).toBe(true); return; }
+test(
+  'PLR-EXP-15: The Flashcard player independently confirmed to open and render real content (not just assumed distinct from Notes)',
+  { tag: ['@negative', '@bug'] },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const plr = new PlayerPage(page);
+    const card = pl.resourceCards.filter({ hasText: /flashcard/i }).first();
+    const cardFound = await card.isVisible({ timeout: 5000 }).catch(() => false);
+    test.fail(!cardFound, 'Could not locate a FlashCard-type resource card this run');
+    if (!cardFound) {
+      expect(cardFound).toBe(true);
+      return;
+    }
 
-  await plr.openResourceCard(card);
-  await page.waitForTimeout(2000);
-  const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
-  console.log('Real content text length inside the opened Flashcard player:', bodyText.trim().length);
-  expect(bodyText.trim().length).toBeGreaterThan(20);
-});
+    await plr.openResourceCard(card);
+    await page.waitForTimeout(2000);
+    const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
+    console.log('Real content text length inside the opened Flashcard player:', bodyText.trim().length);
+    expect(bodyText.trim().length).toBeGreaterThan(20);
+  }
+);

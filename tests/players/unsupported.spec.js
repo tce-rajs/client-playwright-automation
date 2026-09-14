@@ -17,7 +17,8 @@ const { applyClassMap } = require('../../config/moduleClassMap');
 
 test.use({ viewport: { width: 1920, height: 1080 } });
 
-const THROWAWAY_TXT = 'C:\\Users\\V_CRYS~2\\AppData\\Local\\Temp\\claude\\d--Projects\\c0fe8cad-eeb0-4db9-a8d0-ac9a0fdfed61\\scratchpad\\unsupported_test_file.txt';
+const THROWAWAY_TXT =
+  'C:\\Users\\V_CRYS~2\\AppData\\Local\\Temp\\claude\\d--Projects\\c0fe8cad-eeb0-4db9-a8d0-ac9a0fdfed61\\scratchpad\\unsupported_test_file.txt';
 
 test.beforeEach(async ({ page }) => {
   const pl = new PlaylistPage(page);
@@ -55,58 +56,98 @@ function findByTitle(pl, title) {
   return pl.resourceCards.filter({ hasText: title }).first();
 }
 
-test('PLR-UNS-01: An Unsupported resource type shows a clear, graceful "UNSUPPORTED FILE" message', { tag: ['@positive', '@bug'] }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const ar = new AddResourcePage(page);
-  const plr = new PlayerPage(page);
-  const title = 'QA Unsupported Test ' + Date.now();
-  const created = await createUnsupportedAsset(page, ar, pl, title);
-  test.fail(!created, 'Could not create a throwaway .txt Unsupported asset this run (Add Resource picker stuck, or Submit did not add a new card)');
-  if (!created) { expect(created).toBe(true); return; }
+test(
+  'PLR-UNS-01: An Unsupported resource type shows a clear, graceful "UNSUPPORTED FILE" message',
+  { tag: ['@positive', '@bug'] },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const ar = new AddResourcePage(page);
+    const plr = new PlayerPage(page);
+    const title = 'QA Unsupported Test ' + Date.now();
+    const created = await createUnsupportedAsset(page, ar, pl, title);
+    test.fail(
+      !created,
+      'Could not create a throwaway .txt Unsupported asset this run (Add Resource picker stuck, or Submit did not add a new card)'
+    );
+    if (!created) {
+      expect(created).toBe(true);
+      return;
+    }
 
-  await plr.openResourceCard(findByTitle(pl, title));
-  await page.waitForTimeout(2000);
-  const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
-  const showsUnsupported = /unsupported file/i.test(bodyText);
-  console.log('"UNSUPPORTED FILE" message shown:', showsUnsupported);
-  expect(showsUnsupported).toBe(true);
-  await expect(plr.closeIcon.first()).toBeVisible();
-});
+    await plr.openResourceCard(findByTitle(pl, title));
+    await page.waitForTimeout(2000);
+    const bodyText = (await page.evaluate(() => document.body.innerText)) || '';
+    const showsUnsupported = /unsupported file/i.test(bodyText);
+    console.log('"UNSUPPORTED FILE" message shown:', showsUnsupported);
+    expect(showsUnsupported).toBe(true);
+    await expect(plr.closeIcon.first()).toBeVisible();
+  }
+);
 
-test('PLR-UNS-02: A .txt upload correctly showing UNSUPPORTED FILE + Download is EXPECTED BEHAVIOR (positive re-confirmation)', { tag: ['@positive', '@bug'] }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const ar = new AddResourcePage(page);
-  const plr = new PlayerPage(page);
-  const title = 'QA Unsupported Positive ' + Date.now();
-  const created = await createUnsupportedAsset(page, ar, pl, title);
-  test.fail(!created, 'Could not create a throwaway .txt Unsupported asset this run');
-  if (!created) { expect(created).toBe(true); return; }
+test(
+  'PLR-UNS-02: A .txt upload correctly showing UNSUPPORTED FILE + Download is EXPECTED BEHAVIOR (positive re-confirmation)',
+  { tag: ['@positive', '@bug'] },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const ar = new AddResourcePage(page);
+    const plr = new PlayerPage(page);
+    const title = 'QA Unsupported Positive ' + Date.now();
+    const created = await createUnsupportedAsset(page, ar, pl, title);
+    test.fail(!created, 'Could not create a throwaway .txt Unsupported asset this run');
+    if (!created) {
+      expect(created).toBe(true);
+      return;
+    }
 
-  await plr.openResourceCard(findByTitle(pl, title));
-  await page.waitForTimeout(2000);
-  const downloadBtnVisible = await page.getByRole('button', { name: /download/i }).isVisible({ timeout: 5000 }).catch(() => false);
-  console.log('A Download fallback button is present (expected, correct behavior for .txt):', downloadBtnVisible);
-  expect(downloadBtnVisible).toBe(true);
-});
+    await plr.openResourceCard(findByTitle(pl, title));
+    await page.waitForTimeout(2000);
+    const downloadBtnVisible = await page
+      .getByRole('button', { name: /download/i })
+      .isVisible({ timeout: 5000 })
+      .catch(() => false);
+    console.log('A Download fallback button is present (expected, correct behavior for .txt):', downloadBtnVisible);
+    expect(downloadBtnVisible).toBe(true);
+  }
+);
 
-test('PLR-UNS-03: No "Close All Resources" control affects an open Unsupported player', { tag: ['@cross-cutting', '@bug'] }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const ar = new AddResourcePage(page);
-  const plr = new PlayerPage(page);
-  const title = 'QA Unsupported CloseAll ' + Date.now();
-  const created = await createUnsupportedAsset(page, ar, pl, title);
-  test.fail(!created, 'Could not create a throwaway .txt Unsupported asset this run');
-  if (!created) { expect(created).toBe(true); return; }
+test(
+  'PLR-UNS-03: No "Close All Resources" control affects an open Unsupported player',
+  { tag: ['@cross-cutting', '@bug'] },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const ar = new AddResourcePage(page);
+    const plr = new PlayerPage(page);
+    const title = 'QA Unsupported CloseAll ' + Date.now();
+    const created = await createUnsupportedAsset(page, ar, pl, title);
+    test.fail(!created, 'Could not create a throwaway .txt Unsupported asset this run');
+    if (!created) {
+      expect(created).toBe(true);
+      return;
+    }
 
-  await plr.openResourceCard(findByTitle(pl, title));
-  await page.waitForTimeout(2000);
-  const closeAllVisible = await page.getByText(/close all resources/i).isVisible({ timeout: 3000 }).catch(() => false);
-  console.log('"Close All Resources" control found:', closeAllVisible);
-  test.fail(closeAllVisible, 'Expected this control to be absent per the workbook\'s own confirmed finding, but it was found -- worth re-checking');
-  expect(closeAllVisible).toBe(false);
-});
+    await plr.openResourceCard(findByTitle(pl, title));
+    await page.waitForTimeout(2000);
+    const closeAllVisible = await page
+      .getByText(/close all resources/i)
+      .isVisible({ timeout: 3000 })
+      .catch(() => false);
+    console.log('"Close All Resources" control found:', closeAllVisible);
+    test.fail(
+      closeAllVisible,
+      "Expected this control to be absent per the workbook's own confirmed finding, but it was found -- worth re-checking"
+    );
+    expect(closeAllVisible).toBe(false);
+  }
+);
 
-test('PLR-UNS-04: Downloaded file content and edge-case filenames need a human-verified check (not independently automatable)', { tag: ['@boundary', '@bug'] }, async ({ page }) => {
-  test.fail(true, 'CONFIRMED cross-repo: downloaded-file content and filename-handling verification cannot be inspected from browser automation at all -- Playwright can observe the Download click but not open/verify the resulting file\'s content on disk in this sandboxed environment. Needs a human tester.');
-  expect(true).toBe(false);
-});
+test(
+  'PLR-UNS-04: Downloaded file content and edge-case filenames need a human-verified check (not independently automatable)',
+  { tag: ['@boundary', '@bug'] },
+  async ({ page }) => {
+    test.fail(
+      true,
+      "CONFIRMED cross-repo: downloaded-file content and filename-handling verification cannot be inspected from browser automation at all -- Playwright can observe the Download click but not open/verify the resulting file's content on disk in this sandboxed environment. Needs a human tester."
+    );
+    expect(true).toBe(false);
+  }
+);

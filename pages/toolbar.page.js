@@ -7,8 +7,18 @@
 // additionally confirmed live for this project on 2026-09-05.
 
 const TOOL_IDS = [
-  'gtSelect', 'gtWidgets', 'gtBackground', 'gtPan', 'gtInserttext',
-  'gtPen', 'gtErase', 'gtShapes', 'gtZoom', 'gtMagnet', 'gtUndo', 'gtRedo',
+  'gtSelect',
+  'gtWidgets',
+  'gtBackground',
+  'gtPan',
+  'gtInserttext',
+  'gtPen',
+  'gtErase',
+  'gtShapes',
+  'gtZoom',
+  'gtMagnet',
+  'gtUndo',
+  'gtRedo',
 ];
 
 class ToolbarPage {
@@ -145,8 +155,10 @@ class ToolbarPage {
   async drawStroke(from, to, steps = 14) {
     await this.wbSvg.waitFor({ state: 'visible', timeout: 10000 });
     const box = await this.wbSvg.boundingBox();
-    const fx = box.x + from.x, fy = box.y + from.y;
-    const tx = box.x + to.x, ty = box.y + to.y;
+    const fx = box.x + from.x,
+      fy = box.y + from.y;
+    const tx = box.x + to.x,
+      ty = box.y + to.y;
     await this.page.mouse.move(fx, fy);
     await this.page.mouse.down();
     for (let i = 1; i <= steps; i++) {
@@ -165,7 +177,7 @@ class ToolbarPage {
     await this.selectTool('gtPen');
     const before = await this.pathCount();
     await this.drawStroke(from, to);
-    if (await this.pathCount() === before) {
+    if ((await this.pathCount()) === before) {
       await this.page.waitForTimeout(500);
       await this.drawStroke(from, to);
     }

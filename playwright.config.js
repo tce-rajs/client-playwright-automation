@@ -10,8 +10,10 @@ const { defineConfig, devices } = require('@playwright/test');
 function reportTimestamp() {
   const pad = (n) => String(n).padStart(2, '0');
   const d = new Date();
-  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_` +
-    `${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`;
+  return (
+    `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}_` +
+    `${pad(d.getHours())}-${pad(d.getMinutes())}-${pad(d.getSeconds())}`
+  );
 }
 
 // Computed once per run, so the archived html report and its README both
@@ -62,6 +64,10 @@ module.exports = defineConfig({
   // safe even after you run the suite again. The third entry drops a
   // README.md into that same archive folder explaining how to open it.
   reporter: [
+    // Console output while the run is happening (pass/fail per test as it
+    // finishes) -- the html reporters below only give you something to look
+    // at after the whole run ends.
+    ['list'],
     ['html', { outputFolder: 'playwright-report' }],
     ['html', { outputFolder: archiveFolder, open: 'never' }],
     ['./scripts/archive-readme-reporter.js', { outputFolder: archiveFolder }],
@@ -88,33 +94,50 @@ module.exports = defineConfig({
     // 1280x720 the canvas genuinely only fills that smaller area; at
     // 1920x1080 it correctly fills the whole window). Setting it here
     // makes every file consistent regardless of whether it overrides it.
-    // viewport: { width: 1920, height: 1080 },
+    // Re-enabled (2026-09-14): only matters for legacy browser mode (the desktop-client fixture
+    // ignores this entirely). CONFIRMED LIVE: `viewport` alone only controls the PAGE's internal
+    // content area via CDP emulation -- it does NOT resize the actual OS browser window, which
+    // still opened maximized to the real monitor's native resolution regardless. The real fix is
+    // an explicit --window-size launch arg below, which controls the actual window; `viewport` is
+    // kept in sync with it so the page's reported size matches what's really on screen.
+    viewport: { width: 1920, height: 1080 },
 
-    // Capture a trace only when a test fails, so we can debug it visually.
-    trace: 'on-first-retry',
+    launchOptions: {
+      args: ['--window-size=1920,1080', '--window-position=0,0'],
+    },
+
+    // Capture a trace whenever a test fails -- 'on-first-retry' (the previous
+    // setting) only produces a trace on retry attempts, so a local run
+    // (retries: 0 above) never got one for its very first, only failure.
+    // 'retain-on-failure' captures on every failed attempt, retried or not,
+    // and deletes the trace for passing tests automatically.
+    trace: 'retain-on-failure',
 
     // Take a screenshot only when a test fails.
     screenshot: 'only-on-failure',
+
+    // Keep a video of failing tests too -- this suite drives a lot of
+    // timing-sensitive UI (drag/drop, canvas drawing, popup animations)
+    // where a single failure screenshot often isn't enough to tell what
+    // actually happened; a short video usually is.
+    video: 'retain-on-failure',
   },
 
+  // REMOVED (2026-09-14): this used to be 3 projects -- chromium, plus firefox/webkit scoped to
+  // just RESP-05 for a real cross-browser check. Since the switch to desktop client mode, EVERY
+  // spec (including responsive.spec.js's RESP-05) imports from fixtures/electron-app.js, which
+  // always launches the real Tata ClassEdge School.exe regardless of a project's `use.browserName`
+  // -- so the firefox/webkit projects never actually drove Firefox or WebKit, they just reran
+  // RESP-05 two more times through the SAME Electron client under a misleading label. Confirmed
+  // live: no real browser has ever launched in this suite's default run. Down to a single project,
+  // renamed from 'chromium' to 'client' -- Playwright requires every test to belong to a named
+  // project (it's a structural requirement, the name itself has no effect on what runs, and the
+  // fixture ignores `use.browserName` entirely either way), but the reporter prints whatever that
+  // project is called, and 'chromium' was misleading people into thinking a browser was involved.
   projects: [
     {
-      name: 'chromium',
+      name: 'client',
       use: { ...devices['Desktop Chrome'] },
-    },
-    // These two only run the RESP-05 cross-browser-consistency case —
-    // every other test only needs to run once, on chromium, so there's no
-    // point tripling the whole suite's runtime for tests that don't care
-    // which engine they run under.
-    {
-      name: 'firefox',
-      use: { ...devices['Desktop Firefox'] },
-      grep: /RESP-05/,
-    },
-    {
-      name: 'webkit',
-      use: { ...devices['Desktop Safari'] },
-      grep: /RESP-05/,
     },
   ],
 });

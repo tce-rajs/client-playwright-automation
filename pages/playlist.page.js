@@ -52,9 +52,15 @@ class PlaylistPage {
     // previously-opened confirmation popup's template mounted in the DOM
     // (confirmed live: 4 stacked instances after a few remove attempts) --
     // scope to the currently visible one.
-    this.resourceRemoveBtn = page.locator('[data-qa-id="playlist-resource-remove-btn"], [data-qa-id="playlist-quiz-remove-btn"]');
-    this.resourceRemoveConfirmBtn = page.locator('[data-qa-id="playlist-resource-remove-confirm-btn"]:visible, [data-qa-id="playlist-quiz-remove-confirm-btn"]:visible');
-    this.resourceRemoveCancelBtn = page.locator('[data-qa-id="playlist-resource-cancle-btn"]:visible, [data-qa-id="playlist-quiz-cancle-btn"]:visible');
+    this.resourceRemoveBtn = page.locator(
+      '[data-qa-id="playlist-resource-remove-btn"], [data-qa-id="playlist-quiz-remove-btn"]'
+    );
+    this.resourceRemoveConfirmBtn = page.locator(
+      '[data-qa-id="playlist-resource-remove-confirm-btn"]:visible, [data-qa-id="playlist-quiz-remove-confirm-btn"]:visible'
+    );
+    this.resourceRemoveCancelBtn = page.locator(
+      '[data-qa-id="playlist-resource-cancle-btn"]:visible, [data-qa-id="playlist-quiz-cancle-btn"]:visible'
+    );
     // Cards added via Add Resource are their own type (playlist-asset-card)
     // and use a different remove path -- an overflow ("...") icon per card
     // that reveals its own Remove option, rather than a direct hover-reveal
@@ -87,13 +93,19 @@ class PlaylistPage {
    * clicking this same button, so callers must track open/closed state
    * themselves rather than assuming Escape closed it. */
   async openOptionsMenu() {
-    const alreadyOpen = await this.filterOptions.first().isVisible().catch(() => false);
+    const alreadyOpen = await this.filterOptions
+      .first()
+      .isVisible()
+      .catch(() => false);
     if (!alreadyOpen) await this.optionsMenuBtn.click();
     await this.filterOptions.first().waitFor({ state: 'visible', timeout: 5000 });
   }
 
   async closeOptionsMenu() {
-    const stillOpen = await this.filterOptions.first().isVisible().catch(() => false);
+    const stillOpen = await this.filterOptions
+      .first()
+      .isVisible()
+      .catch(() => false);
     if (stillOpen) await this.optionsMenuBtn.click();
   }
 
@@ -131,7 +143,7 @@ class PlaylistPage {
    * whole search -- worst case it just tries fewer chapters.
    */
   async ensureResourcesPresent(maxChaptersToTry = 4, maxTopicsPerChapter = 4) {
-    if (await this.resourceCards.count() > 0) return;
+    if ((await this.resourceCards.count()) > 0) return;
 
     for (let c = 0; c < maxChaptersToTry; c++) {
       const opened = await this._tryOpenContentsPopup();
@@ -148,7 +160,7 @@ class PlaylistPage {
         const topicOk = await this._tryClick(this.topicItems.nth(t));
         if (!topicOk) break; // popup likely re-rendered; move on to next chapter attempt
         await this.page.waitForTimeout(800);
-        if (await this.resourceCards.count() > 0) return;
+        if ((await this.resourceCards.count()) > 0) return;
         const reopened = await this._tryOpenContentsPopup();
         if (!reopened) break;
         const rechapterOk = await this._tryClick(this.chapterItems.nth(c));
@@ -159,7 +171,10 @@ class PlaylistPage {
   }
 
   async _tryOpenContentsPopup() {
-    const alreadyOpen = await this.chapterItems.first().isVisible().catch(() => false);
+    const alreadyOpen = await this.chapterItems
+      .first()
+      .isVisible()
+      .catch(() => false);
     if (alreadyOpen) return true;
     try {
       await this.contentsTile.click({ timeout: 5000 });
@@ -183,13 +198,13 @@ class PlaylistPage {
    * switching Chapter if the current one doesn't have enough (used by tests
    * that need to index into 2+ distinct Topics, e.g. rapid-switch races). */
   async ensureMinTopics(min) {
-    if (await this.topicItems.count() >= min) return;
+    if ((await this.topicItems.count()) >= min) return;
     const chapterCount = await this.chapterItems.count();
     for (let c = 0; c < chapterCount; c++) {
       const ok = await this._tryClick(this.chapterItems.nth(c));
       if (!ok) continue;
       await this.page.waitForTimeout(600);
-      if (await this.topicItems.count() >= min) return;
+      if ((await this.topicItems.count()) >= min) return;
     }
   }
 

@@ -155,55 +155,58 @@ async function launchClient() {
 const MAX_LAUNCH_ATTEMPTS = 2;
 
 const test = base.test.extend({
-  page: [async ({}, use) => {
-    // Without this check, a missing client just fails with Playwright's own
-    // generic "Process failed to launch!" (confirmed live -- no path, no
-    // reason, nothing actionable), repeated identically on every single
-    // test. Fail fast with a message that says what's actually wrong.
-    if (!fs.existsSync(CLIENT_EXE_PATH)) {
-      throw new Error(
-        `Tata ClassEdge School client not found at: ${CLIENT_EXE_PATH}\n` +
-          `Install the desktop client on this machine, or set CLASSEDGE_CLIENT_EXE ` +
-          `in .env to point at its real install location.`
-      );
-    }
+  page: [
+    async ({}, use) => {
+      // Without this check, a missing client just fails with Playwright's own
+      // generic "Process failed to launch!" (confirmed live -- no path, no
+      // reason, nothing actionable), repeated identically on every single
+      // test. Fail fast with a message that says what's actually wrong.
+      if (!fs.existsSync(CLIENT_EXE_PATH)) {
+        throw new Error(
+          `Tata ClassEdge School client not found at: ${CLIENT_EXE_PATH}\n` +
+            `Install the desktop client on this machine, or set CLASSEDGE_CLIENT_EXE ` +
+            `in .env to point at its real install location.`
+        );
+      }
 
-    let app, teachWindow;
-    for (let attempt = 1; attempt <= MAX_LAUNCH_ATTEMPTS; attempt++) {
-      ({ app, teachWindow } = await launchClient());
+      let app, teachWindow;
+      for (let attempt = 1; attempt <= MAX_LAUNCH_ATTEMPTS; attempt++) {
+        ({ app, teachWindow } = await launchClient());
 
-      if (await isConnectionErrorShowing(app)) {
-        // Cheap recovery first: a plain Playwright-level goto on the SAME
-        // window, bypassing the app's own broken internal retry. Confirmed
-        // live this reliably restores real content within a few seconds.
-        try {
-          await teachWindow.goto(resolveUrl(BASE_URL), { timeout: 20000, waitUntil: 'domcontentloaded' });
-        } catch {
-          // fall through to the real-content check below regardless
+        if (await isConnectionErrorShowing(app)) {
+          // Cheap recovery first: a plain Playwright-level goto on the SAME
+          // window, bypassing the app's own broken internal retry. Confirmed
+          // live this reliably restores real content within a few seconds.
+          try {
+            await teachWindow.goto(resolveUrl(BASE_URL), { timeout: 20000, waitUntil: 'domcontentloaded' });
+          } catch {
+            // fall through to the real-content check below regardless
+          }
+        }
+
+        if (await hasRealContent(teachWindow)) break;
+
+        await app.close().catch(() => {});
+        if (attempt === MAX_LAUNCH_ATTEMPTS) {
+          throw new Error(
+            `BLOCKER: the client's teach window is still empty/broken after ${MAX_LAUNCH_ATTEMPTS} ` +
+              `fresh launches, each with a recovery retry attempted. This is a genuine failure to ` +
+              `load real content, not the known cosmetic startup-race overlay (which recovers on ` +
+              `retry) -- so this test is failing rather than working around it. Check the QA ` +
+              `server/network before re-running.`
+          );
         }
       }
 
-      if (await hasRealContent(teachWindow)) break;
+      const originalGoto = teachWindow.goto.bind(teachWindow);
+      teachWindow.goto = (url, options) => originalGoto(resolveUrl(url), options);
+
+      await use(teachWindow);
 
       await app.close().catch(() => {});
-      if (attempt === MAX_LAUNCH_ATTEMPTS) {
-        throw new Error(
-          `BLOCKER: the client's teach window is still empty/broken after ${MAX_LAUNCH_ATTEMPTS} ` +
-            `fresh launches, each with a recovery retry attempted. This is a genuine failure to ` +
-            `load real content, not the known cosmetic startup-race overlay (which recovers on ` +
-            `retry) -- so this test is failing rather than working around it. Check the QA ` +
-            `server/network before re-running.`
-        );
-      }
-    }
-
-    const originalGoto = teachWindow.goto.bind(teachWindow);
-    teachWindow.goto = (url, options) => originalGoto(resolveUrl(url), options);
-
-    await use(teachWindow);
-
-    await app.close().catch(() => {});
-  }, { timeout: 100000 }], // 2 launch attempts worst-case (~10-20s each incl. recovery retry) needs more than Playwright's fixture-timeout default
+    },
+    { timeout: 100000 },
+  ], // 2 launch attempts worst-case (~10-20s each incl. recovery retry) needs more than Playwright's fixture-timeout default
 });
 
 module.exports = { test, expect: base.expect, devices: base.devices };

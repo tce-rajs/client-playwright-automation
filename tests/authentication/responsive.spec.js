@@ -61,23 +61,27 @@ test('RESP-04: Browser zoom at 150-200%', { tag: '@boundary' }, async ({ page })
   }
 });
 
-test('RESP-05: Cross-browser consistency (Chromium, Firefox, WebKit)', { tag: '@boundary' }, async ({ page, browserName }) => {
-  // Runs three times — once per engine (see playwright.config.js's
-  // per-project `grep`) — repeating the core PIN login flow and checking
-  // the same real things work on each: the canvas-rendered toolbar, the
-  // virtual keyboard, and PIN entry/submit.
-  console.log('Running under browser engine:', browserName);
+test(
+  'RESP-05: Cross-browser consistency (Chromium, Firefox, WebKit)',
+  { tag: '@boundary' },
+  async ({ page, browserName }) => {
+    // Runs three times — once per engine (see playwright.config.js's
+    // per-project `grep`) — repeating the core PIN login flow and checking
+    // the same real things work on each: the canvas-rendered toolbar, the
+    // virtual keyboard, and PIN entry/submit.
+    console.log('Running under browser engine:', browserName);
 
-  await page.goto('./');
-  const login = new LoginPage(page);
-  await expect(login.guestModeText).toBeVisible();
+    await page.goto('./');
+    const login = new LoginPage(page);
+    await expect(login.guestModeText).toBeVisible();
 
-  await login.openSignIn();
-  await expect(login.pinForm).toBeVisible();
-  for (let i = 0; i < 5; i++) {
-    await expect(login.pinDigitBox(i)).toBeVisible();
+    await login.openSignIn();
+    await expect(login.pinForm).toBeVisible();
+    for (let i = 0; i < 5; i++) {
+      await expect(login.pinDigitBox(i)).toBeVisible();
+    }
+
+    await login.enterPin(process.env.VALID_PIN);
+    await expect(page.locator('[data-qa-id="toolbar-user-avatar"]')).toBeVisible({ timeout: 15000 });
   }
-
-  await login.enterPin(process.env.VALID_PIN);
-  await expect(page.locator('[data-qa-id="toolbar-user-avatar"]')).toBeVisible({ timeout: 15000 });
-});
+);

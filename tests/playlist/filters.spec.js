@@ -48,111 +48,155 @@ test.afterEach(async ({ page }) => {
   await pl.closeOptionsMenu();
 });
 
-test('PL-FLT-01: Playlist Options shows one checkbox per resource type, with a live count', { tag: '@ui-state' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const count = await pl.filterOptions.count();
-  expect(count).toBeGreaterThan(0);
-  const texts = await pl.filterOptions.allTextContents();
-  console.log('Filter options:', JSON.stringify(texts));
-  for (const t of texts) {
-    expect(t).toMatch(/\(\d+\)/);
+test(
+  'PL-FLT-01: Playlist Options shows one checkbox per resource type, with a live count',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const count = await pl.filterOptions.count();
+    expect(count).toBeGreaterThan(0);
+    const texts = await pl.filterOptions.allTextContents();
+    console.log('Filter options:', JSON.stringify(texts));
+    for (const t of texts) {
+      expect(t).toMatch(/\(\d+\)/);
+    }
   }
-});
+);
 
-test('PL-FLT-02: Unchecking every resource-type checkbox hides all resource cards', { tag: '@negative' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const optionCount = await pl.filterOptions.count();
-  for (let i = 0; i < optionCount; i++) {
-    await pl.filterOptions.nth(i).click();
+test(
+  'PL-FLT-02: Unchecking every resource-type checkbox hides all resource cards',
+  { tag: '@negative' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const optionCount = await pl.filterOptions.count();
+    for (let i = 0; i < optionCount; i++) {
+      await pl.filterOptions.nth(i).click();
+      await page.waitForTimeout(400);
+    }
+
+    const cardCount = await pl.resourceCards.count();
+    const noResourcesMessage = await page
+      .getByText(/no resources found/i)
+      .isVisible()
+      .catch(() => false);
+    console.log(
+      'Resource cards after unchecking all',
+      optionCount,
+      'type(s):',
+      cardCount,
+      '| "No resources found!" shown:',
+      noResourcesMessage
+    );
+    expect(cardCount).toBe(0);
+    expect(noResourcesMessage).toBe(true);
+  }
+);
+
+test(
+  'PL-FLT-03: Re-checking every resource-type checkbox restores all previously visible resource cards',
+  { tag: '@positive' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const beforeCount = await pl.resourceCards.count();
+    const optionCount = await pl.filterOptions.count();
+
+    for (let i = 0; i < optionCount; i++) {
+      await pl.filterOptions.nth(i).click(); // uncheck
+      await page.waitForTimeout(300);
+    }
+    for (let i = 0; i < optionCount; i++) {
+      await pl.filterOptions.nth(i).click(); // re-check
+      await page.waitForTimeout(300);
+    }
+
+    const afterCount = await pl.resourceCards.count();
+    expect(afterCount).toBe(beforeCount);
+  }
+);
+
+test(
+  'PL-FLT-04: Unchecking a single resource-type checkbox hides only that type',
+  { tag: ['@positive', '@bug'] },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const optionCount = await pl.filterOptions.count();
+    if (optionCount < 2) {
+      test.fail(
+        true,
+        `Only ${optionCount} distinct resource type(s) in this account's active topic — need 2+ to confirm isolated filtering`
+      );
+      expect(optionCount).toBeGreaterThanOrEqual(2);
+      return;
+    }
+
+    const beforeCount = await pl.resourceCards.count();
+    await pl.filterOptions.nth(0).click();
+    await page.waitForTimeout(600);
+    const afterCount = await pl.resourceCards.count();
+
+    expect(afterCount).toBeLessThan(beforeCount);
+    expect(afterCount).toBeGreaterThan(0);
+  }
+);
+
+test(
+  'PL-FLT-05: Filter selection persists or resets when switching to a different Topic',
+  { tag: '@negative' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const optionCount = await pl.filterOptions.count();
+    for (let i = 0; i < optionCount; i++) {
+      await pl.filterOptions.nth(i).click();
+      await page.waitForTimeout(300);
+    }
+    await pl.closeOptionsMenu();
+    await page.waitForTimeout(500);
+
+    await pl.openContentsPopup();
+    await pl.ensureMinTopics(2); // need a genuinely different Topic B to switch to; some chapters have only 1 (or 0)
+    await pl.topicItems.first().click();
+    await page.waitForTimeout(1000);
+
+    const filterStateOnTopicB = await page
+      .getByText(/no resources found/i)
+      .isVisible()
+      .catch(() => false);
+    console.log('Filter (all-unchecked) still applied after switching topics:', filterStateOnTopicB);
+    // Documenting whichever real behaviour occurs -- both "remembered" and
+    // "reset" are legitimate as long as they're consistent; this isn't a
+    // pass/fail bar on its own per the test case, just a documented finding.
+  }
+);
+
+test(
+  'PL-FLT-06: "Edit" warns that it will reset filters, but ONLY when a filter is actively applied',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    // CONFIRMED LIVE: with every type checked (default), Edit enters editing
+    // mode directly with no confirmation at all -- the warning only appears
+    // once a filter is actually narrowing the list.
+    await pl.filterOptions.nth(0).click();
     await page.waitForTimeout(400);
+
+    await pl.filterEditBtn.click();
+    await expect(page.getByText(/editing the playlist will reset the applied filters/i)).toBeVisible({ timeout: 5000 });
+    await pl.filterCancelBtn.click();
   }
+);
 
-  const cardCount = await pl.resourceCards.count();
-  const noResourcesMessage = await page.getByText(/no resources found/i).isVisible().catch(() => false);
-  console.log('Resource cards after unchecking all', optionCount, 'type(s):', cardCount, '| "No resources found!" shown:', noResourcesMessage);
-  expect(cardCount).toBe(0);
-  expect(noResourcesMessage).toBe(true);
-});
-
-test('PL-FLT-03: Re-checking every resource-type checkbox restores all previously visible resource cards', { tag: '@positive' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const beforeCount = await pl.resourceCards.count();
-  const optionCount = await pl.filterOptions.count();
-
-  for (let i = 0; i < optionCount; i++) {
-    await pl.filterOptions.nth(i).click(); // uncheck
-    await page.waitForTimeout(300);
+test(
+  'PL-FLT-07: "Reset" restores the playlist to its default order/state after confirmation',
+  { tag: '@positive' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    await pl.filterResetBtn.click();
+    await expect(page.getByText(/are you sure you want to reset your playlist/i)).toBeVisible({ timeout: 5000 });
+    await pl.filterResetConfirmBtn.click();
+    await page.waitForTimeout(1000);
+    await expect(pl.resourceCards.first()).toBeVisible();
   }
-  for (let i = 0; i < optionCount; i++) {
-    await pl.filterOptions.nth(i).click(); // re-check
-    await page.waitForTimeout(300);
-  }
-
-  const afterCount = await pl.resourceCards.count();
-  expect(afterCount).toBe(beforeCount);
-});
-
-test('PL-FLT-04: Unchecking a single resource-type checkbox hides only that type', { tag: ['@positive', '@bug'] }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const optionCount = await pl.filterOptions.count();
-  if (optionCount < 2) {
-    test.fail(true, `Only ${optionCount} distinct resource type(s) in this account's active topic — need 2+ to confirm isolated filtering`);
-    expect(optionCount).toBeGreaterThanOrEqual(2);
-    return;
-  }
-
-  const beforeCount = await pl.resourceCards.count();
-  await pl.filterOptions.nth(0).click();
-  await page.waitForTimeout(600);
-  const afterCount = await pl.resourceCards.count();
-
-  expect(afterCount).toBeLessThan(beforeCount);
-  expect(afterCount).toBeGreaterThan(0);
-});
-
-test('PL-FLT-05: Filter selection persists or resets when switching to a different Topic', { tag: '@negative' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const optionCount = await pl.filterOptions.count();
-  for (let i = 0; i < optionCount; i++) {
-    await pl.filterOptions.nth(i).click();
-    await page.waitForTimeout(300);
-  }
-  await pl.closeOptionsMenu();
-  await page.waitForTimeout(500);
-
-  await pl.openContentsPopup();
-  await pl.ensureMinTopics(2); // need a genuinely different Topic B to switch to; some chapters have only 1 (or 0)
-  await pl.topicItems.first().click();
-  await page.waitForTimeout(1000);
-
-  const filterStateOnTopicB = await page.getByText(/no resources found/i).isVisible().catch(() => false);
-  console.log('Filter (all-unchecked) still applied after switching topics:', filterStateOnTopicB);
-  // Documenting whichever real behaviour occurs -- both "remembered" and
-  // "reset" are legitimate as long as they're consistent; this isn't a
-  // pass/fail bar on its own per the test case, just a documented finding.
-});
-
-test('PL-FLT-06: "Edit" warns that it will reset filters, but ONLY when a filter is actively applied', { tag: '@ui-state' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  // CONFIRMED LIVE: with every type checked (default), Edit enters editing
-  // mode directly with no confirmation at all -- the warning only appears
-  // once a filter is actually narrowing the list.
-  await pl.filterOptions.nth(0).click();
-  await page.waitForTimeout(400);
-
-  await pl.filterEditBtn.click();
-  await expect(page.getByText(/editing the playlist will reset the applied filters/i)).toBeVisible({ timeout: 5000 });
-  await pl.filterCancelBtn.click();
-});
-
-test('PL-FLT-07: "Reset" restores the playlist to its default order/state after confirmation', { tag: '@positive' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  await pl.filterResetBtn.click();
-  await expect(page.getByText(/are you sure you want to reset your playlist/i)).toBeVisible({ timeout: 5000 });
-  await pl.filterResetConfirmBtn.click();
-  await page.waitForTimeout(1000);
-  await expect(pl.resourceCards.first()).toBeVisible();
-});
+);
 
 test('PL-FLT-08: Cancelling the Edit confirmation makes no change', { tag: '@ui-state' }, async ({ page }) => {
   const pl = new PlaylistPage(page);

@@ -35,17 +35,25 @@ const MODULE_CLASS_MAP = {
   default: {
     label: 'Default (general-purpose fallback)',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Physics',
-    chapterIndex: 0, topicIndex: 0,
-    notes: 'This suite\'s general-purpose class on the primary account -- used by any module with no specific data dependency.',
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics',
+    chapterIndex: 0,
+    topicIndex: 0,
+    notes:
+      "This suite's general-purpose class on the primary account -- used by any module with no specific data dependency.",
     knownIssues: [],
   },
   defaultAccount2: {
     label: 'Default (general-purpose fallback, second account)',
     account: 'VALID_PIN_2',
-    grade: 'Class 12', division: 'A', subject: 'Computer Science',
-    chapterIndex: 13, topicIndex: 0,
-    notes: '"14. Project Based Learning" -- confirmed to hold Image/Video/Worksheet/Weblink resources, used across most Players sub-modules on the second account.',
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Computer Science',
+    chapterIndex: 13,
+    topicIndex: 0,
+    notes:
+      '"14. Project Based Learning" -- confirmed to hold Image/Video/Worksheet/Weblink resources, used across most Players sub-modules on the second account.',
     knownIssues: [],
   },
 
@@ -53,27 +61,39 @@ const MODULE_CLASS_MAP = {
   navigationBoundary: {
     label: 'Navigation -- boundary/first-last-chapter checks',
     account: 'VALID_PIN',
-    grade: 'Class 9', division: 'A', subject: 'Hindi Language',
-    chapterIndex: null, topicIndex: null, // 29 chapters total, used for first/last-index boundary tests
-    notes: '29 chapters -- the widest chapter list confirmed on this account, used wherever a test needs "many chapters" (boundary/scroll checks).',
+    grade: 'Class 9',
+    division: 'A',
+    subject: 'Hindi Language',
+    chapterIndex: null,
+    topicIndex: null, // 29 chapters total, used for first/last-index boundary tests
+    notes:
+      '29 chapters -- the widest chapter list confirmed on this account, used wherever a test needs "many chapters" (boundary/scroll checks).',
     knownIssues: [
-      'The true LAST chapter (29) and the one before it (28) do not show a browsable topics list the same way earlier chapters do -- the popup jumps straight to a single topic instead of listing options. Not a bug; just don\'t assume every chapter behaves identically when writing a new boundary test here.',
+      "The true LAST chapter (29) and the one before it (28) do not show a browsable topics list the same way earlier chapters do -- the popup jumps straight to a single topic instead of listing options. Not a bug; just don't assume every chapter behaves identically when writing a new boundary test here.",
     ],
   },
   navigationGeneral: {
     label: 'Navigation -- general cascade/state checks',
     account: 'VALID_PIN',
-    grade: 'Class 5', division: 'A', subject: 'Mathematics',
-    chapterIndex: 0, topicIndex: 0,
-    notes: 'Secondary known-good combo, used to force a genuine class-switch transition (away from Class 9A/Class 11A) in tests that need to prove a real navigation event occurred.',
+    grade: 'Class 5',
+    division: 'A',
+    subject: 'Mathematics',
+    chapterIndex: 0,
+    topicIndex: 0,
+    notes:
+      'Secondary known-good combo, used to force a genuine class-switch transition (away from Class 9A/Class 11A) in tests that need to prove a real navigation event occurred.',
     knownIssues: [],
   },
   navigationAccountancy: {
     label: 'Navigation -- Accountancy-specific checks (subject list order)',
     account: 'VALID_PIN',
-    grade: 'Class 11', division: 'A', subject: 'Accountancy',
-    chapterIndex: 2, topicIndex: 0,
-    notes: 'Accountancy is the alphabetically-FIRST subject in Class 11\'s real subject list on this account -- used wherever a test needs "the first subject pill" specifically (e.g. Toolbar/User-Journeys rapid-switch tests).',
+    grade: 'Class 11',
+    division: 'A',
+    subject: 'Accountancy',
+    chapterIndex: 2,
+    topicIndex: 0,
+    notes:
+      'Accountancy is the alphabetically-FIRST subject in Class 11\'s real subject list on this account -- used wherever a test needs "the first subject pill" specifically (e.g. Toolbar/User-Journeys rapid-switch tests).',
     knownIssues: [],
   },
 
@@ -81,9 +101,13 @@ const MODULE_CLASS_MAP = {
   attendance: {
     label: 'Attendance',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Physics or Mathematics',
-    chapterIndex: 0, topicIndex: 0,
-    notes: 'Magnet tool (toolbar-tool-gtMagnet) is per-account+class-teacher-assignment gated, not universal -- confirmed available on this account\'s Class 12A.',
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics or Mathematics',
+    chapterIndex: 0,
+    topicIndex: 0,
+    notes:
+      "Magnet tool (toolbar-tool-gtMagnet) is per-account+class-teacher-assignment gated, not universal -- confirmed available on this account's Class 12A.",
     knownIssues: [
       'CRITICAL, reproduced across multiple subjects: the Attendance panel hangs indefinitely on its own loading spinner and never renders the roster -- no known workaround, no way to exit from inside the panel.',
     ],
@@ -93,17 +117,25 @@ const MODULE_CLASS_MAP = {
   compassBaseline: {
     label: 'Compass -- AnalyseIt/ExploreIt/Revision Tests all render',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Physics',
-    chapterIndex: 0, topicIndex: 0,
-    notes: 'CONFIRMED LIVE: the only combo found this session where AnalyseIt, ExploreIt, AND Revision Tests all render simultaneously with real data -- use this, not navigationGeneral or Class 11A Mathematics, for any new Compass test.',
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics',
+    chapterIndex: 0,
+    topicIndex: 0,
+    notes:
+      'CONFIRMED LIVE: the only combo found this session where AnalyseIt, ExploreIt, AND Revision Tests all render simultaneously with real data -- use this, not navigationGeneral or Class 11A Mathematics, for any new Compass test.',
     knownIssues: [],
   },
   compassNoAnalyseIt: {
     label: 'Compass -- confirmed to have ZERO AnalyseIt presence (negative case)',
     account: 'VALID_PIN',
-    grade: 'Class 11', division: 'A', subject: 'Mathematics',
-    chapterIndex: 0, topicIndex: 0,
-    notes: 'CONFIRMED LIVE (5/5 repro, including after a full reload): this combo never renders an AnalyseIt entry at all -- only ExploreIt. Useful specifically as a negative-case fixture; do NOT use this combo for any AnalyseIt-dependent test.',
+    grade: 'Class 11',
+    division: 'A',
+    subject: 'Mathematics',
+    chapterIndex: 0,
+    topicIndex: 0,
+    notes:
+      'CONFIRMED LIVE (5/5 repro, including after a full reload): this combo never renders an AnalyseIt entry at all -- only ExploreIt. Useful specifically as a negative-case fixture; do NOT use this combo for any AnalyseIt-dependent test.',
     knownIssues: [
       'compass-analyseit-item is entirely absent from the DOM on this combo, not just hidden -- a test written assuming "it\'s just empty" instead of "it doesn\'t exist" will hang on a locator wait.',
     ],
@@ -113,12 +145,15 @@ const MODULE_CLASS_MAP = {
   checkpoints: {
     label: 'Checkpoints Player',
     account: 'VALID_PIN', // CORRECTED 2026-09-09 re-scan: flashcard.spec.js (see its own `flashcard` entry) also uses VALID_PIN for this same chapter, not VALID_PIN_2 as previously noted here.
-    grade: 'Class 8', division: 'R', subject: 'Mathematics',
+    grade: 'Class 8',
+    division: 'R',
+    subject: 'Mathematics',
     chapterName: 'Foundation Checkpoint', // selected by NAME, not index -- position varies
     topicIndex: 0,
-    notes: 'Resource card "testR-25.08.26". Chapter must be selected by NAME (goToChapterTopicByName), not a fixed index -- its position in the chapter list is not stable.',
+    notes:
+      'Resource card "testR-25.08.26". Chapter must be selected by NAME (goToChapterTopicByName), not a fixed index -- its position in the chapter list is not stable.',
     knownIssues: [
-      'This resource\'s real status (CREATED / PAUSED / LAUNCHED) drifts as a direct side-effect of testing it -- any new test against this resource must check current on-screen state rather than assuming one fixed flow.',
+      "This resource's real status (CREATED / PAUSED / LAUNCHED) drifts as a direct side-effect of testing it -- any new test against this resource must check current on-screen state rather than assuming one fixed flow.",
       'Clicking the checkpointEndBtn control reliably crashes the page (reproduced twice) -- never call it as a cleanup step.',
     ],
   },
@@ -127,8 +162,11 @@ const MODULE_CLASS_MAP = {
   quiz: {
     label: 'Quiz Player',
     account: 'VALID_PIN_2',
-    grade: 'Class 11', division: 'A', subject: 'Accountancy',
-    chapterIndex: 2, topicIndex: 0,
+    grade: 'Class 11',
+    division: 'A',
+    subject: 'Accountancy',
+    chapterIndex: 2,
+    topicIndex: 0,
     notes: '',
     knownIssues: [
       'The Playlist strip can render fully COLLAPSED on this account -- every resource-card click silently no-ops until the drawer is explicitly re-expanded first (see PlaylistPage.ensureDrawerVisible()).',
@@ -138,8 +176,11 @@ const MODULE_CLASS_MAP = {
   codeEditor: {
     label: 'Code Editor Player',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Computer Science',
-    chapterIndex: 1, topicIndex: 0,
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Computer Science',
+    chapterIndex: 1,
+    topicIndex: 0,
     notes: '"2. Exception Handling in Python" -- confirmed to hold a real Code-type resource.',
     knownIssues: [
       'Editor settings (font size/theme) were found NOT to persist across a reload in one verification pass, contradicting an earlier positive finding recorded for this same combo -- treat as flaky/needs re-confirmation, not settled either way.',
@@ -148,9 +189,13 @@ const MODULE_CLASS_MAP = {
   playersDefault: {
     label: 'Players -- Video/Worksheet/Image/Weblink (shared default topic)',
     account: 'VALID_PIN_2',
-    grade: 'Class 12', division: 'A', subject: 'Computer Science',
-    chapterIndex: 13, topicIndex: 0,
-    notes: '"14. Project Based Learning" -- one confirmed Image/Video/Worksheet/Weblink resource each, all in the same topic. Shared across video.spec.js, worksheet.spec.js, image.spec.js, weblink.spec.js.',
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Computer Science',
+    chapterIndex: 13,
+    topicIndex: 0,
+    notes:
+      '"14. Project Based Learning" -- one confirmed Image/Video/Worksheet/Weblink resource each, all in the same topic. Shared across video.spec.js, worksheet.spec.js, image.spec.js, weblink.spec.js.',
     knownIssues: [
       'A worksheet, once closed, was observed leaving 13 stale close-icon elements behind in the DOM in one pass -- possible stacking/cleanup bug, flagged for re-confirmation, not yet settled as a hard finding.',
     ],
@@ -158,8 +203,11 @@ const MODULE_CLASS_MAP = {
   ebook: {
     label: 'Ebook Player',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Physics',
-    chapterIndex: 13, topicIndex: 0,
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics',
+    chapterIndex: 13,
+    topicIndex: 0,
     notes: 'Confirmed 1 linked e-book resource: "(CE Crystal) NCERT Physics Class 12".',
     knownIssues: [
       'Both the chapter-drawer and resource-drawer toggle buttons are confirmed non-functional (verified via DOM computed-style + screenshot, display:none before and after click).',
@@ -168,17 +216,23 @@ const MODULE_CLASS_MAP = {
   tceUnsupported: {
     label: 'TCE Player / Unsupported Player',
     account: 'VALID_PIN_2', // CORRECTED 2026-09-09 re-scan: both consuming files (tce.spec.js, unsupported.spec.js) actually log in with VALID_PIN_2, not VALID_PIN as this entry previously said.
-    grade: 'Class 12', division: 'A', subject: 'Physics',
-    chapterIndex: 0, topicIndex: 0,
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics',
+    chapterIndex: 0,
+    topicIndex: 0,
     notes: 'Unsupported Player creates its own throwaway asset per test and works on any class.',
     knownIssues: [],
   },
   flashcard: {
     label: 'Flashcard Player',
     account: 'VALID_PIN', // CORRECTED 2026-09-09 re-scan: flashcard.spec.js's own comment explains VALID_PIN_2 does not have Class 8/Division R reachable at all on this account -- it deliberately uses VALID_PIN instead (the SAME account checkpoints.spec.js uses for this same chapter).
-    grade: 'Class 8', division: 'R', subject: 'Mathematics',
+    grade: 'Class 8',
+    division: 'R',
+    subject: 'Mathematics',
     chapterName: 'Foundation Checkpoint',
-    notes: 'Shares the Checkpoints module\'s chapter (selected by name) -- see the `checkpoints` entry\'s own known issues, which also apply here. The real topic under this chapter ("Baseline Test") is only known by name, not a stable index -- the consuming file searches topic indices 0..4 itself rather than using a single fixed topicIndex, so this entry intentionally carries no topicIndex/chapterNav-search logic of its own.',
+    notes:
+      'Shares the Checkpoints module\'s chapter (selected by name) -- see the `checkpoints` entry\'s own known issues, which also apply here. The real topic under this chapter ("Baseline Test") is only known by name, not a stable index -- the consuming file searches topic indices 0..4 itself rather than using a single fixed topicIndex, so this entry intentionally carries no topicIndex/chapterNav-search logic of its own.',
     knownIssues: [],
   },
 
@@ -186,9 +240,13 @@ const MODULE_CLASS_MAP = {
   toolbarGeneral: {
     label: 'Toolbar / Whiteboard drawing',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Physics',
-    chapterIndex: 0, topicIndex: 0,
-    notes: 'Draws directly on the Whiteboard canvas -- works on any class; most Toolbar tests don\'t depend on curriculum content at all.',
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics',
+    chapterIndex: 0,
+    topicIndex: 0,
+    notes:
+      "Draws directly on the Whiteboard canvas -- works on any class; most Toolbar tests don't depend on curriculum content at all.",
     knownIssues: [
       'A fixed header/logo covers roughly the top-left 90x90px of the canvas -- any coordinate helper must clamp to a minimum of ~120px in both axes or risk silently clicking the header instead of the canvas.',
       'The Shapes tool needs Rectangle re-selected from a freshly reopened panel before EVERY individual insertion -- it is not "armed" for multiple inserts in a row.',
@@ -197,8 +255,11 @@ const MODULE_CLASS_MAP = {
   toolbarRapidSwitch: {
     label: 'Toolbar -- rapid subject-switch checks',
     account: 'VALID_PIN',
-    grade: 'Class 11', division: 'A', subject: 'Accountancy',
-    notes: 'Used specifically where a test needs to click "the first subject pill" and know which one that is (see navigationAccountancy).',
+    grade: 'Class 11',
+    division: 'A',
+    subject: 'Accountancy',
+    notes:
+      'Used specifically where a test needs to click "the first subject pill" and know which one that is (see navigationAccountancy).',
     knownIssues: [],
   },
 
@@ -206,8 +267,11 @@ const MODULE_CLASS_MAP = {
   aiHomework: {
     label: 'AI Homework',
     account: 'VALID_PIN_2',
-    grade: 'Class 11', division: 'A', subject: 'Mathematics',
-    notes: 'Magnet-gated. The Objective counter\'s real floor is 0, not 1 -- a generate-and-wait helper assuming "at least 1" will hang on a genuine 0-question request.',
+    grade: 'Class 11',
+    division: 'A',
+    subject: 'Mathematics',
+    notes:
+      'Magnet-gated. The Objective counter\'s real floor is 0, not 1 -- a generate-and-wait helper assuming "at least 1" will hang on a genuine 0-question request.',
     knownIssues: [
       '"Ready to Send" is a REAL send action -- never click it in automation (documented via test.fail(), not executed).',
     ],
@@ -215,10 +279,13 @@ const MODULE_CLASS_MAP = {
   aiNotices: {
     label: 'AI Notices',
     account: 'VALID_PIN',
-    grade: 'Class 11', division: 'A', subject: 'Mathematics',
-    notes: 'Magnet-gated, same class as aiHomework\'s VALID_PIN_2 entry but confirmed independently on the primary account.',
+    grade: 'Class 11',
+    division: 'A',
+    subject: 'Mathematics',
+    notes:
+      "Magnet-gated, same class as aiHomework's VALID_PIN_2 entry but confirmed independently on the primary account.",
     knownIssues: [
-      '3 of the compose dialog\'s AI-assist buttons (paraphrase etc.) are confirmed dead code.',
+      "3 of the compose dialog's AI-assist buttons (paraphrase etc.) are confirmed dead code.",
       'The Title field has a real Backspace/Delete key handling bug.',
       'Closing the composer silently discards a draft with no confirmation.',
     ],
@@ -228,8 +295,11 @@ const MODULE_CLASS_MAP = {
   playlistGeneral: {
     label: 'Playlist -- general (Show/Hide/Pin, Filter, Chapter/Topic nav)',
     account: 'VALID_PIN',
-    grade: 'Class 12', division: 'A', subject: 'Physics',
-    chapterIndex: 0, topicIndex: 0,
+    grade: 'Class 12',
+    division: 'A',
+    subject: 'Physics',
+    chapterIndex: 0,
+    topicIndex: 0,
     notes: '',
     knownIssues: [],
   },
@@ -241,7 +311,9 @@ const MODULE_CLASS_MAP = {
 function getClassMap(moduleKey) {
   const entry = MODULE_CLASS_MAP[moduleKey];
   if (!entry) {
-    throw new Error(`moduleClassMap: no entry for "${moduleKey}" -- known keys: ${Object.keys(MODULE_CLASS_MAP).join(', ')}`);
+    throw new Error(
+      `moduleClassMap: no entry for "${moduleKey}" -- known keys: ${Object.keys(MODULE_CLASS_MAP).join(', ')}`
+    );
   }
   return entry;
 }
@@ -274,7 +346,10 @@ async function applyClassMap(nav, moduleKey, opts = {}) {
     }
   }
   if (entry.knownIssues && entry.knownIssues.length > 0) {
-    console.log(`[moduleClassMap:${moduleKey}] ${entry.knownIssues.length} known issue(s) on this combo:`, entry.knownIssues);
+    console.log(
+      `[moduleClassMap:${moduleKey}] ${entry.knownIssues.length} known issue(s) on this combo:`,
+      entry.knownIssues
+    );
   }
   return entry;
 }

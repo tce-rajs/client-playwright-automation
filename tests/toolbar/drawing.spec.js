@@ -33,28 +33,39 @@ test('TB-DRAW-02: Eraser removes a drawn stroke where dragged over it', { tag: '
   expect(afterErase).toBeLessThan(afterDraw);
 });
 
-test('TB-DRAW-03: Eraser can leave small fragments of a stroke behind', { tag: ['@negative', '@bug'] }, async ({ page }) => {
-  const tb = new ToolbarPage(page);
-  await tb.penStroke({ x: 300, y: 500 }, { x: 400, y: 500 }); // ~100px stroke
-  const afterDraw = await tb.pathCount();
+test(
+  'TB-DRAW-03: Eraser can leave small fragments of a stroke behind',
+  { tag: ['@negative', '@bug'] },
+  async ({ page }) => {
+    const tb = new ToolbarPage(page);
+    await tb.penStroke({ x: 300, y: 500 }, { x: 400, y: 500 }); // ~100px stroke
+    const afterDraw = await tb.pathCount();
 
-  await tb.selectTool('gtErase');
-  await tb.drawStroke({ x: 295, y: 500 }, { x: 405, y: 500 }, 20); // single pass directly over it
-  await page.waitForTimeout(1000);
-  const afterOnePass = await tb.pathCount();
+    await tb.selectTool('gtErase');
+    await tb.drawStroke({ x: 295, y: 500 }, { x: 405, y: 500 }, 20); // single pass directly over it
+    await page.waitForTimeout(1000);
+    const afterOnePass = await tb.pathCount();
 
-  console.log('Paths: after draw =', afterDraw, '| after one erase pass =', afterOnePass);
-  test.fail(afterOnePass > 0 && afterOnePass >= afterDraw, 'A single erase pass directly over a short stroke leaves fragments behind rather than fully clearing it');
-  expect(afterOnePass).toBe(afterDraw - 1);
-});
-
-test('TB-DRAW-04: Pencil color/thickness options are available before drawing', { tag: '@ui-state' }, async ({ page }) => {
-  const tb = new ToolbarPage(page);
-  await tb.openToolPanel('gtPen');
-  await expect(tb.panel).toBeVisible();
-  const colorCount = await tb.penColorOptions.count();
-  expect(colorCount).toBeGreaterThan(1);
-  for (const label of ['Thin', 'Normal', 'Thick', 'Strong']) {
-    await expect(tb.panel.getByText(label, { exact: true })).toBeVisible();
+    console.log('Paths: after draw =', afterDraw, '| after one erase pass =', afterOnePass);
+    test.fail(
+      afterOnePass > 0 && afterOnePass >= afterDraw,
+      'A single erase pass directly over a short stroke leaves fragments behind rather than fully clearing it'
+    );
+    expect(afterOnePass).toBe(afterDraw - 1);
   }
-});
+);
+
+test(
+  'TB-DRAW-04: Pencil color/thickness options are available before drawing',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const tb = new ToolbarPage(page);
+    await tb.openToolPanel('gtPen');
+    await expect(tb.panel).toBeVisible();
+    const colorCount = await tb.penColorOptions.count();
+    expect(colorCount).toBeGreaterThan(1);
+    for (const label of ['Thin', 'Normal', 'Thick', 'Strong']) {
+      await expect(tb.panel.getByText(label, { exact: true })).toBeVisible();
+    }
+  }
+);

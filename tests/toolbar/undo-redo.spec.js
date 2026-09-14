@@ -61,6 +61,8 @@ test('TB-UNDO-03: Undo/Redo history depth', { tag: '@boundary' }, async ({ page 
     current = now;
   }
 
-  console.log(`Undo history depth: ${undoSteps} step(s) back out of ${strokeCount} actions performed (ended at ${current} paths, started at ${before}).`);
+  console.log(
+    `Undo history depth: ${undoSteps} step(s) back out of ${strokeCount} actions performed (ended at ${current} paths, started at ${before}).`
+  );
   expect(undoSteps).toBeGreaterThan(0);
 });

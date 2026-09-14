@@ -9,19 +9,27 @@ test.beforeEach(async ({ page }) => {
   await pl.loginWithPin(process.env.VALID_PIN);
 });
 
-test('PL-CORE-01: Playlist strip visible with E-Books, Contents, and resource cards', { tag: '@ui-state' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  await expect(pl.eBooksTile).toBeVisible();
-  await expect(pl.contentsTile).toBeVisible();
-  await expect(pl.resourceCards.first()).toBeVisible();
-});
+test(
+  'PL-CORE-01: Playlist strip visible with E-Books, Contents, and resource cards',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    await expect(pl.eBooksTile).toBeVisible();
+    await expect(pl.contentsTile).toBeVisible();
+    await expect(pl.resourceCards.first()).toBeVisible();
+  }
+);
 
-test('PL-CORE-02: Contents tile shows the current chapter/topic position badge', { tag: '@ui-state' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  const contentsText = await pl.contentsTile.textContent();
-  console.log('Contents tile text:', contentsText);
-  expect(contentsText).toMatch(/\d+\.\d+/);
-});
+test(
+  'PL-CORE-02: Contents tile shows the current chapter/topic position badge',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    const contentsText = await pl.contentsTile.textContent();
+    console.log('Contents tile text:', contentsText);
+    expect(contentsText).toMatch(/\d+\.\d+/);
+  }
+);
 
 test('PL-CORE-03: Resource cards show a type-specific badge/icon', { tag: '@ui-state' }, async ({ page }) => {
   const pl = new PlaylistPage(page);
@@ -39,11 +47,15 @@ test('PL-CORE-04: The "..." control opens the Playlist Options menu', { tag: '@p
   await expect(pl.filterResetBtn).toBeVisible();
 });
 
-test('PL-CORE-05: Left/right chevrons are present beside the Playlist Options control', { tag: '@ui-state' }, async ({ page }) => {
-  const pl = new PlaylistPage(page);
-  await expect(pl.leftScrollBtn).toBeVisible();
-  await expect(pl.rightScrollBtn).toBeVisible();
-});
+test(
+  'PL-CORE-05: Left/right chevrons are present beside the Playlist Options control',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const pl = new PlaylistPage(page);
+    await expect(pl.leftScrollBtn).toBeVisible();
+    await expect(pl.rightScrollBtn).toBeVisible();
+  }
+);
 
 test('PL-CORE-06: Pin/anchor icon toggles visual state on click', { tag: '@ui-state' }, async ({ page }) => {
   const pl = new PlaylistPage(page);

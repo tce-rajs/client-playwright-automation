@@ -101,7 +101,10 @@ test('PWD-11: Login with valid school, user ID and password', { tag: ['@positive
   // fresh password from the account owner, PIN login is the confirmed
   // working path. Running it for real here rather than skipping, and
   // documenting the known outcome instead of re-diagnosing it.
-  test.fail(true, 'Known: this .env PASSWORD value is rejected by the auth server (400 invalid_grant) — see project notes, needs a fresh password to retest');
+  test.fail(
+    true,
+    'Known: this .env PASSWORD value is rejected by the auth server (400 invalid_grant) — see project notes, needs a fresh password to retest'
+  );
 
   const login = new LoginPage(page);
   await login.loginWithPassword({

@@ -48,7 +48,9 @@ class AiHomeworkPage {
     this.topicsCloseBtn = page.locator('[data-qa-id="ai-homework-topics-close-btn"]');
 
     // --- Question Builder ---
-    this.builderQuestions = page.locator('[data-qa-id^="ai-homework-builder-scq-question-"], [data-qa-id^="ai-homework-builder-mcq-question-"], [data-qa-id^="ai-homework-builder-subjective-question-"]');
+    this.builderQuestions = page.locator(
+      '[data-qa-id^="ai-homework-builder-scq-question-"], [data-qa-id^="ai-homework-builder-mcq-question-"], [data-qa-id^="ai-homework-builder-subjective-question-"]'
+    );
     this.swipeLeft = (kind, i) => page.locator(`[data-qa-id="ai-homework-builder-${kind}-swipe-left-${i}"]`);
     this.swipeRight = (kind, i) => page.locator(`[data-qa-id="ai-homework-builder-${kind}-swipe-right-${i}"]`);
 

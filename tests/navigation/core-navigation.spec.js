@@ -22,12 +22,16 @@ test('NAV-CORE-02: Current Chapter/Topic label visible on Dashboard', { tag: '@u
   await expect(nav.currentChapterTopicBtn).toContainText('|');
 });
 
-test('NAV-CORE-03: Clicking Current Class opens the Class Popup on Recent Classes by default', { tag: '@positive' }, async ({ page }) => {
-  const nav = new NavigationPage(page);
-  await nav.openClassPopup();
-  await expect(nav.recentClassButtons.first()).toBeVisible();
-  await expect(nav.recentClassesTab).toHaveAttribute('aria-selected', 'true');
-});
+test(
+  'NAV-CORE-03: Clicking Current Class opens the Class Popup on Recent Classes by default',
+  { tag: '@positive' },
+  async ({ page }) => {
+    const nav = new NavigationPage(page);
+    await nav.openClassPopup();
+    await expect(nav.recentClassButtons.first()).toBeVisible();
+    await expect(nav.recentClassesTab).toHaveAttribute('aria-selected', 'true');
+  }
+);
 
 test('NAV-CORE-04: Clicking Current Chapter/Topic opens the Chapters Popup', { tag: '@positive' }, async ({ page }) => {
   const nav = new NavigationPage(page);
@@ -37,14 +41,18 @@ test('NAV-CORE-04: Clicking Current Chapter/Topic opens the Chapters Popup', { t
   await expect(nav.topicItems.first()).toBeVisible();
 });
 
-test('NAV-CORE-05: Class Popup has two tabs: Recent Classes and All My Classes', { tag: '@ui-state' }, async ({ page }) => {
-  const nav = new NavigationPage(page);
-  await nav.openClassPopup();
-  await expect(nav.recentClassesTab).toBeVisible();
-  await expect(nav.allMyClassesTab).toBeVisible();
+test(
+  'NAV-CORE-05: Class Popup has two tabs: Recent Classes and All My Classes',
+  { tag: '@ui-state' },
+  async ({ page }) => {
+    const nav = new NavigationPage(page);
+    await nav.openClassPopup();
+    await expect(nav.recentClassesTab).toBeVisible();
+    await expect(nav.allMyClassesTab).toBeVisible();
 
-  await nav.allMyClassesTab.click();
-  await expect(nav.gradeButtons.first()).toBeVisible();
-  await nav.recentClassesTab.click();
-  await expect(nav.recentClassButtons.first()).toBeVisible();
-});
+    await nav.allMyClassesTab.click();
+    await expect(nav.gradeButtons.first()).toBeVisible();
+    await nav.recentClassesTab.click();
+    await expect(nav.recentClassButtons.first()).toBeVisible();
+  }
+);
