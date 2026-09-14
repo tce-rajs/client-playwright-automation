@@ -3,6 +3,7 @@
 
 require('dotenv').config();
 const { defineConfig, devices } = require('@playwright/test');
+const { BASE_URL } = require('./config/env');
 
 // Folder-name-safe "current date and time" (no colons, since Windows
 // paths can't contain them) — used to give each run's archived report
@@ -75,7 +76,7 @@ module.exports = defineConfig({
 
   use: {
     // Every test can call page.goto('/login') instead of the full URL.
-    baseURL: process.env.BASE_URL || 'https://ce-qa-school.devstudi.com/teach/',
+    baseURL: BASE_URL,
 
     // Run with a real, visible browser window by default. UI mode has no
     // "show browser" toggle in this Playwright version -- this config

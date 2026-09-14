@@ -16,11 +16,20 @@ module.exports = [
       'playwright/.cache/**',
       '.agents/**',
       'CEP_TestCases/**',
+      'review_archive/**',
     ],
   },
   js.configs.recommended,
   {
-    files: ['*.js', 'tests/**/*.js', 'pages/**/*.js', 'fixtures/**/*.js', 'config/**/*.js', 'scripts/**/*.js'],
+    files: [
+      '*.js',
+      'tests/**/*.js',
+      'pages/**/*.js',
+      'utils/**/*.js',
+      'fixtures/**/*.js',
+      'config/**/*.js',
+      'scripts/**/*.js',
+    ],
     languageOptions: {
       sourceType: 'commonjs',
       // Both sets are needed in the same files: top-level code runs in

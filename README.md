@@ -3,11 +3,14 @@
 A Playwright (JS/CommonJS) end-to-end test suite for Tata ClassEdge CEP v2's
 teach webapp, targeting `https://ce-qa-school.devstudi.com/teach/`.
 
-**1,016 automated test cases across 20 modules**, all live-verified against
-the real QA app. Every case is tracked to a real outcome — it passes, or it
-fails with a documented reason (a confirmed real app bug, or a genuine
-tooling/environment limitation) — nothing is silently skipped anywhere in
-this suite.
+**1,045 documented test cases across 20 modules**, with an automated
+Playwright test for nearly every one. As of the latest count, **732 (70%)
+carry a "Verified Live" status** in their workbook (confirmed against the
+real QA app); the remaining 313 are "Pending Verification" or process/meta
+notes. Every case is tracked to a real outcome — it passes, or it fails with
+a documented reason (a confirmed real app bug, or a genuine tooling/
+environment limitation) — nothing is silently skipped anywhere in this
+suite.
 
 ## Setup
 
@@ -45,7 +48,9 @@ npx playwright test --grep-invert "@positive"   # everything except positive
 `playwright-report/`, which gets overwritten every run. Every run also
 gets an untouched, timestamped copy saved to
 `playwright-report-archive/report_<date>_<time>/`, so older reports are
-never lost just because you ran the suite again.
+never lost just because you ran the suite again. Only the most recent 20 of
+these are kept -- older ones are pruned automatically at the end of each run
+(`scripts/archive-readme-reporter.js`) so the archive doesn't grow forever.
 
 **Always keep `--workers=1`** (already the config default) when running
 against the live app — every test shares real, mutable account state
@@ -89,7 +94,7 @@ existing page objects and specs need no changes beyond the import line.
 - **Known intermittent issue, low frequency (~1 in 50 fresh launches
   observed), not fully root-caused**: occasionally a fresh launch's
   `page.goto('./')` throws "Target page, context or browser has been
-  closed" — unrelated to the cosmetic overlay above. `pages/auth.helper.js`
+  closed" — unrelated to the cosmetic overlay above. `utils/auth.helper.js`
   now retries the whole login attempt (not just the final avatar wait)
   when this happens, which resolved every occurrence hit in testing so
   far, but the underlying cause of the occasional "Target closed" itself
@@ -125,11 +130,13 @@ tests/              test spec files (*.spec.js), one folder per module,
                      and extended-coverage.spec.js (additional cases from a
                      later gap-analysis pass). No module has ad-hoc,
                      one-off file names beyond that set.
-pages/auth.helper.js  shared PIN sign-in used by every page object that logs
+pages/               page objects, one file per screen/module (e.g. login.page.js)
+utils/auth.helper.js  shared PIN sign-in used by every page object that logs
                      in — retries once on a confirmed transient timing race
                      (see the note in the file) rather than each test
                      re-implementing its own login/retry logic
-pages/               page objects, one file per screen/module (e.g. login.page.js)
+config/env.js        single source of truth for BASE_URL, read by both
+                     playwright.config.js and fixtures/electron-app.js
 config/moduleClassMap.js   confirmed-working Class/Division/Subject/Chapter/Topic
                      combo per module, for both QA accounts (see below)
 fixtures/electron-app.js   custom Playwright fixture that drives the real desktop
@@ -178,7 +185,7 @@ Verification -- <specific reason>`).
 - Desktop client mode (see above) was wired into every spec file
   (2026-09-12) and pilot-tested on two modules so far: authentication's
   `pin-login.spec.js` (19/23 passed originally) and the full
-  `tests/add-resource/` module (50/51 passed after the `auth.helper.js`
+  `tests/add-resource/` module (50/51 passed after the `utils/auth.helper.js`
   fix above — the one remaining failure, `AR-BREAK-05`, needs two
   simultaneous browser tabs on the same account and doesn't map to a
   single-window desktop client; it's a structural gap in that one test,
@@ -199,7 +206,7 @@ Every test logs into the same one real, shared QA account fresh (no session
 reuse) — running the FULL suite back-to-back for the hours that takes can
 hit a confirmed, transient backend timing race where a login right after a
 prior test's class-switch/sign-out times out waiting for the post-login
-avatar (`pages/auth.helper.js` now retries once automatically, which fixes
+avatar (`utils/auth.helper.js` now retries once automatically, which fixes
 this in practice). If Playwright's **UI mode** still shows widespread
 failures on "run all" specifically (as opposed to `npm test` from the CLI),
 check the workers count in its own toolbar — UI mode has a worker-count

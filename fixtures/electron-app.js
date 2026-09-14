@@ -8,7 +8,7 @@
 // <webview> tag, which Electron exposes to Playwright as its OWN separate
 // window. So every test here uses THAT window as `page`, not the shell.
 //
-// Setup this required (see docs/CLIENT_AUTOMATION_NOTES.md for the full story):
+// Setup this required:
 //   1. This machine has ELECTRON_RUN_AS_NODE=1 set globally, which makes any
 //      Electron exe run as plain Node instead of opening its GUI. We strip it
 //      from the launched process's env.
@@ -24,12 +24,11 @@
 const fs = require('fs');
 const base = require('@playwright/test');
 const { _electron: electron } = base;
+const { BASE_URL } = require('../config/env');
 
 const CLIENT_EXE_PATH =
   process.env.CLASSEDGE_CLIENT_EXE ||
   'C:\\Users\\v_crystalQA3\\AppData\\Local\\Programs\\tceclient\\Tata ClassEdge School.exe';
-
-const BASE_URL = process.env.BASE_URL || 'https://ce-qa-school.devstudi.com/teach/';
 
 // Every spec was written against a plain browser `page`, where Playwright's
 // own `baseURL` config option lets `page.goto('./')` resolve automatically.
