@@ -2,6 +2,8 @@
 // Full reference: https://playwright.dev/docs/test-configuration
 
 require('dotenv').config();
+const os = require('os');
+const path = require('path');
 const { defineConfig, devices } = require('@playwright/test');
 const { BASE_URL } = require('./config/env');
 
@@ -17,9 +19,20 @@ function reportTimestamp() {
   );
 }
 
-// Computed once per run, so the archived html report and its README both
-// land in the same folder.
-const archiveFolder = `playwright-report-archive/report_${reportTimestamp()}`;
+// `npx playwright test --list` (used constantly for sanity checks -- does
+// this config/fixture change still resolve every test with no import
+// errors?) runs every reporter, including the html one below, even though
+// ZERO tests actually execute. Confirmed live: that was silently filling
+// playwright-report-archive/ with reports that have no real pass/fail data,
+// and at high enough volume even pushed genuine completed-run reports out
+// past archive-readme-reporter.js's own retention cap. Route the archive
+// folder outside the project during --list so nothing accumulates in the
+// repo for a run that never really happened; archive-readme-reporter.js's
+// own onEnd separately skips writing a README for the same reason.
+const isListOnly = process.argv.includes('--list');
+const archiveFolder = isListOnly
+  ? path.join(os.tmpdir(), 'playwright-list-scratch', reportTimestamp())
+  : `playwright-report-archive/report_${reportTimestamp()}`;
 
 module.exports = defineConfig({
   // Where our test files live.
