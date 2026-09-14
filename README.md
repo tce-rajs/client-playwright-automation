@@ -62,11 +62,25 @@ over it and produce false failures.
 Every spec file imports `test`/`expect` from `fixtures/electron-app.js`
 instead of `@playwright/test` directly. That fixture launches the real
 `Tata ClassEdge School.exe` desktop client (via Playwright's
-`_electron.launch()`) for every test, finds the `<webview>` window that
-actually hosts the teach webapp (the client's own top-level window is just
-a chrome/shell around it), and hands that window back as `page` — so
-existing page objects and specs need no changes beyond the import line.
+`_electron.launch()`) **once per worker** (not per test — see below),
+finds the `<webview>` window that actually hosts the teach webapp (the
+client's own top-level window is just a chrome/shell around it), and
+hands that window back as `page` — so existing page objects and specs
+need no changes beyond the import line.
 
+- **One launch per worker, not per test.** Since `workers: 1` is already
+  forced suite-wide (see above), this means one real launch for a whole
+  run, not ~1,000+. Between tests, the SAME window is reused: a fixture
+  step signs out via the real UI first if a previous test left it signed
+  in (so a Guest-Mode test like `entry.spec.js` still starts logged out,
+  same as it always has), and a health check (same `hasRealContent()`
+  signal the initial launch already trusted) forces a full relaunch if a
+  prior test left the window genuinely broken rather than handing a bad
+  window to the next test. Live-verified (2026-09-14): a real PIN login
+  followed immediately by `core-ui.spec.js`'s Guest-Mode-only tests, all
+  in one worker — every test still saw the state it expected, and the
+  whole 12-test batch (1 login + 11 Guest-Mode tests) ran in 2.5 minutes
+  with a single launch, versus needing ~12 separate launches before.
 - **Client path**: defaults to
   `C:\Users\v_crystalQA3\AppData\Local\Programs\tceclient\Tata ClassEdge School.exe`;
   override with the `CLASSEDGE_CLIENT_EXE` env var on another machine.
