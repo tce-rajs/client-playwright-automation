@@ -213,3 +213,20 @@ check the workers count in its own toolbar — UI mode has a worker-count
 control independent of this project's `playwright.config.js` `workers: 1`
 setting, and running more than 1 worker means multiple tests fight over the
 same live account's state at once.
+
+## CI
+
+Two separate GitHub Actions workflows, for two very different jobs:
+
+- **`.github/workflows/lint.yml`** — runs `npm run lint` on every push/PR.
+  Uses a normal hosted runner since ESLint doesn't touch the live app. Does
+  NOT run `format:check` yet — a batch of pre-existing files predate
+  Prettier and need a separate, reviewable reformat pass first.
+- **`.github/workflows/nightly-suite.yml`** — runs the real suite against
+  the live QA app. Needs a self-hosted Windows runner with the desktop
+  client installed (a hosted runner can't drive it — see "Desktop client
+  mode" above); its `schedule` trigger is commented out until that runner
+  is actually registered (see the workflow file's own comments for the
+  one-time setup). Until then, trigger it manually via
+  **Actions → Nightly regression suite → Run workflow** once the runner
+  exists, or keep running `npm test` locally as today.

@@ -1,0 +1,43 @@
+name: Nightly regression suite
+
+# Runs the REAL suite against the live QA app -- unlike lint.yml, this needs
+# a self-hosted Windows runner with the Tata ClassEdge School desktop client
+# already installed and pointed at the QA backend (see fixtures/electron-app.js
+# and the README's "Desktop client mode" section for why: every spec drives
+# that real Electron app, which a hosted Linux/macOS runner can't do).
+#
+# One-time setup this workflow depends on, done outside this repo:
+#   1. On the machine that already runs this suite manually, register it as
+#      a GitHub Actions self-hosted runner (repo Settings > Actions >
+#      Runners > New self-hosted runner) with the label `classedge-qa` below.
+#   2. Make sure that machine's runner service has access to the same .env
+#      values used for manual runs (VALID_PIN, VALID_PIN_2, etc.) -- either
+#      as repo/environment secrets exported into the runner's env, or an
+#      .env file already sitting next to the checkout.
+#   3. Un-comment the `schedule` trigger below once (1) and (2) are done --
+#      left disabled for now since no runner is registered yet, and running
+#      this against a nonexistent runner would just queue forever.
+#
+# Deliberately NOT on push/pull_request: every test shares one real, mutable
+# QA account (see playwright.config.js's workers:1 comment) and a full run
+# takes hours, so this runs on its own schedule instead of gating merges.
+
+on:
+  # schedule:
+  #   - cron: '0 20 * * *' # 20:00 UTC daily -- adjust to run overnight in the QA machine's own timezone
+  workflow_dispatch: {}
+
+jobs:
+  suite:
+    runs-on: [self-hosted, classedge-qa]
+    timeout-minutes: 360
+    steps:
+      - uses: actions/checkout@v4
+      - run: npm ci
+      - run: npx playwright test --workers=1
+      - if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 30
